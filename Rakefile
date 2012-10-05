@@ -15,11 +15,12 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "coderunner"
-  gem.homepage = "http://github.com/edmundhighcock/coderunner"
-  gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "github@edmundhighcock.com"
+  gem.homepage = "http://coderunner.sourceforge.net"
+  gem.license = "GPLv3"
+	gem.rubyforge_project = gem.name
+  gem.summary = %Q{A framework for the automated running and analysis of simulations.}
+  gem.description = %Q{CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes.}
+  gem.email = "edmundhighcock@sourceforge.net"
   gem.authors = ["Edmund Highcock"]
   # dependencies defined in Gemfile
 end
@@ -32,13 +33,13 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-  test.rcov_opts << '--exclude "gems/*"'
-end
+#require 'rcov/rcovtask'
+#Rcov::RcovTask.new do |test|
+  #test.libs << 'test'
+  #test.pattern = 'test/**/test_*.rb'
+  #test.verbose = true
+  #test.rcov_opts << '--exclude "gems/*"'
+#end
 
 task :default => :test
 
