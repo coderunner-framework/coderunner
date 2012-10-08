@@ -231,24 +231,24 @@ def process_directory
 # 	p @directory
 	@readme = nil
 	
-	if @code_runner_version < Version.new('0.5.1')
-		begin
-			update_from_version_0_5_0_and_lower
-		rescue Errno::ENOENT => err # No code runner files were found
-			unless @runner.heuristic_analysis
-				puts err
-				raise CRFatal.new("No code runner files found: suggest using heuristic analysis (flag -H if you are using the code_runner script)")
-			end
-			unless @runner.current_request == :traverse_directories
-				@runner.requests.push :traverse_directories unless @runner.requests.include? :traverse_directories
-				raise CRMild.new("can't begin heuristic analysis until there has been a sweep over all directories") # this will get rescued
-			end
-			@runner.increment_max_id	
-			@id = @runner.max_id
-			@job_no = -1
-			run_heuristic_analysis
-		end
-	end
+	#if @code_runner_version < Version.new('0.5.1')
+		#begin
+			#update_from_version_0_5_0_and_lower
+		#rescue Errno::ENOENT => err # No code runner files were found
+			#unless @runner.heuristic_analysis
+				#puts err
+				#raise CRFatal.new("No code runner files found: suggest using heuristic analysis (flag -H if you are using the code_runner script)")
+			#end
+			#unless @runner.current_request == :traverse_directories
+				#@runner.requests.push :traverse_directories unless @runner.requests.include? :traverse_directories
+				#raise CRMild.new("can't begin heuristic analysis until there has been a sweep over all directories") # this will get rescued
+			#end
+			#@runner.increment_max_id	
+			#@id = @runner.max_id
+			#@job_no = -1
+			#run_heuristic_analysis
+		#end
+	#end
 	
 	
 	read_info
@@ -442,7 +442,7 @@ end
 def update_submission_parameters(parameters, start_from_defaults=true)
 	logf(:update_submission_parameters)
 	if start_from_defaults
-		upgrade_defaults_from_0_5_0 if self.class.constants.include? :DEFAULTS_FILE_NAME_0_5_0
+		#upgrade_defaults_from_0_5_0 if self.class.constants.include? :DEFAULTS_FILE_NAME_0_5_0
 		main_defaults_file = "#{defaults_location}/#{defaults_file_name}"
 		main_defaults_file_text = 		File.read(main_defaults_file)
 		evaluate_defaults_file(main_defaults_file)
@@ -753,11 +753,11 @@ def self.check_and_update
 		@readout_list = (rcp.variables+rcp.results) unless rcp.readout_list
 # 		(variables+results).each{|v| const_get(:READOUT_LIST).push v} unless READOUT_LIST.size > 0
 
-		if rcp.variables_0_5_0
-			rcp.variables_0_5_0.dup.each do |par, info| #for backwards compatibility only
-				rcp.variables_0_5_0[par] = info[0] if info.class == Array
-			end
-		end
+		#if rcp.variables_0_5_0
+			#rcp.variables_0_5_0.dup.each do |par, info| #for backwards compatibility only
+				#rcp.variables_0_5_0[par] = info[0] if info.class == Array
+			#end
+		#end
 
 
 

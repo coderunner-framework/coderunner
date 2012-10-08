@@ -7,10 +7,13 @@ end
 
 # Basic class setup
 
+require 'rubygems'
+require "rubyhacks"
 class CodeRunner
 	
 	COMMAND_FOLDER = Dir.pwd
   SCRIPT_FOLDER = File.dirname(File.expand_path(__FILE__)) + '/coderunner' #i.e. where this script is
+	
 	if ENV['CODE_RUNNER_OPTIONS']
 		GLOBAL_OPTIONS = eval(ENV['CODE_RUNNER_OPTIONS']) # global options are set by the environment but some can be changed.
 	else
@@ -18,7 +21,6 @@ class CodeRunner
 	end
 	SYS = (GLOBAL_OPTIONS[:system] or ENV['CODE_RUNNER_SYSTEM'] or ENV['SYSTEM'] or "generic_linux")
 	require SCRIPT_FOLDER + "/system_modules/#{SYS}.rb"
-	require SCRIPT_FOLDER + "/box_of_tricks.rb"
 	SYSTEM_MODULE = const_get(SYS.variable_to_class_name)
 	include SYSTEM_MODULE
 	class << self
@@ -56,7 +58,7 @@ $stderr.print 'Loading libraries...' unless $has_put_startup_message_for_code_ru
 #read this if you are puzzled by
 # some non-standard use of ruby
 ################################
-require CodeRunner::SCRIPT_FOLDER + "/box_of_tricks.rb"
+#require CodeRunner::SCRIPT_FOLDER + "/box_of_tricks.rb"
 ################################
 
 require "getoptlong"
@@ -64,7 +66,7 @@ require "thread"
 require "fileutils"
 require "drb"
 require "test/unit/assertions"
-require CodeRunner::SCRIPT_FOLDER + '/parallelpipes.rb'
+require 'parallelpipes'
 require 'find'
 
 begin	
@@ -81,10 +83,7 @@ rescue LoadError
 end
 
 #require CodeRunner::SCRIPT_FOLDER + "/gnuplot.rb"
-load CodeRunner::SCRIPT_FOLDER + "/graphkit.rb"
-load CodeRunner::SCRIPT_FOLDER + "/graphkit_gnuplot2.rb"
-load CodeRunner::SCRIPT_FOLDER + "/graphkit_vtk_legacy.rb"
-load CodeRunner::SCRIPT_FOLDER + "/graphkit_mathematica.rb"
+require "graphkit"
 CodeRunner::GraphKit = GraphKit # Backwards compatibility
 
 # load 'gnuplot'
@@ -92,20 +91,20 @@ load CodeRunner::SCRIPT_FOLDER + "/feedback.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/test.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
-load CodeRunner::SCRIPT_FOLDER + "/input_file_generator.rb"
-eprint '.' unless $has_put_startup_message_for_code_runner
+#load CodeRunner::SCRIPT_FOLDER + "/input_file_generator.rb"
+#eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/long_regexen.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/version.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/heuristic_run_methods.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
-load CodeRunner::SCRIPT_FOLDER + "/code_runner_version.rb"
-eprint '.' unless $has_put_startup_message_for_code_runner
+#load CodeRunner::SCRIPT_FOLDER + "/code_runner_version.rb"
+#eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/fortran_namelist.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 
-
+CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s)
 
 CodeRunner::GLOBAL_BINDING = binding
 
@@ -166,9 +165,10 @@ class CodeRunner
 		
 	CLF = COMMAND_LINE_FLAGS = COMMAND_LINE_FLAGS_WITH_HELP.map{|arr| arr.slice(0..2)}
 
-	CODE_COMMAND_OPTIONS = (Dir.entries(SCRIPT_FOLDER + "/code_modules/") - [".", "..", ".svn"]).map do |d|
-		["--#{d}-options", "", GetoptLong::REQUIRED_ARGUMENT, %[A hash of options for the #{d} code module]]
-	end
+	CODE_COMMAND_OPTIONS = [] # NEEDS FIXING!!!!
+ 	#(Dir.entries(SCRIPT_FOLDER + "/code_modules/") - [".", "..", ".svn"]).map do |d|
+		#["--#{d}-options", "", GetoptLong::REQUIRED_ARGUMENT, %[A hash of options for the #{d} code module]]
+	#end
 
 	LONG_COMMAND_LINE_OPTIONS = [
 	["--replace-existing", "", GetoptLong::NO_ARGUMENT, %[Use with resubmit: causes each resubmitted run to replace the run being resubmitted.]],

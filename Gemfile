@@ -3,6 +3,7 @@ source "http://rubygems.org"
 # Example:
 #   gem "activesupport", ">= 2.3.5"
   gem "graphkit", ">= 0.2.0"
+  gem "parallelpipes", ">= 1.0.0"
   gem "rubyhacks", ">= 0.1.0"
   gem "gsl", ">= 1.12.0"
   gem "ruby-netcdf", ">= 0.6.6"

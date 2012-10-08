@@ -1,5 +1,6 @@
 # $script_folder = File.dirname(File.expand_path(__FILE__))
-require File.dirname(File.expand_path(__FILE__)) + "/box_of_tricks.rb"
+#require File.dirname(File.expand_path(__FILE__)) + "/box_of_tricks.rb"
+require 'rubyhacks'
 
 module LongRegexen 
 

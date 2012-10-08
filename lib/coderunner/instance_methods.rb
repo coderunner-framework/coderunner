@@ -1733,7 +1733,7 @@ end
 	"/merged_code_runner.rb",
 	'/run.rb', 
 	'/heuristic_run_methods.rb', 
-	'/run_backwards_compatibility.rb'
+	#'/run_backwards_compatibility.rb'
 ].each do |file|
 		file = CodeRunner::SCRIPT_FOLDER + file
 		require file
