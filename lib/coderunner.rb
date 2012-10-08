@@ -10,7 +10,7 @@ end
 class CodeRunner
 	
 	COMMAND_FOLDER = Dir.pwd
-  SCRIPT_FOLDER = File.dirname(File.expand_path(__FILE__)) #i.e. where this script is
+  SCRIPT_FOLDER = File.dirname(File.expand_path(__FILE__)) + '/coderunner' #i.e. where this script is
 	if ENV['CODE_RUNNER_OPTIONS']
 		GLOBAL_OPTIONS = eval(ENV['CODE_RUNNER_OPTIONS']) # global options are set by the environment but some can be changed.
 	else
