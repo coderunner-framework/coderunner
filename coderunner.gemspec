@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.11.1"
+  s.version = "0.11.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -43,6 +43,16 @@ Gem::Specification.new do |s|
     "lib/coderunner/long_regexen.rb",
     "lib/coderunner/merged_code_runner.rb",
     "lib/coderunner/run.rb",
+    "lib/coderunner/system_modules/franklin.rb",
+    "lib/coderunner/system_modules/generic_linux.rb",
+    "lib/coderunner/system_modules/genericlinux_testsystem.rb",
+    "lib/coderunner/system_modules/hector.rb",
+    "lib/coderunner/system_modules/helios.rb",
+    "lib/coderunner/system_modules/juropa.rb",
+    "lib/coderunner/system_modules/macosx.rb",
+    "lib/coderunner/system_modules/moab.rb",
+    "lib/coderunner/system_modules/new_hydra.rb",
+    "lib/coderunner/system_modules/slurm.rb",
     "test/helper.rb",
     "test/test_coderunner.rb"
   ]
