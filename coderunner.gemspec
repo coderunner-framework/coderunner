@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.11.2"
+  s.version = "0.11.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
     "lib/code_runner_extension.rb",
     "lib/coderunner.rb",
     "lib/coderunner/class_methods.rb",
+    "lib/coderunner/feedback.rb",
     "lib/coderunner/fortran_namelist.rb",
     "lib/coderunner/graphs_and_films.rb",
     "lib/coderunner/heuristic_run_methods.rb",
@@ -42,6 +43,7 @@ Gem::Specification.new do |s|
     "lib/coderunner/interactive_methods.rb",
     "lib/coderunner/long_regexen.rb",
     "lib/coderunner/merged_code_runner.rb",
+    "lib/coderunner/remote_code_runner.rb",
     "lib/coderunner/run.rb",
     "lib/coderunner/system_modules/franklin.rb",
     "lib/coderunner/system_modules/generic_linux.rb",
@@ -53,6 +55,14 @@ Gem::Specification.new do |s|
     "lib/coderunner/system_modules/moab.rb",
     "lib/coderunner/system_modules/new_hydra.rb",
     "lib/coderunner/system_modules/slurm.rb",
+    "lib/coderunner/test.rb",
+    "lib/coderunner/version.rb",
+    "lib/cubecalccrmod.rb",
+    "lib/cubecalccrmod/cubecalc_defaults.rb",
+    "lib/cubecalccrmod/default_modlets/empty.rb",
+    "lib/cubecalccrmod/default_modlets/empty_defaults.rb",
+    "lib/cubecalccrmod/defaults_files/sleep_defaults.rb",
+    "lib/cubecalccrmod/my_modlets/sleep.rb",
     "test/helper.rb",
     "test/test_coderunner.rb"
   ]
@@ -68,6 +78,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<graphkit>, [">= 0.2.0"])
+      s.add_runtime_dependency(%q<parallelpipes>, [">= 1.0.0"])
       s.add_runtime_dependency(%q<rubyhacks>, [">= 0.1.0"])
       s.add_runtime_dependency(%q<gsl>, [">= 1.12.0"])
       s.add_runtime_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
@@ -77,6 +88,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.4"])
     else
       s.add_dependency(%q<graphkit>, [">= 0.2.0"])
+      s.add_dependency(%q<parallelpipes>, [">= 1.0.0"])
       s.add_dependency(%q<rubyhacks>, [">= 0.1.0"])
       s.add_dependency(%q<gsl>, [">= 1.12.0"])
       s.add_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
@@ -87,6 +99,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<graphkit>, [">= 0.2.0"])
+    s.add_dependency(%q<parallelpipes>, [">= 1.0.0"])
     s.add_dependency(%q<rubyhacks>, [">= 0.1.0"])
     s.add_dependency(%q<gsl>, [">= 1.12.0"])
     s.add_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
