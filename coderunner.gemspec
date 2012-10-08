@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.11.0"
+  s.version = "0.11.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "ext/graph_kit.c",
     "include/code_runner_ext.h",
     "include/graph_kit.h",
+    "lib/code_runner_extension.rb",
     "lib/coderunner.rb",
     "lib/coderunner/class_methods.rb",
     "lib/coderunner/fortran_namelist.rb",
