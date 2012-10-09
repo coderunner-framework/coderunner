@@ -101,7 +101,7 @@ EOF
 				file.puts CodeRunner::InteractiveMethods::INTERACTIVE_METHODS
 			end
 # 			asdfa
-			exec %[#{Config::CONFIG['bindir']}/irb#{Config::CONFIG['ruby_install_name'].sub(/ruby/, '')} -f -I '#{Dir.pwd}' -I '#{SCRIPT_FOLDER}'   -I '#{ENV['HOME']}' -r '.code_runner_interactive_options' -r 'coderunner' -r .int.tmp ]
+			exec %[#{RbConfig::CONFIG['bindir']}/irb#{Config::CONFIG['ruby_install_name'].sub(/ruby/, '')} -f -I '#{Dir.pwd}' -I '#{SCRIPT_FOLDER}'   -I '#{ENV['HOME']}' -r '.code_runner_interactive_options' -r 'coderunner' -r .int.tmp ]
 	end
 		
 
