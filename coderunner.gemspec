@@ -5,13 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.11.3"
+  s.version = "0.11.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
-  s.date = "2012-10-08"
+  s.date = "2012-10-09"
   s.description = "CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes."
   s.email = "edmundhighcock@sourceforge.net"
+  s.executables = ["coderunner"]
   s.extensions = ["ext/extconf.rb"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -26,6 +27,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "bin/coderunner",
     "coderunner.gemspec",
     "ext/code_runner_ext.c",
     "ext/extconf.rb",
