@@ -76,8 +76,10 @@ rescue LoadError
 end
 
 begin
+	require "rubygems"
 	require "rbgsl"
-	require CodeRunner::SCRIPT_FOLDER + "/gsl_tools.rb"
+	require "gsl_extras"
+	#require CodeRunner::SCRIPT_FOLDER + "/gsl_tools.rb"
 rescue LoadError
 	$stderr.puts "Warning: could not load rbgsl; limited functionality"
 end
