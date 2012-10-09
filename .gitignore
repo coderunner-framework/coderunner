@@ -52,3 +52,12 @@ pkg
 #*.rbc
 #
 Gemfile.lock
+
+
+#For CodeRunner
+#
+.code-runner*
+.code_runner*
+.int.tmp.rb
+
+
