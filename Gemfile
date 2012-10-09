@@ -4,9 +4,10 @@ source "http://rubygems.org"
 #   gem "activesupport", ">= 2.3.5"
   gem "graphkit", ">= 0.2.0"
   gem "parallelpipes", ">= 1.0.0"
-  gem "rubyhacks", ">= 0.1.0"
+  gem "rubyhacks", ">= 0.1.1"
   gem "gsl", ">= 1.12.0"
   gem "ruby-netcdf", ">= 0.6.6"
+	gem "hostmanager", "> 0.1.0"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

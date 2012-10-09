@@ -70,7 +70,7 @@ require 'parallelpipes'
 require 'find'
 
 begin	
-	require CodeRunner::SCRIPT_FOLDER + '/../../hostmanager/host_manager.rb'
+	require 'hostmanager'
 rescue LoadError
 	eprint 'no hostmanager.'
 end
