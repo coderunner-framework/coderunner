@@ -24,6 +24,7 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Edmund Highcock"]
 	gem.extensions = "ext/extconf.rb"
 	gem.files.include('ext/*.c', 'include/*.h', 'ext/*.rb')
+	gem.required_ruby_version = '>= 1.9.1'
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
