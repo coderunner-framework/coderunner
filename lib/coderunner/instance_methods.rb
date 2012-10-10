@@ -343,13 +343,13 @@ class CodeRunner
 			setup_run_class(code.downcase, modlet: modlet)
 	end
 
+	SETUP_RUN_CLASSES =[]
 	
 	# Create, set up and check the validity of the custom class which deals with a particular simulation code. This class will be defined in a custom module in the folder <tt>code_modules/code_name</tt>, where <tt>'code_name'</tt> is the name of the code. The only option is <tt>modlet:</tt>.
 	#
 	# If the custom class has already been set up, this method just returns the class.
 
 
-	SETUP_RUN_CLASSES =[]
 		def self.setup_run_class(code, options={})
 # 		logf(:setup_code)
 # 		log(:code, code)
@@ -387,6 +387,7 @@ class CodeRunner
 
 		
 		code_module_name = SCRIPT_FOLDER+ "/code_modules/#{code}/#{code}.rb"
+		code_module_name = "#{code}crmod"
 		require code_module_name
 # 		ep get_run_class_name(code, nil)
 		run_class = const_get(get_run_class_name(code, nil))
@@ -410,19 +411,22 @@ class CodeRunner
 		#Some codes require an modlet; the flag modlet_required is specified in the code module
 		if run_class.rcp.modlet_required
 			raise CRFatal.new("Modlet necessary and none given") unless modlet
+		end
+		#If a modlet is specified (modlets can also be optional)
+		if modlet
 # 			Log.logi(:modlet, modlet)
-			if (	modlet_location =  "#{SCRIPT_FOLDER}/code_modules/#{code}/default_modlets";
-			        file_name = "#{modlet_location}/#{modlet}.rb"; 
-				FileTest.exist? file_name
-			)
-			elsif (		modlet_location =  "#{SCRIPT_FOLDER}/code_modules/#{code}/my_modlets";
-			        file_name = "#{modlet_location}/#{modlet}.rb"; 
-				FileTest.exist? file_name
-			)
-			else
-				raise CRFatal.new("Could not find modlet file: #{modlet}.rb")
-			end
-			require file_name
+			#if (	modlet_location =  "#{SCRIPT_FOLDER}/code_modules/#{code}/default_modlets";
+			        #file_name = "#{modlet_location}/#{modlet}.rb"; 
+				#FileTest.exist? file_name
+			#)
+			#elsif (		modlet_location =  "#{SCRIPT_FOLDER}/code_modules/#{code}/my_modlets";
+			        #file_name = "#{modlet_location}/#{modlet}.rb"; 
+				#FileTest.exist? file_name
+			#)
+			#else
+				#raise CRFatal.new("Could not find modlet file: #{modlet}.rb")
+			#end
+			#require file_name
 # 			ep run_class.constants
 # 			ep run_class_names
 			
