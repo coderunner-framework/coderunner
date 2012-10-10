@@ -430,6 +430,8 @@ class CodeRunner
 # 			ep run_class.constants
 # 			ep run_class_names
 			
+		  modlet_file = "#{code}crmod/#{modlet}.rb"
+			require modlet_file
 			run_class = recursive_const_get(run_class_name)
 			run_class.instance_variable_set(:@modlet, modlet)
 		end
@@ -1737,7 +1739,6 @@ end
 	"/merged_code_runner.rb",
 	'/run.rb', 
 	'/heuristic_run_methods.rb', 
-	'/run_backwards_compatibility.rb'
 ].each do |file|
 		file = CodeRunner::SCRIPT_FOLDER + file
 		require file
