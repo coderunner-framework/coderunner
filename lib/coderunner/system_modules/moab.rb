@@ -120,6 +120,8 @@ def get_run_status(job_no, current_status)
 			return :Queueing
 		elsif line =~ /\sR\s/
 			return :Running
+		elsif line =~ /\sH\s/
+			return :Queueing
 		elsif line =~ /\sC\s/
 			return :Unknown
 		else

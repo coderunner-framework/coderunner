@@ -64,6 +64,12 @@ class Run
 		end
 		arr
 	end
+	
+	@variable_names_from_code_names = @variables_with_hashes.inject({}) do |hash, (var, var_hash)|
+		hash[(var_hash[:code_name] || var)] = var
+	 	hash
+	end
+		
 
 
 	# VARIABLES = VARIABLES_WITH_HELP.keys
@@ -534,9 +540,11 @@ def self.parse_input_file(input_file, strict=true)
 	end
 	namelist_hash = {}
 	regex = Regexp.new("#{rcp.matching_regex.to_s}\\s*(?:\\!(?<comment>.*))?\\n")
+	#ep input_file
 	text.scan(/(?:^\s*\!\s*(?<namelist_comment>[^\n]+))?\n^\&(?<namelist>\S+).*?^\//m) do 
 		namelist = $~[:namelist].to_sym
 		hash = namelist_hash[namelist] = {}
+		#p $~
 		scan_text_for_variables($~.to_s).each do |var, val|
 			add_code_variable_to_namelist(namelist, var, val) if @strict
 			hash[var] =  val
@@ -555,8 +563,8 @@ def self.scan_text_for_variables(text)
 		match = $~
 		var = match[:name].to_sym
 		default = match[:default.to_sym]
-		default = (match[:float] or match[:complex]) ? match[:default].gsub(/(\.)(\D|$)/, '\10\2').gsub(/[dD]/, 'e').gsub(/(\D)(\.)/, '\10\2') : match[:default]
-# 		ep default
+		default = (match[:float] or match[:complex]) ? match[:default].gsub(/(\.)(\D|$)/, '\10\2').gsub(/[dD]/, 'e').gsub(/(\D|^)(\.)/, '\10\2') : match[:default]
+ 		#ep 'default', default
 		default = eval(default) unless match[:word] or match[:complex]
 		default= Complex(*default.scan(LongRegexen::FLOAT).map{|f| f[0].to_f}) if match[:complex]
 		arr.push [var, default]
@@ -787,11 +795,12 @@ def make_info_file(file=ARGV[-1], strict=true)
 		namelist = namelist.to_s.sub(/\_(?<num>\d+)$/, '').to_sym
 		if $~  # I.e if there was a number at the end of the namelist
 # 			ep namelist
-			"This namelist: #{namelist} should have an enumerator and does not have one" if not rcp.namelists[namelist][:enumerator]
+			raise "This namelist: #{namelist} should have an enumerator and does not have one" if not rcp.namelists[namelist][:enumerator]
 			num = $~[:num]
 		end
 		vars.each do |var, value|
-			var = (var.to_s + "_#{num}").to_sym if num
+			#ep 'var', var
+			var = (rcp.variable_names_from_code_names[var.to_sym] + (num ? "_#{num}" : "")).to_sym
 # 				p var, value
 			set(var, value)
 		end

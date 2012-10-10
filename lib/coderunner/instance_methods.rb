@@ -206,7 +206,7 @@ class CodeRunner
 	
 	def read_defaults
 		DEFAULT_RUNNER_OPTIONS.each{|key,value| set(key, value)}
-# 				ep DEFAULT_RUNNER_OPTIONS, @multiple_processes
+ 				#ep DEFAULT_RUNNER_OPTIONS, @multiple_processes
 
 		read_folder_defaults
 	end
@@ -1391,11 +1391,11 @@ EOF
 	def similar_runs(exclude_variables=[], run=@run) #all runs for which variables are the same as 'run', with the exception of exclude_variables
 		logf(:similar_runs)
 		raise CRFatal.new("generate_combined_ids must be called before this function is called") unless (@combined_run_list.size > 0 and @combined_ids.size > 0) or @ids.size ==0
-		command = (run.class.rcp.variables+run.class.rcp.run_info-exclude_variables  - [:output_file, :error_file]).inject("@combined_ids.find_all{|id| @combined_run_list[id].class == run.class}"){ |s,v|	
-			s + %<.find_all{|id| @combined_run_list[id].#{v}.class == #{run.send(v).inspect}.class and @combined_run_list[id].#{v} == #{run.send(v).inspect}}>} #the second send call retrieves the type conversion
+		command = (run.class.rcp.variables+run.class.rcp.run_info-exclude_variables  - [:output_file, :error_file, :runner, :phantom_runs]).inject("@combined_ids.find_all{|id| @combined_run_list[id].class == run.class}"){ |s,v|	
+			s + %<.find_all{|id| ep '#{v}'; @combined_run_list[id].#{v}.class == #{run.send(v).inspect}.class and @combined_run_list[id].#{v} == #{run.send(v).inspect}}>} #the second send call retrieves the type conversion
 
 #  		log command
-#  		puts command
+  		#puts command
 		begin 
 			similar = instance_eval(command)
 		rescue => err
@@ -1733,7 +1733,7 @@ end
 	"/merged_code_runner.rb",
 	'/run.rb', 
 	'/heuristic_run_methods.rb', 
-	#'/run_backwards_compatibility.rb'
+	'/run_backwards_compatibility.rb'
 ].each do |file|
 		file = CodeRunner::SCRIPT_FOLDER + file
 		require file
