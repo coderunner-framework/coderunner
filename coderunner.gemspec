@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.11.8"
+  s.version = "0.11.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -86,7 +86,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<rubyhacks>, [">= 0.1.1"])
       s.add_runtime_dependency(%q<gsl>, [">= 1.12.0"])
       s.add_runtime_dependency(%q<gsl_extras>, [">= 0.3.0"])
-      s.add_runtime_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
       s.add_runtime_dependency(%q<hostmanager>, ["> 0.1.0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
@@ -98,7 +97,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rubyhacks>, [">= 0.1.1"])
       s.add_dependency(%q<gsl>, [">= 1.12.0"])
       s.add_dependency(%q<gsl_extras>, [">= 0.3.0"])
-      s.add_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
       s.add_dependency(%q<hostmanager>, ["> 0.1.0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
@@ -111,7 +109,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rubyhacks>, [">= 0.1.1"])
     s.add_dependency(%q<gsl>, [">= 1.12.0"])
     s.add_dependency(%q<gsl_extras>, [">= 0.3.0"])
-    s.add_dependency(%q<ruby-netcdf>, [">= 0.6.6"])
     s.add_dependency(%q<hostmanager>, ["> 0.1.0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
