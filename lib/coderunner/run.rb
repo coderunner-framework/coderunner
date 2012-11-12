@@ -395,7 +395,7 @@ end
 
 def defaults_location
 	if @runner.defaults_file
-		location = ["#{SCRIPT_FOLDER}/code_modules/#@code/my_defaults_files", "#{SCRIPT_FOLDER}/code_modules/#@code/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
+		location = [ENV['HOME'] + "/.coderunner/#{@code}crmod/defaults_files", rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
 		raise "Defaults file: #{defaults_file_name} not found" unless location
 		return location
 	else

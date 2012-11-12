@@ -25,12 +25,12 @@ if ARGV[-1] =~ /0/
 	Dir.chdir('results') do
 		
 		puts 'testing test submission'	
-		exit unless system %[coderunner submit -C cubecalc -m sleep -D sleep -X ../cubecalc -T]
+		exit unless system %[ruby ../lib/coderunner.rb submit -C cubecalc -m sleep -D sleep -X ../cubecalc -T]
 		raise "didn't find defaults" unless FileTest.exist? 'sleep_defaults.rb'
 		puts 'testing test submission complete'
 		
 		puts 'testing job_no detection'
-		puts fork{system %[coderunner sub -p "{sleep_time: 4}"]}
+		puts fork{system %[ruby ../lib/coderunner.rb sub -p "{sleep_time: 4}"]}
 		sleep 2
 		#exit unless system %[ps | grep cubecalc]
 		Process.waitall

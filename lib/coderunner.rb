@@ -9,6 +9,11 @@ end
 
 require 'rubygems'
 require "rubyhacks"
+
+
+#Create the coderunner config directory if it doesn't exist
+FileUtils.makedirs(ENV['HOME'] + "/.coderunner")
+
 class CodeRunner
 	
 	COMMAND_FOLDER = Dir.pwd

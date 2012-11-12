@@ -367,6 +367,7 @@ class CodeRunner
 
 # 		p run_class_name
 
+		FileUtils.makedirs(ENV['HOME'] + "/.coderunner/#{code}crmod/")
 		return const_get(run_class_name) if constants.include? (run_class_name).to_sym unless options[:force]
 		SETUP_RUN_CLASSES.push run_class_name.downcase
 
