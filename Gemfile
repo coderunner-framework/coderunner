@@ -7,7 +7,7 @@ source "http://rubygems.org"
   gem "rubyhacks", ">= 0.1.1"
   gem "gsl", ">= 1.12.0"
   gem "gsl_extras", ">= 0.3.0"
-  gem "ruby-netcdf", ">= 0.6.6"
+  #gem "ruby-netcdf", ">= 0.6.6"
 	gem "hostmanager", "> 0.1.0"
 
 # Add dependencies to develop your gem here.
