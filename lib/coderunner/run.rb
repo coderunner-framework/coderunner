@@ -249,9 +249,24 @@ def process_directory
 			#run_heuristic_analysis
 		#end
 	#end
+		begin
+			read_info
+		rescue Errno::ENOENT => err # No code runner files were found
+			unless @runner.heuristic_analysis
+				puts err
+				raise CRFatal.new("No code runner files found: suggest using heuristic analysis (flag -H if you are using the code_runner script)")
+			end
+			unless @runner.current_request == :traverse_directories
+				@runner.requests.push :traverse_directories unless @runner.requests.include? :traverse_directories
+				raise CRMild.new("can't begin heuristic analysis until there has been a sweep over all directories") # this will get rescued
+			end
+			@runner.increment_max_id	
+			@id = @runner.max_id
+			@job_no = -1
+			run_heuristic_analysis
+		end
 	
 	
-	read_info
 	begin
 		read_results if FileTest.exist? 'code_runner_results.rb'
 	rescue NoMethodError, SyntaxError => err
