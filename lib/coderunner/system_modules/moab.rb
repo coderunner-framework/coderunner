@@ -17,8 +17,12 @@ EOF
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
 		else
-			%x[qstat | grep $USER]
+			%x[qstat -q consort | grep $USER]
 		end
+	end
+
+	def mpi_prog
+		"aprun"
 	end
 
 	def run_command
@@ -28,7 +32,7 @@ EOF
 		else
 			nodes, ppn = @nprocs.split(/x/)
 			nprocstot = nodes.to_i * ppn.to_i
-			"aprun -n #{nprocstot} -N #{ppn} #{executable_location}/#{executable_name} #{parameter_string}"
+			"#{mpi_prog} -n #{nprocstot} -N #{ppn} #{executable_location}/#{executable_name} #{parameter_string}"
 		end
 	end
 
@@ -84,7 +88,7 @@ EOF
 	cd $PBS_O_WORKDIR 
 	echo "workdir: $PBS_O_WORKDIR" 
 
-	echo "Submitting #{nodes}x#{ppn} job on Hector for project #@project..."
+	echo "Submitting #{nodes}x#{ppn} job on #{CodeRunner::SYS} for project #@project..."
 	
 	
 EOF
