@@ -546,6 +546,7 @@ def self.parse_input_file(input_file, strict=true)
 		hash = namelist_hash[namelist] = {}
 		#p $~
 		scan_text_for_variables($~.to_s).each do |var, val|
+			#ep ['Varval', var, val]
 			add_code_variable_to_namelist(namelist, var, val) if @strict
 			hash[var] =  val
 		end
@@ -761,12 +762,14 @@ def self.defaults_file_text_from_input_file(input_file)
 
 	hash = parse_input_file(input_file)
 	#pp hash; exit
+	#ep ['class', self.to_s, 'namelists', rcp.namelists.keys, 'code_long', rcp.code_long, 'namelist_hashes', rcp.namelists.values.map{|v| v.class}]
 	rcp.namelists.each do |namelist, namelist_hash|
  		#ep namelist
 		if namelist_hash[:enumerator]  # ie. This is an indexed namelist
       #p namelist_hash[:enumerator]
 			enumerator = namelist_hash[:enumerator][:name]
 			enum_hash = hash.find{|nml, nmlh| nmlh[enumerator]}
+			next unless enum_hash
 			#pp enum_hash
 			enum = enum_hash[1][enumerator]
 			enum.times{|i| string << namelist_defaults_text(hash, namelist, namelist_hash, i+1)}

@@ -331,10 +331,13 @@ EOF
 		unless copts[:C]
 			if FileTest.exist? file=Dir.pwd + '/.code_runner_script_defaults.rb'
 				copts[:C] = eval(File.read(file))[:code]
+				copts[:m] = eval(File.read(file))[:modlet]
 			elsif self.runner
 				copts[:C] = self.runner.code
+				copts[:m] = self.runner.modlet
 			end
 		end
+		#ep ['code', 'modlet is', copts[:C], copts[:m]]
 		            
 		run_class = setup_run_class(copts[:C], modlet: copts[:m])
 		run_class.class_eval(string)

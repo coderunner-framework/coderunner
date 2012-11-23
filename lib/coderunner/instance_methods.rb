@@ -432,6 +432,7 @@ class CodeRunner
 # 			ep run_class_names
 			
 		  modlet_file = "#{code}crmod/#{modlet}.rb"
+			#ep ['requiring modlet file']
 			require modlet_file
 			run_class = recursive_const_get(run_class_name)
 			run_class.instance_variable_set(:@modlet, modlet)
