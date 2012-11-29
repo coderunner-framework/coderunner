@@ -92,6 +92,7 @@ EOF
 	### start of jobscript 
 	cd $PBS_O_WORKDIR 
 	echo "workdir: $PBS_O_WORKDIR" 
+#{code_run_environment}
 
 	echo "Submitting #{nodes}x#{ppn} job on #{CodeRunner::SYS} for project #@project..."
 	
