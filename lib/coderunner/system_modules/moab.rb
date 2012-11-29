@@ -22,7 +22,7 @@ EOF
 	end
 
 	def mpi_prog
-		"aprun"
+		"aprun -n #{nprocstot} -N #{ppn}"
 	end
 
 	def run_command
@@ -32,7 +32,7 @@ EOF
 		else
 			nodes, ppn = @nprocs.split(/x/)
 			nprocstot = nodes.to_i * ppn.to_i
-			"#{mpi_prog} -n #{nprocstot} -N #{ppn} #{executable_location}/#{executable_name} #{parameter_string}"
+			"#{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
 	end
 

@@ -10,7 +10,7 @@ class CodeRunner
 			12
 		end
 		def mpi_prog
-			"mpirun"
+			"mpirun -np #{nprocstot}"
 		end
 		def execute
 			if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
