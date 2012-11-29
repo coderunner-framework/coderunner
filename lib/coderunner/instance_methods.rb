@@ -1400,7 +1400,7 @@ EOF
 		logf(:similar_runs)
 		raise CRFatal.new("generate_combined_ids must be called before this function is called") unless (@combined_run_list.size > 0 and @combined_ids.size > 0) or @ids.size ==0
 		command = (run.class.rcp.variables+run.class.rcp.run_info-exclude_variables  - [:output_file, :error_file, :runner, :phantom_runs]).inject("@combined_ids.find_all{|id| @combined_run_list[id].class == run.class}"){ |s,v|	
-			s + %<.find_all{|id| ep '#{v}'; @combined_run_list[id].#{v}.class == #{run.send(v).inspect}.class and @combined_run_list[id].#{v} == #{run.send(v).inspect}}>} #the second send call retrieves the type conversion
+			s + %<.find_all{|id| @combined_run_list[id].#{v}.class == #{run.send(v).inspect}.class and @combined_run_list[id].#{v} == #{run.send(v).inspect}}>} #the second send call retrieves the type conversion
 
 #  		log command
   		#puts command
