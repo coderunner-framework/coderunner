@@ -25,6 +25,11 @@ EOF
 		"aprun -n #{nprocstot} -N #{ppn}"
 	end
 
+	def nprocstot
+		
+			nodes, ppn = @nprocs.split(/x/)
+			nprocstot = nodes.to_i * ppn.to_i
+	end
 	def run_command
 # 		"qsub #{batch_script_file}"
 		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
