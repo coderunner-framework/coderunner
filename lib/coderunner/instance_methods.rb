@@ -1522,9 +1522,9 @@ EOF
 		if options[:no_confirm] 
 			delete =  options[:delete]
 		else
-			delete = Feedback.get_boolean("Do you want to delete the folder as well?")
+			delete = Feedback.get_boolean("Do you want to delete the folder (#{@run.directory}) as well?")
 		end
-		FileUtils.rm_r(@run.directory) if delete
+		FileUtils.rm_r(@run.directory) if delete and @run.directory and not @run.directory == ""
 		update
 		print_out
 	end
