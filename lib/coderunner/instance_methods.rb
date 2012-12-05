@@ -1500,7 +1500,9 @@ EOF
 			eputs "Please confirm again. Press Enter to confirm, Ctrl + C to cancel"
 			gets
 		end
-		ids.each{|id| FileUtils.rm_r @run_list[id].directory; @run_list.delete(id); @ids.delete(id); generate_combined_ids}
+		ids.each{|id| 
+			FileUtils.rm_r @run_list[id].directory if @run_list[id].directory and not ["", ".", ".."].include? @run_list[id].directory
+			@run_list.delete(id); @ids.delete(id); generate_combined_ids}
 		set_max_id(@ids.max || 0)
 		save_large_cache
 		generate_combined_ids
