@@ -25,6 +25,10 @@ EOF
 		"aprun -n #{nprocstot} -N #{ppn}"
 	end
 
+	def ppn
+			nodes, ppn = @nprocs.split(/x/)
+			ppn
+	end
 	def nprocstot
 		
 			nodes, ppn = @nprocs.split(/x/)
