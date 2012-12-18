@@ -8,7 +8,7 @@ module LoadLeveler
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
 		else
-			%x[llq | grep $USER]
+			%x[llq -W | grep $USER]
 		end
 	end
 
