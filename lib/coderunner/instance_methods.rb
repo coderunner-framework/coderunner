@@ -140,7 +140,7 @@ class CodeRunner
 	
 	# These are the only permitted values for the run instance variable <tt>@status</tt>.
 	
-	PERMITTED_STATI = [:Unknown, :Complete, :Incomplete, :NotStarted, :Failed, :Queueing, :Running]
+	PERMITTED_STATI = [:Unknown, :Complete, :Incomplete, :NotStarted, :Failed, :Queueing, :Running, :Held]
 
 
 	include Log

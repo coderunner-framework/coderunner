@@ -8,7 +8,7 @@ module LoadLeveler
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
 			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
 		else
-			%x[llq -W | grep $USER]
+			%x[llq -W | grep $USER].gsub(/^bglogin\d\./, '')
 		end
 	end
 
@@ -50,7 +50,8 @@ module LoadLeveler
 			return pid
 		else
 			File.open(batch_script_file, 'w'){|file| file.puts batch_script + "\n" + run_command + "\n"}
-			return pid = %x[llsubmit #{batch_script_file}].to_i
+			%x[llsubmit #{batch_script_file}].to_i
+			return nil
 		end
 	end
 
@@ -132,7 +133,9 @@ def get_run_status(job_no, current_status)
 	unless line
 		return :Unknown
 	else 
-		if line =~ /\sQ|I|S|H\s/
+		if line =~ /\sS|H\s/
+			return :Held
+		elsif line =~ /\sI\s/
 			return :Queueing
 		elsif line =~ /\sR\s/
 			return :Running
