@@ -684,7 +684,7 @@ def info_file
 
 
 # Actual Command:
-# #{run_command}
+# #{run_command.gsub(/\n/, "\n#")}
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 EOF
 
@@ -1010,6 +1010,17 @@ end
 	def code_run_environment
 		""
 	end
+
+def warning(message)
+	eputs "Warning: " + message; sleep 0.3
+end
+
+class SubmitError < StandardError
+end
+
+def error(message)
+	raise("Error: " + message)
+end
 end
 
 end

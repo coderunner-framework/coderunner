@@ -14,8 +14,8 @@ EOF
 				
 	def queue_status
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
+			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt | grep sh]  +
+			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt | grep sh] 
 		else
 			%x[qstat | grep $USER]
 		end
@@ -37,7 +37,7 @@ EOF
 	def run_command
 # 		"qsub #{batch_script_file}"
 		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
-			return %[mpiexec -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+			return %[#{mpi_prog} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
 			nodes, ppn = @nprocs.split(/x/)
 			nprocstot = nodes.to_i * ppn.to_i
@@ -49,8 +49,8 @@ EOF
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
 			launch_id = "#{Time.now.to_i}#{$$}"
 			fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{launch_id}"
-			File.open(fname + '.start', 'w'){|file| file.puts "cd #{Dir.pwd};#{run_command}"}
-			sleep 1 until FileTest.exist? fname + '.pid'
+			File.open(fname + '.start', 'w'){|file| file.print "cd #{Dir.pwd};", run_command, "\n"}
+			sleep 2 until FileTest.exist? fname + '.pid'
 			pid = File.read(fname + '.pid').to_i
 			FileUtils.rm fname + '.pid'
 			return pid
@@ -115,16 +115,30 @@ EOF
 	end
 
 	def error_file
-		return "#{executable_name}.#{job_identifier}.e#@job_no"
+		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
+			return "#{executable_name}.#{job_identifier}.e"
+		else
+			return "#{executable_name}.#{job_identifier}.e#@job_no"
+		end
 	end
 
 	def output_file
-		return "#{executable_name}.#{job_identifier}.o#@job_no"
+		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
+			return "#{executable_name}.#{job_identifier}.o"
+		else
+			return "#{executable_name}.#{job_identifier}.o#@job_no"
+		end
 	end
 
 def get_run_status(job_no, current_status)
 	if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-		return :Unknown
+		if current_status =~ Regexp.new(job_no.to_s)
+			@running = true
+			return :Running
+		else
+			@running = false
+			return :Unknown
+		end
 	end
 	line = current_status.split(/\n/).grep(Regexp.new(job_no.to_s))[0]
 	unless line
