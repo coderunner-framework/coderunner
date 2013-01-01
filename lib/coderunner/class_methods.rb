@@ -211,7 +211,8 @@ EOF
     #raise "Launcher already running" if %x[ps -e -o cmd].split("\n").grep(/coderunner\s+launch/).size > 0
     require 'thread'
     tl = ENV['HOME'] + "/.coderunner_to_launch_#{ENV['CODE_RUNNER_LAUNCHER']}" #SCRIPT_FOLDER + '/to_launch'
-		exit unless Feedback.get_boolean( "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?") if FileTest.exist? tl
+		#exit unless Feedback.get_boolean( "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?") if FileTest.exist? tl
+		raise "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?") if FileTest.exist? tl
 #     FileUtils.rm_r tl if FileTest.exist? tl
     eputs "Starting launcher\n"
 		at_exit{FileUtils.rm_r tl}
