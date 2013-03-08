@@ -203,6 +203,7 @@ EOF
 		["code_runner_execute", "crex",  1, 'Run (within the CodeRunner class) the fragment of Ruby code given.', ['Ruby fragment'], []],	
 		["delete", "del", 0, 'Permanently erase all filtered runs.', [], [:j, :F, :U, :N]],
 		["directory", "dir", 1, 'Print out the directory for the given run.', ['id'], []],
+		['dumb_film', "dfm", 0, 'Create a film of the specified graphkits using gnuplot "dumb" ASCII terminal.', [], [:F, :G, :g, :U, :N, :j, :f]],
 		["execute", "ex",  1, 'Run (at the top level) the fragment of Ruby code given.', ['Ruby fragment'], []],	
 		['film', "fm", 0, 'Create a film of the specified graphkits.', [], [:F, :G, :g, :U, :N, :j, :f]],
 		["generate_modlet_from_input_file", "gm", 1, 'Deprecated', [], []],

@@ -77,6 +77,28 @@ class CodeRunner
 		runner.destroy
 	end
 	
+	def self.dumb_film(copts = {})
+# 		process_copts(copts)
+		#old_term = GraphKit::GNUPLOT_DEFAULT_TERM
+		size = Terminal.terminal_size
+		size[0] -= 2
+		term = "dumb #{size.reverse.join(' ')}"
+		string = "\n" * size[0]
+
+		runner = fetch_runner(copts)
+		string_to_eval = copts[:w]
+		frame_array = copts[:F][:frame_array] || copts[:F][:fa]
+		index_name = copts[:F][:index_name] || copts[:F][:in]
+		#options = (options and options =~ /\S/) ? eval(options): {}
+		puts string
+		for index in frame_array[0]..frame_array[1]
+			string.true_lines.times{print "\033[A"}
+			kit = runner.graphkit_from_lists(copts[:G], copts[:g], index_name => index)
+      kit.gp.term =  term
+			kit.gnuplot(eval: string_to_eval)
+			sleep(copts[:F][:fr] ? 1.0/copts[:F][:fr] :  0.1)
+		end 
+	end
 # 	def self.executable_name # :nodoc:
 # 		""
 # 	end
