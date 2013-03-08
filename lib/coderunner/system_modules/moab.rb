@@ -14,8 +14,8 @@ EOF
 				
 	def queue_status
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt | grep sh]  +
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt | grep sh] 
+			%x[cat #{CodeRunner.launcher_directory}/queue_status.txt | grep sh]  +
+			%x[cat #{CodeRunner.launcher_directory}/queue_status2.txt | grep sh] 
 		else
 			%x[qstat | grep $USER]
 		end
@@ -48,7 +48,7 @@ EOF
 	def execute
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
 			launch_id = "#{Time.now.to_i}#{$$}"
-			fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{launch_id}"
+			fname = "#{CodeRunner.launcher_directory}/#{launch_id}"
 			File.open(fname + '.start', 'w'){|file| file.print "cd #{Dir.pwd};", run_command, "\n"}
 			sleep 2 until FileTest.exist? fname + '.pid'
 			pid = File.read(fname + '.pid').to_i
@@ -107,7 +107,7 @@ EOF
 
 	def cancel_job
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			 fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{$$}.stop"
+			 fname = CodeRunner.launcher_directory + "/#{$$}.stop"
 			 File.open(fname, 'w'){|file| file.puts "\n"}
 		else
 			`qdel #{@job_no}`

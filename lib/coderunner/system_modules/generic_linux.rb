@@ -41,7 +41,7 @@ def execute
 # 	pid = spawn("trap '' 2 && trap '' 0 && " + run_command + " & ")
   if prefix = ENV['CODE_RUNNER_LAUNCHER']
     launch_id = "#{Time.now.to_i}#{$$}"
-    fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{launch_id}"
+    fname = CodeRunner.launcher_directory + "/#{launch_id}"
     File.open(fname + '.start', 'w'){|file| file.puts "cd #{Dir.pwd};#{run_command}"}
     sleep 1 until FileTest.exist? fname + '.pid'
     pid = File.read(fname + '.pid').to_i

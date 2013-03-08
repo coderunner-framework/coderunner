@@ -240,17 +240,25 @@ class CodeRunner
 	
 	def read_folder_defaults
 # 		p @root_folder + '/.code_runner_script_defaults.rb'
-		Hash.phoenix(@root_folder + '/.code_runner_script_defaults.rb') do |hash|
-# 			ep hash
+		if ENV['CODE_RUNNER_READONLY_DEFAULTS']
+			hash = eval(File.read(@root_folder + '/.code_runner_script_defaults.rb'))
 			FOLDER_DEFAULTS.each do |var|
-# 				p send(var), hash[var]
-				hash[var] = (send(var) or hash[var])
-				hash[:code_runner_version] ||= CodeRunner::CODE_RUNNER_VERSION.to_s
-				set(var, hash[var])
+				set(var, hash[var]) if hash[var]
 			end
-			@start_id = hash[:start_id] if hash[:start_id]
-# 			ep "start_id: #@start_id"
-			hash
+		else
+
+			Hash.phoenix(@root_folder + '/.code_runner_script_defaults.rb') do |hash|
+	# 			ep hash
+				FOLDER_DEFAULTS.each do |var|
+	# 				p send(var), hash[var]
+					hash[var] = (send(var) or hash[var])
+					hash[:code_runner_version] ||= CodeRunner::CODE_RUNNER_VERSION.to_s
+					set(var, hash[var])
+				end
+				@start_id = hash[:start_id] if hash[:start_id]
+	# 			ep "start_id: #@start_id"
+				hash
+			end
 		end
 		
 		raise "No default information exists for this folder. If you are running CodeRunner from the commmand line please run again with the -C <code> and -X <executable> (and -m <modlet>, if required) flag (you only need to specify these flags once in each folder). Else, please specify :code and :executable (and :modlet if required) as options in CodeRunner.new(folder, options)" unless @code and @executable

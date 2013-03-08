@@ -205,14 +205,17 @@ EOF
 	
 	end
   
+	def self.launcher_directory
+		ENV['HOME'] + "/.coderunner/to_launch/#{ENV['CODE_RUNNER_LAUNCHER']}"
+	end
   def self.start_launcher(refresh, max_queue, copts={})
 		raise "Raise refresh is #{refresh}: it must be >= 1" if refresh.to_i < 1
 		raise "Raise max_queue is #{max_queue}: it must be >= 5" if max_queue.to_i < 5
     #raise "Launcher already running" if %x[ps -e -o cmd].split("\n").grep(/coderunner\s+launch/).size > 0
     require 'thread'
-    tl = ENV['HOME'] + "/.coderunner_to_launch_#{ENV['CODE_RUNNER_LAUNCHER']}" #SCRIPT_FOLDER + '/to_launch'
+    tl = launcher_directory #SCRIPT_FOLDER + '/to_launch'
 		#exit unless Feedback.get_boolean( "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?") if FileTest.exist? tl
-		raise "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?") if FileTest.exist? tl
+		raise "Launch directory #{tl} already exists: it is suggested that you change the prefix by changing the environment variable CODE_RUNNER_LAUNCHER. Do you wish to continue (don't select yes unless you know what you are doing)?" if FileTest.exist? tl
 #     FileUtils.rm_r tl if FileTest.exist? tl
     eputs "Starting launcher\n"
 		at_exit{FileUtils.rm_r tl}
