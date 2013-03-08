@@ -1209,16 +1209,25 @@ Conditions contain a single = sign: #{conditions}
 		#|| ""
 # 			qstat = qstat=~/\S/ ? qstat : nil
 		job_no = nil
-			5.times do # job_no may not appear instantly
+		if self.respond_to? :queue_wait_attempts
+			ntimes = queue_wait_attempts
+		else
+			ntimes = 5
+		end
+		eputs 'Waiting for job to appear in the queue...'
+		ntimes.times do |i| # job_no may not appear instantly
 # 				eputs queue_status
-				new_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
-				job_no = (new_job_nos-old_job_nos).sort[0]
+			new_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
+			job_no = (new_job_nos-old_job_nos).sort[0]
 # 				eputs "job_no", job_no
-				break if job_no
-				sleep 0.2
-				qstat = queue_status
+			break if job_no
+			sleep 0.2
+			qstat = queue_status
+			if i == ntimes
+				eputs 'Timeout... perhaps increase queue_wait_attempts in the system module?'
 			end
-			job_no ||= -1 # some functions don't work if job_no couldn't be found, but most are ok
+		end
+		job_no ||= -1 # some functions don't work if job_no couldn't be found, but most are ok
 	end
 	
 	private :get_new_job_no

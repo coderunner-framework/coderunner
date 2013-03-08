@@ -146,5 +146,11 @@ def get_run_status(job_no, current_status)
 	end
 end
 
+ 	# It takes a long time for the job to appear in the queue
+  # Each attempt to wait for it to appear takes 0.2 seconds
+	# Here we therefore wait 40 seconds!
+	def queue_wait_attempts
+		200
+	end
 	end
 end
