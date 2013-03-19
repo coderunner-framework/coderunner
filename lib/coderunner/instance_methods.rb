@@ -1113,7 +1113,9 @@ Conditions contain a single = sign: #{conditions}
 							#########################
 							run.job_no = get_new_job_no(old_job_nos) unless run.job_no.kind_of? Integer # (if the execute command does not return the job number, look for it manually) 
 # 							eputs 'run.job_no', run.job_no
+							run.output_file = nil # reset the output file
 							run.output_file # Sets the output_file on first call
+							run.error_file = nil # reset the output file
 							run.error_file # Sets the error_file on first call
 							run.write_info
 							eputs "Submitted run: #{run.run_name}"
@@ -1134,6 +1136,7 @@ Conditions contain a single = sign: #{conditions}
 				FileUtils.makedirs('job_chain_files')
 				@id_list = runs.map{|run| run.id}
 				
+				#@executable ||= runs[0].executable
 				@submission_script = script
 				# A hook... default is to do nothing
 				@submission_script = @run_class.modify_job_script(self, runs, @submission_script)
@@ -1179,10 +1182,12 @@ Conditions contain a single = sign: #{conditions}
 	end
 	
 	def executable_name
+		return 'job_chain' unless @executable
 		File.basename(@executable)
 	end
 
 	def executable_location
+		return '' unless @executable
 		File.dirname(@executable)
 	end
 
