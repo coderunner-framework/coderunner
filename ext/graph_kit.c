@@ -645,3 +645,4 @@ void Init_graph_kit()
 	rb_define_method(cgraph_kit, "to_vtk_legacy_fast", graph_kit_to_vtk_legacy_2, 1);
 
 }
+
