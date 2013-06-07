@@ -202,6 +202,7 @@ EOF
 		["continue_in_new_folder", "cnf", 1, 'Make a new folder in the parent directory and copy all coderunner configuration files to that folder. If options j or f are specified, copy all matching runs to that new folder.', ['folder'], [:j, :f, :U, :N]],
 		["code_runner_execute", "crex",  1, 'Run (within the CodeRunner class) the fragment of Ruby code given.', ['Ruby fragment'], []],	
 		["delete", "del", 0, 'Permanently erase all filtered runs.', [], [:j, :F, :U, :N]],
+		["differences_between", "diff", 1, 'Print a table of all the differences between the input parameters of the given ids.', ['ids'], [:j, :F, :U, :N]],
 		["directory", "dir", 1, 'Print out the directory for the given run.', ['id'], []],
 		['dumb_film', "dfm", 0, 'Create a film of the specified graphkits using gnuplot "dumb" ASCII terminal.', [], [:F, :G, :g, :U, :N, :j, :f]],
 		["execute", "ex",  1, 'Run (at the top level) the fragment of Ruby code given.', ['Ruby fragment'], []],	

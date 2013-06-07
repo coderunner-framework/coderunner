@@ -76,6 +76,28 @@ class CodeRunner
 		runner = fetch_runner(copts)
 		runner.destroy
 	end
+	def self.differences_between(ids, copts = {})
+		runner = fetch_runner(copts)
+		runs = runner.filtered_ids.map{|id| runner.run_list[id]}
+		vars = runner.run_class.rcp.variables.dup + runner.run_class.rcp.run_info.dup
+		vars.delete_if{|var| runs.map{|r| r.send(var)}.uniq.size == 1}
+		vars.delete :id
+		vars.delete :run_name
+		vars.delete :output_file
+		vars.delete :error_file
+		vars.delete :executable
+		vars.delete :comment
+		vars.delete :naming_pars
+		vars.delete :parameter_hash
+		vars.unshift :id
+		#vars.push 'File.basename(executable)'
+		table = vars.map{|var| [var] + runs.map{|r| str = r.instance_eval(var.to_s).to_s; str.size>10?str[0..9]:str} }
+		#vars[-1] = 'exec'
+		col_widths = table.map{|row| row.map{|v| v.to_s.size}}.inject{|o,n| o.zip(n).map{|a| a.max}}		
+		eputs
+		table.each{|row| i=0; eputs row.map{|v| str = sprintf(" %#{col_widths[i]}s ", v.to_s); i+=1; str}.join('|'); eputs '-' * (col_widths.sum + col_widths.size*3 - 1) }
+		#p table, col_widths
+	end 
 	
 	def self.dumb_film(copts = {})
 # 		process_copts(copts)
