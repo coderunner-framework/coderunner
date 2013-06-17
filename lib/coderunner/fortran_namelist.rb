@@ -85,7 +85,7 @@ class Run
 		@deleted_variables = eval(File.read(folder + '/deleted_variables.rb'), binding, folder + '/deleted_variables.rb')
 	rescue Errno::ENOENT
 		@deleted_variables = {}
-		save_deleted_variables
+		#save_deleted_variables
 	end
 
 	@deleted_variables.keys.each{|var| attr_accessor var}
@@ -295,7 +295,9 @@ def self.add_code_variable_to_namelist(namelist, var, value)
 	namelist_file = 'namelists.rb'
 # 	end
 	raise "This namelist: #{namelist} should have an enumerator and does not have one" if enum and not @namelists[namelist][:enumerator]
-	return unless Feedback.get_boolean("An unknown variable has been found in this input file: \n\n\t Namelist: #{namelist}, Name: #{code_name}, Sample Value: #{value.inspect}.\n\nDo you wish to add it to the CodeRunner module? (Recommended: answer yes as long as the variable is not a typo)")
+  unless ENV['CR_NON_INTERACTIVE']
+  	return unless Feedback.get_boolean("An unknown variable has been found in this input file: \n\n\t Namelist: #{namelist}, Name: #{code_name}, Sample Value: #{value.inspect}.\n\nDo you wish to add it to the CodeRunner module? (Recommended: answer yes as long as the variable is not a typo)")
+  end
 
 	while nms = variable_exists?(namelist, var)
 		puts "This variable: #{var} already exists in these namelists: #{nms}. Please give an alternative name for CodeRunner (this will not affect the name that appears in the input file). If you know that the variable has the same meaning in these other namelists, or if you know that none of these namelists will appear at the same time, enter '0' to leave it unchanged."
@@ -355,7 +357,7 @@ def self.add_code_variable_to_namelist(namelist, var, value)
 		attr_accessor var
 	end
   save_namelists
-	edit_variable_help(namelist, var)
+	edit_variable_help(namelist, var) unless ENV['CR_NON_INTERACTIVE']
 # 	folder = File.dirname(__FILE__)
 # 	File.open(folder + '/' + namelist_file, 'w'){|f| f.puts namelists.pretty_inspect}
 end	
@@ -988,10 +990,10 @@ def self.update_defaults_from_source_code(source_code_folder = ARGV[-1])
 	end
 	
 # 	string.gsub!(/^.+?:/, '') # Get rid of file names from grep
- File.open('found1','w'){|f| f.puts string}
+ #File.open('found1','w'){|f| f.puts string}
 #  exit
 	defs = scan_text_for_variables(string) 
-	File.open('found2','w'){|f| f.puts defs.pretty_inspect}
+	#File.open('found2','w'){|f| f.puts defs.pretty_inspect}
 # 	exit
 	namelists.each do |namelist, hash|
 		hash[:variables].each do |var, varhash|
@@ -1043,7 +1045,7 @@ def self.synchronise_variables(source_code_folder = ARGV[2])
 	all_variables_in_source = {}
 	namelist_declarations = {}
 	#source.scan(/^\s*namelist\s*\/(?<namelist>\w+)\/(?<variables>(?:(?:&\s*[\n\r]+)|[^!\n\r])*)/) do 
-	source.scan(Regexp.new("#{/^\s*namelist\s*\/(?<namelist>\w+)\//}(?<variables>#{FORTRAN_SINGLE_LINE})")) do 
+	source.scan(Regexp.new("#{/^\s*namelist\s*\/\s*(?<namelist>\w+)\s*\//}(?<variables>#{FORTRAN_SINGLE_LINE})")) do 
 		namelist = $~[:namelist].to_s.downcase.to_sym
 		variables = $~[:variables].gsub(/!.*/, '')
 		eputs namelist, variables
@@ -1095,6 +1097,7 @@ def self.synchronise_variables(source_code_folder = ARGV[2])
 	eputs nms.keys.zip(nms.values.map{|vs| vs.size})
 	eputs "Namelists to be added to. (Press Enter)"; STDIN.gets
 	n = 0
+  ep nms
 # 	ep nms.values.sum
 	nms.values.sum.each do |var|
 		eputs var if variable_exists? var

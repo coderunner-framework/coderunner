@@ -410,7 +410,7 @@ end
 
 def defaults_location
 	if @runner.defaults_file
-		location = [ENV['HOME'] + "/.coderunner/#{@code}crmod/defaults_files", rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
+		location = [rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
 		raise "Defaults file: #{defaults_file_name} not found" unless location
 		return location
 	else
@@ -786,6 +786,7 @@ def self.check_and_update
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
+    @user_defaults_location = ENV['HOME'] + "/.coderunner/#{@code}crmod/defaults_files"
 		define_method(:output_file) do 
 			return @output_file if @output_file
 			@output_file = super()

@@ -118,19 +118,17 @@ CodeRunner::GLOBAL_BINDING = binding
 
 Log.log_file = nil
 
-# $sys = 'macosx' if $sys == 'home'
-# puts $sys; gets
 
 
+
+class CodeRunner
+	
 ####################################
 # Commmand line processing         #
 ####################################
 
 
 # Here are all the methods that map the command line invocation into the correct class method call
-
-class CodeRunner
-
 		COMMAND_LINE_FLAGS_WITH_HELP = [
 	["--recalc-all", "-A", GetoptLong::NO_ARGUMENT, %[Causes each directory to be reprocessed, rather than reading the cache of data. Its exact effect depends on the code module being used. By convention it implies that ALL data analysis will be redone.]],
 	["--reprocess-all", "-a", GetoptLong::NO_ARGUMENT, %[Causes each directory to be reprocessed, rather than reading the cache of data. Its exact effect depends on the code module being used. By convention it implies that VERY LITTLE data analysis will be redone.]],
@@ -202,7 +200,7 @@ EOF
 		["continue_in_new_folder", "cnf", 1, 'Make a new folder in the parent directory and copy all coderunner configuration files to that folder. If options j or f are specified, copy all matching runs to that new folder.', ['folder'], [:j, :f, :U, :N]],
 		["code_runner_execute", "crex",  1, 'Run (within the CodeRunner class) the fragment of Ruby code given.', ['Ruby fragment'], []],	
 		["delete", "del", 0, 'Permanently erase all filtered runs.', [], [:j, :F, :U, :N]],
-		["differences_between", "diff", 1, 'Print a table of all the differences between the input parameters of the given ids.', ['ids'], [:j, :F, :U, :N]],
+		["differences_between", "diff", 0, 'Print a table of all the differences between the input parameters of the filtered ids.', [], [:j, :F, :U, :N]],
 		["directory", "dir", 1, 'Print out the directory for the given run.', ['id'], []],
 		['dumb_film', "dfm", 0, 'Create a film of the specified graphkits using gnuplot "dumb" ASCII terminal.', [], [:F, :G, :g, :U, :N, :j, :f]],
 		["execute", "ex",  1, 'Run (at the top level) the fragment of Ruby code given.', ['Ruby fragment'], []],	

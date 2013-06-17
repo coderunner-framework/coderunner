@@ -15,6 +15,7 @@ end
 
 def run_command
 	if rcp.uses_mpi
+    raise "Number of processors (nprocs) not specified" unless @nprocs
 		return %[time mpirun -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 	else
 		return %[#{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]

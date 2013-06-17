@@ -76,7 +76,7 @@ class CodeRunner
 		runner = fetch_runner(copts)
 		runner.destroy
 	end
-	def self.differences_between(ids, copts = {})
+	def self.differences_between(copts = {})
 		runner = fetch_runner(copts)
 		runs = runner.filtered_ids.map{|id| runner.run_list[id]}
 		vars = runner.run_class.rcp.variables.dup + runner.run_class.rcp.run_info.dup
@@ -684,9 +684,9 @@ EOF
 				else
 					runner = @runners[copts[:Y]]
 				end
-# 				p 'reading defaults', @r.conditions, DEFAULT_RUNNER_OPTIONS
+ 				#p 'reading defaults', runner.recalc_all, DEFAULT_RUNNER_OPTIONS
 				runner.read_defaults
-# 				p 'read defaults', @r.conditions
+ 				#p 'read defaults', runner.recalc_all
 				
 			end #Dir.chdir
 		end

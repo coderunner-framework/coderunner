@@ -59,6 +59,9 @@ class CodeRunner
 			super(mess)
 		end
 	end
+	# The defaults that are saved in the root folder
+	
+	FOLDER_DEFAULTS = [:code, :modlet, :executable, :defaults_file, :project]  
 	
 	# Parameters important to the submission of a run, which can be set by command line flags. The runner values provide the default values for the submit function, but can be overidden in that function. All the runner does with them is set them as properties of the run to be submitted. It is the run itself for which the options are relevant.
 	
@@ -66,7 +69,7 @@ class CodeRunner
 	
 	# A hash containing the defaults for most runner options. They are overridden by any options provided during initialisation. They are mostly set at the command line (in practice, the command line flags are read into the command options, which set these defaults in the function CodeRunner.process_command_options which calls CodeRunner.set_runner_defaults). However, if Code Runner is being scripted, these defaults must be set manually or else the options they specify must be provided when initialising a runner.
 	
-	DEFAULT_RUNNER_OPTIONS = ([:conditions, :code, :executable, :sort, :debug, :script_folder, :recalc_all, :multiple_processes, :heuristic_analysis, :test_submission, :reprocess_all, :use_large_cache, :use_large_cache_but_recheck_incomplete, :use_phantom, :no_run, :server, :version, :parameters] + SUBMIT_OPTIONS).inject({}){|hash, option| hash[option] = nil; hash}
+	DEFAULT_RUNNER_OPTIONS = ([:conditions, :sort, :debug, :script_folder, :recalc_all, :multiple_processes, :heuristic_analysis, :test_submission, :reprocess_all, :use_large_cache, :use_large_cache_but_recheck_incomplete, :use_phantom, :no_run, :server, :version, :parameters] + SUBMIT_OPTIONS + FOLDER_DEFAULTS).inject({}){|hash, option| hash[option] = nil; hash}
 	
 	# Options that apply across the CodeRunner class 
 	
@@ -232,9 +235,6 @@ class CodeRunner
 		
 	private :set_max_id
 
-	# The defaults that are saved in the root folder
-	
-	FOLDER_DEFAULTS = [:code, :modlet, :executable, :defaults_file, :project]  
 
 	# Read any default options contained in the file <tt>.code_runner_script_defaults.rb</tt> in the root folder.
 	
