@@ -213,106 +213,106 @@ class TestCodeRunner < Test::Unit::TestCase
 		#assert(!FileTest.exist?('results/submitting'))
 	#end
 	
-	#def test_latex_graphkit
-		#Dir.chdir('test/results') do
-			##@runner.print_out(0)
-			#sds = @runner.run_graphkit('sides;;[1,2].include? id')
-			##p sds
-			#sds.ylabel = 'Hello'
-			#sds.data.each_with_index{|dk,i| dk.title = i.to_s}
-			#sds.xlabel = '\(\Gamma_{\epsilon}\)'
-			#sds.title = 'Area of the Sides'
-			##sds.gnuplot
-			##pp sds
-			##pid1 = sds.gnuplot
+	def test_latex_graphkit
+		Dir.chdir('test/results') do
+			#@runner.print_out(0)
+			sds = @runner.run_graphkit('sides;;[1,2].include? id')
+			#p sds
+			sds.ylabel = 'Hello'
+			sds.data.each_with_index{|dk,i| dk.title = i.to_s}
+			sds.xlabel = '\(\Gamma_{\epsilon}\)'
+			sds.title = 'Area of the Sides'
+			#sds.gnuplot
+			#pp sds
+			#pid1 = sds.gnuplot
 
-			#sds.gnuplot_write('latgraph.eps', latex: true)
-			##pid = system "okular #{Dir.pwd}/latgraph.eps"
-			##sleep 3
-			##Process.kill 'TERM', pid
-			##Process.kill 'TERM', pid1
-		#end
-	#end
+			sds.gnuplot_write('latgraph.eps', latex: true)
+			#pid = system "okular #{Dir.pwd}/latgraph.eps"
+			#sleep 3
+			#Process.kill 'TERM', pid
+			#Process.kill 'TERM', pid1
+		end
+	end
 	
-	#def test_graphkit_multiplot
-		#Dir.chdir('test/results') do
-		
-		#######################
-		## Make 3 random graphs
-		#######################
-		
-		
-		## As usual, data can be an array or a GSL::Vector
-		#kit1 = GraphKit.autocreate(x: {data: [0,2,4], title: 'A label with latex \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [3.3, 5.5, 10], title: 'Label with latex \(\beta\)', units: '\(v_{thi}\)'})
-		#kit1.title = 'First Graph'
-		#kit1.gp.label = '\'A label\' at 2,7' # This 'gp' syntax is new. You can set pretty much any gnuplot option like this - see gnuplot help set
-		#kit1.data[0].title = 'A new title'
-		
-		#kit2 = GraphKit.autocreate(x: {data: [0,2,4], title: 'Stuff \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [2, -1, 2], title: 'Some \(\beta\)', units: '\(v_{thi}\)'})
-		#kit2.title = 'Second Graph'
-		#kit2.data[0].gp.with = 'lp linewidth 6' # See gnuplot help plot for data options
-		#kit2.gp.key = 'off'
-		#kit2.xlabel = 'A NEW XLABEL'
-		
-		#kit3 = GraphKit.autocreate(x: {data: [0,5,10], title: 'Mouse Height \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [4, 3, 4], title: 'Mouse weight \(\kappa\)', units: '\(v_{thi}\)'})
-		#kit3.title = 'Mouse info'
-		#kit3.data[0].gp.with = 'lp'
-		#kit3.gp.key = 'off'
+	def test_graphkit_multiplot
+		Dir.chdir('test/results') do
 		
 		######################
-		## Plot a single one
+		# Make 3 random graphs
 		######################
 		
-		#pp kit1
-		#kit1.gnuplot_write('first_graph.eps', latex: true) #Just plot it by itself
-		##system "okular #{Dir.pwd}/first_graph.eps"
-		#pp kit1
 		
-		############################
-		## Plot multiple graphs
+		# As usual, data can be an array or a GSL::Vector
+		kit1 = GraphKit.autocreate(x: {data: [0,2,4], title: 'A label with latex \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [3.3, 5.5, 10], title: 'Label with latex \(\beta\)', units: '\(v_{thi}\)'})
+		kit1.title = 'First Graph'
+		kit1.gp.label = '\'A label\' at 2,7' # This 'gp' syntax is new. You can set pretty much any gnuplot option like this - see gnuplot help set
+		kit1.data[0].title = 'A new title'
+		
+		kit2 = GraphKit.autocreate(x: {data: [0,2,4], title: 'Stuff \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [2, -1, 2], title: 'Some \(\beta\)', units: '\(v_{thi}\)'})
+		kit2.title = 'Second Graph'
+		kit2.data[0].gp.with = 'lp linewidth 6' # See gnuplot help plot for data options
+		kit2.gp.key = 'off'
+		kit2.xlabel = 'A NEW XLABEL'
+		
+		kit3 = GraphKit.autocreate(x: {data: [0,5,10], title: 'Mouse Height \(\Gamma_\epsilon \chi\)', units: '\(\nu e\)'}, y: {data: [4, 3, 4], title: 'Mouse weight \(\kappa\)', units: '\(v_{thi}\)'})
+		kit3.title = 'Mouse info'
+		kit3.data[0].gp.with = 'lp'
+		kit3.gp.key = 'off'
+		
+		#####################
+		# Plot a single one
+		#####################
+		
+		pp kit1
+		kit1.gnuplot_write('first_graph.eps', latex: true) #Just plot it by itself
+		#system "okular #{Dir.pwd}/first_graph.eps"
+		pp kit1
+		
 		###########################
+		# Plot multiple graphs
+		##########################
 
-		##$debug_gnuplot=true
-		#kit1.gnuplot_write('aname.eps', latex: true)
-		##exit
-		#kit2.gnuplot_write('anothername.eps', latex: true)
-		#kit3.gnuplot_write('athirdname.eps', latex: true, size: "2.0in,2.0in")
+		#$debug_gnuplot=true
+		kit1.gnuplot_write('aname.eps', latex: true)
+		#exit
+		kit2.gnuplot_write('anothername.eps', latex: true)
+		kit3.gnuplot_write('athirdname.eps', latex: true, size: "2.0in,2.0in")
 		
-		#my_preamble = <<EOF
-#\\documentclass{article}
-#%\documentclass[aip,reprint]{}
-#\\usepackage{graphics,bm,overpic,subfigure,color}
+		my_preamble = <<EOF
+\\documentclass{article}
+%\documentclass[aip,reprint]{}
+\\usepackage{graphics,bm,overpic,subfigure,color}
 
-#\\pagestyle{empty}
-#\\begin{document}
-#\\begin{figure}
-#EOF
-		
-		
-		## Can use default preamble - just don't include preamble option in function call GraphKit.latex_multiplot('all_graphs.eps')
-		#GraphKit.latex_multiplot('all_graphs.eps', preamble: my_preamble) do 
-#<<EOF
-#\\subfigure{
-#\\includegraphics{aname}
-#}
-#\\subfigure{
-#\\begin{overpic}{anothername}
-			#% The location is in percent of image width
-#\\put(44,22){\\includegraphics[scale=.45]
-			#{athirdname}}
-#\\end{overpic}
-#} 
-#EOF
-
-		#end
-		##system "okular #{Dir.pwd}/all_graphs.eps"
-		#assert_equal("all_graphs.eps: PostScript document text conforming DSC level 2.0, type EPS\n", `file all_graphs.eps`)
-
-		#end # Dir.chdir 
-
+\\pagestyle{empty}
+\\begin{document}
+\\begin{figure}
+EOF
 		
 		
-	#end # def 
+		# Can use default preamble - just don't include preamble option in function call GraphKit.latex_multiplot('all_graphs.eps')
+		GraphKit.latex_multiplot('all_graphs.eps', preamble: my_preamble) do 
+<<EOF
+\\subfigure{
+\\includegraphics{aname}
+}
+\\subfigure{
+\\begin{overpic}{anothername}
+			% The location is in percent of image width
+\\put(44,22){\\includegraphics[scale=.45]
+			{athirdname}}
+\\end{overpic}
+} 
+EOF
+
+		end
+		#system "okular #{Dir.pwd}/all_graphs.eps"
+		assert_equal("all_graphs.eps: PostScript document text conforming DSC level 2.0, type EPS\n", `file all_graphs.eps`)
+
+		end # Dir.chdir 
+
+		
+		
+	end # def 
 		
 end # class TestCodeRunner
 

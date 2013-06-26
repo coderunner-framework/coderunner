@@ -84,7 +84,7 @@ class RemoteCodeRunner < CodeRunner
 	
 	DISPLAY_REMOTE_INVOCATION = false
 
-	RUNNER_CACHE = ENV['HOME'] + '/.remote_code_runner_cache'
+	RUNNER_CACHE = ENV['HOME'] + '/.coderunner/remote_cache/'
 
 	def initialize(host, folder, copts = {})
 		@folder = folder
