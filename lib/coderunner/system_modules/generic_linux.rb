@@ -48,7 +48,9 @@ def execute
     pid = File.read(fname + '.pid').to_i
     FileUtils.rm fname + '.pid'
   else
-    pid = Kernel.spawn(run_command + " & ")
+    #pid = Kernel.spawn(run_command + " ")
+    system run_command
+		pid = -1
   end
   
 #   require 'rbconfig'

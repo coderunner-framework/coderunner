@@ -179,7 +179,8 @@ class CodeRunner
 		
 		@version= options[:version]
 # 		ep 'ex', @executable
-		@run_class = setup_run_class(@code, modlet: @modlet, version: @version, executable: @executable)
+		ep 'modlet is ', @modlet
+		get_run_class
 
 		@cache = {}
 		
@@ -201,6 +202,10 @@ class CodeRunner
 		@maxes = {}; @mins = {}
 		@cmaxes = {}; @cmins = {}
 	end
+
+	def get_run_class
+		@run_class = setup_run_class(@code, modlet: @modlet, version: @version, executable: @executable)
+	end
 	
 	# Read the default values of runner options from the constant hash <tt>CodeRunner::DEFAULT_RUNNER_OPTIONS</tt>. This hash usually contains options set from the command line, but it can have its values edited manually in a script.
 	# 
@@ -212,6 +217,7 @@ class CodeRunner
  				#ep DEFAULT_RUNNER_OPTIONS, @multiple_processes
 
 		read_folder_defaults
+		get_run_class
 	end
 	
 	# Increase the value of <tt>@max_id</tt> by 1.
@@ -344,10 +350,11 @@ class CodeRunner
 
 
 	def self.repair_marshal_run_class_not_found_error(err)
+	    #ep 'error', err, err.message
 			code, modlet = err.message.scan(/CodeRunner\:\:([A-Z][a-z0-9_]+)(?:::([A-Z]\w+))?/)[0]
 			#ep 'merror', err, code, modlet; gets
 			code.gsub!(/([a-z0-9])([A-Z])/, '\1_\2')
-			(modlet.gsub!(/([a-z0-9])([A-Z])/, '\1_\2'); modlet.downcase) if modlet	
+			(modlet.gsub!(/([a-z0-9])([A-Z])/, '\1_\2'); modlet.downcase!) if modlet	
 			setup_run_class(code.downcase, modlet: modlet)
 	end
 
@@ -487,7 +494,22 @@ class CodeRunner
 					#interrupted = false; 
 					#old_trap2 = trap(2){}
 					#old_trap2 = trap(2){eputs "Interrupt acknowledged...#{Dir.pwd} finishing folder analyis. Interrupt again to override (may cause file corruption)."; interrupted = true}
-				 	run = @run_class.new(self).process_directory #NB this doesn't always return an object of class run_class - since the run may actually be from a different code
+
+					# Here we make sure we are creating a run object of the right class for this folder
+					if FileTest.exist?('code_runner_info.rb') and File.read('code_runner_info.rb') =~ /Classname:.*?(?<class>[A-Z][\w:]+)/
+						classname = $~[:class]
+						begin 
+							run_cls = Object.recursive_const_get(classname)
+						rescue NameError=>err
+							ep err, err.message
+							self.class.repair_marshal_run_class_not_found_error(StandardError.new(classname))
+							run_cls = Object.recursive_const_get(classname)
+						end
+					else
+						run_cls = @run_class
+					end
+
+				 	run = run_cls.new(self).process_directory #NB this doesn't always return an object of class run_class - since the run may actually be from a different code
 					#trap(2, old_trap2)
 					#(eputs "Calling old interrupt #{Dir.pwd}"; Process.kill(2, 0)) if interrupted
 				rescue => err
@@ -934,9 +956,9 @@ Conditions contain a single = sign: #{conditions}
 # 		pp @run_list.values.map{|run| run.instance_variables.map{|var| [var, run.instance_variable_get(var).class]}}
 		
 		generate_combined_ids
-		@combined_run_list.each{|id, run| run.runner = nil}
+		@combined_run_list.each{|id, run| run.runner = nil; run.phantom_runs.each{|pr| pr.runner=nil} if run.phantom_runs}
 		File.open(@root_folder + "/.CODE_RUNNER_TEMP_RUN_LIST_CACHE", 'w'){|file| file.puts Marshal.dump @run_list}
-		@combined_run_list.each{|id, run| run.runner = self}
+		@combined_run_list.each{|id, run| run.runner = self; run.phantom_runs.each{|pr| pr.runner=self} if run.phantom_runs}
 	end
 
 	# Self-explanatory! Call CodeRunner::Run#process_directory for every run whose status is not either :Complete or :Failed. (Note, for historical reasons traverse_directories is called rather than CodeRunner::Run#process_directory directly but the effect is nearly the same).

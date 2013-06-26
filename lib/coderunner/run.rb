@@ -331,7 +331,7 @@ def results_file
 # ID:		#{@id}
 
 # Results:
-#{(rcp.results+rcp.run_info).inject({}){|hash, (var,type_co)| hash[var] = send(var); hash}.pretty_inspect}
+#{(rcp.results+rcp.run_info - [:phantom_runs]).inject({}){|hash, (var,type_co)| hash[var] = send(var); hash}.pretty_inspect}
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 EOF
@@ -359,6 +359,7 @@ def save
 	runner, @runner = @runner, nil
 	@system_triers, old_triers = nil, @system_triers
 	@phantom_runs.each{|run| run.runner = nil} if @phantom_runs
+	#@phantom_runs.each{|run| run.runner = nil} if @phantom_runs
 # 	logi(self)
 	Dir.chdir(@directory){File.open(".code_runner_run_data", 'w'){|file| file.puts Marshal.dump(self)}}
 	@runner = runner
@@ -409,13 +410,15 @@ end
 # Return the folder where the default defaults file is located.
 
 def defaults_location
-	if @runner.defaults_file
+	#if @runner.defaults_file
 		location = [rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
-		raise "Defaults file: #{defaults_file_name} not found" unless location
-		return location
-	else
-		return "#{SCRIPT_FOLDER}/code_modules/#@code"
-	end
+		#raise "Defaults file: #{defaults_file_name} not found" unless location
+		raise "Can't find defaults_file #{defaults_file_name} in #{[rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].join(',')}." unless location
+		location
+		#return location
+	#else
+		#location = [rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
+	#end
 end
 
 # Return true if the run is completed, false otherwise
@@ -680,7 +683,7 @@ def info_file
 # #{@job_no ? "Job_No:		#{@job_no}" : ""}
 
 # Parameters:
-#{(rcp.variables + rcp.run_info + [:version, :code, :modlet, :sys]).inject({}){|hash, var| hash[var] = send(var) unless (!send(var) and send(var) ==  nil); hash}.pretty_inspect}
+#{(rcp.variables + rcp.run_info + [:version, :code, :modlet, :sys] - [:phantom_runs]).inject({}){|hash, var| hash[var] = send(var) unless (!send(var) and send(var) ==  nil); hash}.pretty_inspect}
 
 
 # Actual Command:
@@ -766,6 +769,19 @@ def self.check_and_update
 		end
 		
 		@readout_list = (rcp.variables+rcp.results) unless rcp.readout_list
+
+		raise "
+
+Please add the line 
+
+-----------------------------------------------------------
+@code_module_folder = folder = File.dirname(File.expand_path(__FILE__)) # i.e. the directory this file is in
+---------------------------------------------------------
+
+to your code module.
+		
+		" unless rcp.code_module_folder
+
 # 		(variables+results).each{|v| const_get(:READOUT_LIST).push v} unless READOUT_LIST.size > 0
 
 		#if rcp.variables_0_5_0

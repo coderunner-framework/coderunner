@@ -630,7 +630,7 @@ EOF
 			set_class_defaults(copts)
 			copts[:running_remotely] = true
 		else
-			copts[:Y].gsub!(/~/, ENV['HOME']) if copts[:Y]
+			copts[:Y] = copts[:Y].gsub(/~/, ENV['HOME']) if copts[:Y]
 			Dir.chdir((copts[:Y] or Dir.pwd)) do
 				set_runner_defaults(copts)
 # 				ep DEFAULT_RUNNER_OPTIONS

@@ -24,4 +24,8 @@ class Version
   def to_s
     @major.to_s + "." + @feature_group.to_s + "." + @feature.to_s + "." + @bugfix.to_s
   end
+
+	def inspect
+		"#{self.class}.new('#{to_s}')"
+	end
 end

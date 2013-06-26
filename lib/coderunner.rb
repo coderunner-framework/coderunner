@@ -111,7 +111,7 @@ eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/fortran_namelist.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 
-CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s)
+CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s) rescue "test"
 
 CodeRunner::GLOBAL_BINDING = binding
 
