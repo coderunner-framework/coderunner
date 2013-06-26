@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.12.7"
+  s.version = "0.12.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -64,13 +64,15 @@ Gem::Specification.new do |s|
     "lib/coderunner/test.rb",
     "lib/coderunner/version.rb",
     "lib/cubecalccrmod.rb",
-    "lib/cubecalccrmod/cubecalc_defaults.rb",
+    "lib/cubecalccrmod/cubecalc.rb",
     "lib/cubecalccrmod/default_modlets/empty_defaults.rb",
+    "lib/cubecalccrmod/defaults_files/cubecalc_defaults.rb",
     "lib/cubecalccrmod/defaults_files/sleep_defaults.rb",
     "lib/cubecalccrmod/empty.rb",
     "lib/cubecalccrmod/sleep.rb",
     "test/cubecalc.cc",
     "test/helper.rb",
+    "test/old_test.rb",
     "test/test_coderunner.rb"
   ]
   s.homepage = "http://coderunner.sourceforge.net"
