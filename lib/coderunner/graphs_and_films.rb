@@ -397,7 +397,7 @@ class CodeRunner
 				eputs sprintf("Fetching graphs: %2.2f", i.to_f/frame_array.size.to_f * 100.0) + "% Complete"
 # 			end
 			i+=1
-			[frame_index, graphkit_from_lists(graphs, run_graphs, extra_options.absorb({frame_index: frame_index}))]
+			[frame_index, graphkit_from_lists(graphs, run_graphs, extra_options.absorb({(extra_options[:in]||extra_options[:index_name]||:frame_index) => frame_index}))]
 		end
 # 		eputs Marshal.load(Marshal.dump(array)).pretty_inspect
 		#Kernel.puts server_dump(array) if server
@@ -431,22 +431,23 @@ class CodeRunner
 		end
 	end
 	
-	def self.graphkit_multiple_runners_with_frame_array(frame_array, list, print_message = false)
+	def self.graphkit_multiple_runners_with_frame_array(frame_array, list, extra_options, print_message = false)
 		i = 0
 # 		
 		return list.inject(nil) do |kit_array, (runner, graph_lists)|
 			graphs, run_graphs = graph_lists
 			graphs.map!{|graph| runner.graphkit_shorthand(graph)}
 			run_graphs.map!{|graph| runner.run_graphkit_shorthand(graph)}
-			newkit_array = runner.graphkit_from_lists_with_frame_array(frame_array, graphs, run_graphs, {})
+			newkit_array = runner.graphkit_from_lists_with_frame_array(frame_array, graphs, run_graphs, extra_options)
 # 			eputs newkit_array.pretty_inspect
 			kit_array ? (i=-1; kit.map{|(frame_index, kit)| i+= 1;[frame_index, new_kit[i][1]]}) : newkit_array
 		end
 	end
 	
-	def self.make_film_multiple_runners(list, options)
-		possible_options = [:frame_array, :fa, :skip_frames, :sf, :normalize, :n, :normalize_pieces, :np, :increment, :i, :skip_encoding, :se]
+	def self.make_film_multiple_runners_old(list, options)
+		possible_options = [:frame_array, :fa, :skip_frames, :sf, :normalize, :n, :normalize_pieces, :np, :increment, :i, :skip_encoding, :se, :index_name, :in]
 		fa = (options[:frame_array] or options[:fa] or list[0][0].run_list[list[0][0].filtered_ids[0]].frame_array(options)	)
+		iname = options[:in]||options[:index_name]||:frame_index
 
 		fd = frame_digits = Math.log10(fa[1]).ceil
 		unless options[:skip_frames] or options[:sf]
@@ -458,8 +459,8 @@ class CodeRunner
 # 		puts @@multiple_processes; gets
 		no_forks = (@@multiple_processes or 1)
 		ep @@multiple_processes, no_forks
-		end_graphkit = graphkit_multiple_runners(list, frame_index: fa[1])
-		begin_graphkit = graphkit_multiple_runners(list, frame_index: fa[0])
+		end_graphkit = graphkit_multiple_runners(list, iname => fa[1])
+		begin_graphkit = graphkit_multiple_runners(list, iname => fa[0])
 
 		end_area = end_graphkit.plot_area_size
 		begin_area = begin_graphkit.plot_area_size
@@ -490,8 +491,8 @@ class CodeRunner
 		frames.pieces(no_forks).each_with_index do |piece, myrank|
 			fork do
 				if options[:normalize_pieces]
-				end_area = graphkit_multiple_runners(list, frame_index: piece.max).plot_area_size
-				begin_area = graphkit_multiple_runners(list, frame_index: piece.min).plot_area_size
+				end_area = graphkit_multiple_runners(list, iname => piece.max).plot_area_size
+				begin_area = graphkit_multiple_runners(list, iname => piece.min).plot_area_size
 				axes = [:x, :y, :z]
 				for i in 0...end_area.size
 					next unless options[:normalize_pieces].include? axes[i]
@@ -503,7 +504,7 @@ class CodeRunner
 				end
 				end
 				eputs 'making graphs...'; sleep 1
-				graph_array = graphkit_multiple_runners_with_frame_array(piece, list, myrank==0)
+				graph_array = graphkit_multiple_runners_with_frame_array(piece, list, {:in => iname}, myrank==0)
 # 				ep graph_array
 				eputs
 				graph_array.each_with_index do |(frame_index,g), pindex|
@@ -543,6 +544,7 @@ class CodeRunner
 	def self.make_film_multiple_runners(list, options)
 		possible_options = [:frame_array, :fa, :skip_frames, :sf, :normalize, :n, :normalize_pieces, :np, :increment, :i, :skip_encoding, :se]
 		fa = (options[:frame_array] or options[:fa] or list[0][0].run_list[list[0][0].filtered_ids[0]].frame_array(options)	)
+		iname = options[:in]||options[:index_name]||:frame_index
 
 		fd = frame_digits = Math.log10(fa[1]).ceil
 		unless options[:skip_frames] or options[:sf]
@@ -554,8 +556,8 @@ class CodeRunner
 # 		puts @@multiple_processes; gets
 		no_forks = (@@multiple_processes or 1)
 		ep @@multiple_processes, no_forks
-		end_graphkit = graphkit_multiple_runners(list, frame_index: fa[1])
-		begin_graphkit = graphkit_multiple_runners(list, frame_index: fa[0])
+		end_graphkit = graphkit_multiple_runners(list, iname => fa[1])
+		begin_graphkit = graphkit_multiple_runners(list, iname => fa[0])
 
 		end_area = end_graphkit.plot_area_size
 		begin_area = begin_graphkit.plot_area_size
@@ -595,8 +597,8 @@ class CodeRunner
 # 				end
 # 			fork do
 				if options[:normalize_pieces]
-				end_area = graphkit_multiple_runners(list, frame_index: piece.max).plot_area_size
-				begin_area = graphkit_multiple_runners(list, frame_index: piece.min).plot_area_size
+				end_area = graphkit_multiple_runners(list, iname => piece.max).plot_area_size
+				begin_area = graphkit_multiple_runners(list, iname => piece.min).plot_area_size
 				axes = [:x, :y, :z]
 				for i in 0...end_area.size
 					next unless options[:normalize_pieces].include? axes[i]
@@ -608,7 +610,7 @@ class CodeRunner
 				end
 				end
 				eputs 'making graphs...'; sleep 1 if myrank==0
-				graph_array = graphkit_multiple_runners_with_frame_array(piece, list, myrank==0)
+				graph_array = graphkit_multiple_runners_with_frame_array(piece, list, {:in => iname}, myrank==0)
 # 				ep graph_array
 				eputs
 				graph_array.each_with_index do |(frame_index,g), pindex|

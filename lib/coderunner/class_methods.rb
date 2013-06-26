@@ -569,8 +569,8 @@ EOF
 		runner = fetch_runner(copts)
 		eputs 'Starting Graph'
 		kit = runner.graphkit_from_lists(copts[:G], copts[:g])
-		options = copts[:w]
-		options = (options and options =~ /\S/) ? eval(options): {}
+		#options = copts[:w]
+		#options = (options and options =~ /\S/) ? eval(options): {}
 		name = nil unless name =~ /\S/
 		max = 0
 		name.sub!(/^\~/, ENV['HOME']) if name
@@ -582,7 +582,7 @@ EOF
 			name = name.sub(/%d/, (max + 1).to_s)
 		end
 		raise "kit doesn't have a file_name and no filename specified; can't write graph" unless name or (kit.file_name.class == String and kit.file_name =~ /\S/)
-		Dir.chdir(COMMAND_FOLDER){kit.gnuplot_write((name or kit.file_name), options)}
+		Dir.chdir(COMMAND_FOLDER){kit.gnuplot_write((name or kit.file_name), {eval: copts[:w]})}
 	end
 	def self.read_default_command_options(copts)
 		DEFAULT_COMMAND_OPTIONS.each do |key, value|
