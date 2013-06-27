@@ -13,6 +13,9 @@ require 'shoulda'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'coderunner'
+require 'cubecalccrmod'
+require 'cubecalccrmod/sleep'
+
 
 class Test::Unit::TestCase
 end

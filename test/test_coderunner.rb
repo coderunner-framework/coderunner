@@ -25,6 +25,12 @@ class TestSubmission  < Test::Unit::TestCase
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
 		FileUtils.makedirs('test/submission_results')
 		Dir.chdir('test/submission_results'){assert_system string}
+		CodeRunner.setup_run_class('cubecalc', modlet: 'sleep')
+	end
+	def test_setup_run_class
+		assert(CodeRunner::Cubecalc::Sleep.ancestors.include?(CodeRunner::SYSTEM_MODULE), "CodeRunner::Cubecalc.ancestors.include? CodeRunner::SYS, ancestors: #{CodeRunner::Cubecalc.ancestors}")
+		assert(CodeRunner::Cubecalc::Sleep.rcp.user_defaults_location?, "CodeRunner::Cubecalc::Sleep.rcp.user_defaults_location? #{CodeRunner::Cubecalc::Sleep.rcp.user_defaults_location?}")
+		assert_equal(ENV['HOME'] + '/.coderunner/cubecalccrmod/defaults_files', CodeRunner::Cubecalc::Sleep.rcp.user_defaults_location)
 	end
 	def test_submission
 		CodeRunner.submit(Y: 'test/submission_results', C: 'cubecalc', m: 'empty', X: Dir.pwd + '/test/submission_results/cubecalc')
@@ -235,6 +241,7 @@ class TestCodeRunner < Test::Unit::TestCase
 	end
 	
 	def test_graphkit_multiplot
+		unless ENV['SHORT_TEST']
 		Dir.chdir('test/results') do
 		
 		######################
@@ -310,6 +317,7 @@ EOF
 
 		end # Dir.chdir 
 
+		end # unless
 		
 		
 	end # def 

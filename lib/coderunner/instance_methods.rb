@@ -382,10 +382,11 @@ class CodeRunner
 
 # 		p run_class_name
 
+		return recursive_const_get(run_class_name) if SETUP_RUN_CLASSES.include?(run_class_name) #constants.include? (run_class_name).to_sym unless options[:force] #and const_get(run_class_name).rcp.code?
+		#return const_get(run_class_name) if constants.include? (run_class_name).to_sym unless options[:force] #and const_get(run_class_name).rcp.code?
+		SETUP_RUN_CLASSES.push run_class_name #.downcase
 		FileUtils.makedirs(ENV['HOME'] + "/.coderunner/#{code}crmod/")
 		FileUtils.makedirs(ENV['HOME'] + "/.coderunner/#{code}crmod/defaults_files")
-		return const_get(run_class_name) if constants.include? (run_class_name).to_sym unless options[:force]
-		SETUP_RUN_CLASSES.push run_class_name.downcase
 
 		#Create the run_class, a special dynamically created class which knows how to process runs of the given code on the current system.
 		#run.rb contains the basic methods of the class
@@ -409,6 +410,7 @@ class CodeRunner
 # 		ep get_run_class_name(code, nil)
 		run_class = const_get(get_run_class_name(code, nil))
 		run_class.instance_variable_set(:@code, code)
+		run_class.instance_variable_set(:@sys, SYS)
 
 		raise "#{run_class} must inherit from CodeRunner::Run: its ancestors are: #{run_class.ancestors}" unless run_class.ancestors.include? Run
 		

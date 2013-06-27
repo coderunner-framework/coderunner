@@ -25,6 +25,8 @@ class CodeRunner
 
 @uses_mpi = false
 
+#@readout_list = @variables + @results
+
 @code_module_folder = folder = File.dirname(File.expand_path(__FILE__)) # i.e. the directory this file is in
 
 def process_directory_code_specific

@@ -105,18 +105,24 @@ end
 			@my_class = the_class
 		end
 		def method_missing(method, value=nil)
+			#eputs 'STARTING'
 			if method.to_s =~ /=$/
 				raise 'rcps should not be set outside class methods'
 				@my_class.instance_variable_set("@"+method.to_s.sub(/=/, ''), value)
 			else
 				the_class = @my_class
 				loop do 
-# 					p the_class, method
+ 					#p the_class, method
 # 					p the_class.instance_variables
 # 					p the_class.instance_variables.map{|v| the_class.instance_variable_get(v)}
-					return the_class.instance_variable_get("@"+method.to_s) if the_class.instance_variables.include?(("@"+method.to_s).to_sym)
-					the_class = the_class.superclass
-					return nil unless the_class
+					if method.to_s =~ /\?$/
+						return false unless the_class
+						return true if the_class.instance_variables.include?(("@"+method.to_s.sub(/\?$/,'')).to_sym)
+					else
+						raise NoMethodError.new("Run class property #{method} not found.") unless the_class
+						return the_class.instance_variable_get("@"+method.to_s) if the_class.instance_variables.include?(("@"+method.to_s).to_sym)
+					end
+						the_class = the_class.superclass
 				end
 					
 			end
@@ -645,7 +651,7 @@ def prepare_submission(options={})
 		generate_input_file
 		
 		File.open(".code_runner_version.txt", 'w'){|file| file.puts CODE_RUNNER_VERSION}
-		File.open("code_runner_modlet.rb", 'w'){|file| file.puts rcp.modlet_source} if rcp.modlet_required
+		#File.open("code_runner_modlet.rb", 'w'){|file| file.puts rcp.modlet_source} if rcp.modlet_required
 	end
 	@dir_name = nil
 
@@ -768,7 +774,7 @@ def self.check_and_update
 			raise CRFatal.new("#{v} not defined correctly: class is #{rcp[v].class} instead of one of #{class_list.to_s}") unless class_list.include? rcp[v].class
 		end
 		
-		@readout_list = (rcp.variables+rcp.results) unless rcp.readout_list
+		@readout_list = (rcp.variables+rcp.results) unless rcp.readout_list?
 
 		raise "
 
@@ -802,7 +808,9 @@ to your code module.
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
-    @user_defaults_location = ENV['HOME'] + "/.coderunner/#{@code}crmod/defaults_files"
+		eputs "Checking and updating"
+    @user_defaults_location = ENV['HOME'] + "/.coderunner/#{rcp.code}crmod/defaults_files"
+		eputs ' user_defaults_location', rcp.user_defaults_location
 		define_method(:output_file) do 
 			return @output_file if @output_file
 			@output_file = super()
