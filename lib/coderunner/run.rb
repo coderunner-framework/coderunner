@@ -671,7 +671,7 @@ end
 # private :write_info
 
 def info_file
-		@modlet = rcp.modlet
+		@modlet = rcp.modlet if rcp.modlet?
 		return <<EOF
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # #{rcp.code_long} Input Parameters
@@ -683,7 +683,7 @@ def info_file
 # Directory:	#{Dir.pwd}
 # Runname:	#{@run_name}
 # ID:		#{@id}
-# #{rcp.modlet_required ? "Modlet:\t#{rcp.modlet}" : ""} 
+# #{@modlet ? "Modlet:\t#@modlet" : ""} 
 # Classname:	#{self.class.to_s}
 
 # #{@job_no ? "Job_No:		#{@job_no}" : ""}
