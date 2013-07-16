@@ -786,7 +786,7 @@ Please add the line
 
 to your code module.
 		
-		" unless rcp.code_module_folder
+		" unless rcp.code_module_folder?
 
 # 		(variables+results).each{|v| const_get(:READOUT_LIST).push v} unless READOUT_LIST.size > 0
 
@@ -808,9 +808,9 @@ to your code module.
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
-		eputs "Checking and updating"
+		#eputs "Checking and updating"
     @user_defaults_location = ENV['HOME'] + "/.coderunner/#{rcp.code}crmod/defaults_files"
-		eputs ' user_defaults_location', rcp.user_defaults_location
+		#eputs ' user_defaults_location', rcp.user_defaults_location
 		define_method(:output_file) do 
 			return @output_file if @output_file
 			@output_file = super()

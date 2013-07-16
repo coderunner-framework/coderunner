@@ -179,7 +179,7 @@ class CodeRunner
 		
 		@version= options[:version]
 # 		ep 'ex', @executable
-		ep 'modlet is ', @modlet
+		#ep 'modlet is ', @modlet
 		get_run_class
 
 		@cache = {}
