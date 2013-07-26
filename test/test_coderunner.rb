@@ -332,3 +332,12 @@ EOF
 		
 end # class TestCodeRunner
 
+#class TestFortranNamelist < Test::Unit::TestCase
+	##require 'gs2crmod'
+	#def test_make_defaults
+		#Dir.chdir('test') do
+			#CodeRunner.code_command('make_new_defaults_file("fortran_namelist", "fortran_namelist.in")', C: 'gs2')
+			#assert(File.read('fortran_namelist_defaults.rb')=~/tprim_1/)
+		#end
+	#end
+#end

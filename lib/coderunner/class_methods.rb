@@ -668,8 +668,9 @@ EOF
 			copts_r[:Y] = nil
 			copts[:Y] = nil
 			unless @runners[[host, folder]]
+				copts[:cache] ||= :auto
 				runner = @runners[[host, folder]] = RemoteCodeRunner.new(host, folder, copts)
-				(eputs 'Updating remote...'; runner.update) unless (copts[:g] and (copts[:g].kind_of? String or copts[:g].size > 0)) or copts[:no_update] or copts[:cache] 
+				#(eputs 'Updating remote...'; runner.update) unless (copts[:g] and (copts[:g].kind_of? String or copts[:g].size > 0)) or copts[:no_update] or copts[:cache] 
 			else 
 				runner = @runners[[host, folder]]
 			end
