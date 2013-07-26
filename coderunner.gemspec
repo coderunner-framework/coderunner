@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.12.13"
+  s.version = "0.12.14"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
-  s.date = "2013-07-16"
+  s.date = "2013-07-26"
   s.description = "CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes."
   s.email = "edmundhighcock@sourceforge.net"
   s.executables = ["coderunner"]
@@ -61,6 +61,7 @@ Gem::Specification.new do |s|
     "lib/coderunner/system_modules/moab.rb",
     "lib/coderunner/system_modules/new_hydra.rb",
     "lib/coderunner/system_modules/slurm.rb",
+    "lib/coderunner/system_modules/stampede.rb",
     "lib/coderunner/test.rb",
     "lib/coderunner/version.rb",
     "lib/cubecalccrmod.rb",
@@ -71,6 +72,7 @@ Gem::Specification.new do |s|
     "lib/cubecalccrmod/empty.rb",
     "lib/cubecalccrmod/sleep.rb",
     "test/cubecalc.cc",
+    "test/fortran_namelist.in",
     "test/helper.rb",
     "test/old_test.rb",
     "test/test_coderunner.rb"
