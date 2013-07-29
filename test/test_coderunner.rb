@@ -23,6 +23,7 @@ $ruby_command = "#{RbConfig::CONFIG['bindir']}/#{RbConfig::CONFIG['ruby_install_
 class TestSubmission  < Test::Unit::TestCase
 	def setup
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
+		Dir.chdir('test'){CodeRunner.generate_cubecalc}
 		FileUtils.makedirs('test/submission_results')
 		Dir.chdir('test/submission_results'){assert_system string}
 		CodeRunner.setup_run_class('cubecalc', modlet: 'sleep')
@@ -41,11 +42,12 @@ class TestSubmission  < Test::Unit::TestCase
 	end
 	def test_status_loop
 		unless ENV['SHORT_TEST']
-			ENV['CODE_RUNNER_LAUNCHER'] = '4'
-			@thread = Thread.new{CodeRunner.start_launcher(0.2,10)}
+			ENV['CODE_RUNNER_LAUNCHER'] = '42323490qw4q4432407Q2342U3'
+			@thread = Thread.new{CodeRunner.start_launcher(0.5,10)}
+			sleep 0.1 while not FileTest.exist?(CodeRunner.launcher_directory)
 			CodeRunner.submit(Y: 'test/submission_results', C: 'cubecalc', m: 'sleep', X: Dir.pwd + '/test/submission_results/cubecalc', p: '{sleep_time: 2}')
 			CodeRunner.status_loop(Y: 'test/submission_results')
-			@thread.kill
+			#@thread.kill # This is commented out because it causes a Heisenbug... the kill signal can get trapped and cause the deletion of the 'submitting' lock file. This line is unnecessary because the thread will die when the program exits
 			ENV.delete('CODE_RUNNER_LAUNCHER')
 		end
 	end
@@ -57,11 +59,12 @@ class TestSubmission  < Test::Unit::TestCase
 		runner.print_out(0)
 		assert_equal(6.0, runner.run_list[1].volume)
 	end
-	#def test_command_line_submission
-	   #assert_system("#{$ruby_command}  -I lib/ lib/coderunner.rb submit -C cubecalc -m sleep -D sleep -X #{Dir.pwd}/test/cubecalc -Y test/submission_results")
-	#end
+	def test_command_line_submission
+	   assert_system("#{$ruby_command}  -I lib/ lib/coderunner.rb submit -C cubecalc -m sleep -D sleep -X #{Dir.pwd}/test/submission_results/cubecalc -Y test/submission_results")
+	end
 	def teardown
 		FileUtils.rm_r('test/submission_results')
+		FileUtils.rm_r('test/cubecalc.cc')
 	end
 end
 
@@ -77,6 +80,7 @@ class TestCodeRunner < Test::Unit::TestCase
 	def setup
 		FileUtils.makedirs('test/results')
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
+		Dir.chdir('test'){CodeRunner.generate_cubecalc}
 		Dir.chdir('test/results'){assert_system string}
 		CodeRunner.submit(Y: tfolder, C: 'cubecalc', m: 'empty', X: Dir.pwd + '/test/results/cubecalc', T: true)
 	# 	exit
@@ -88,6 +92,7 @@ class TestCodeRunner < Test::Unit::TestCase
 	
 	def teardown
 		FileUtils.rm_r('test/results')
+		FileUtils.rm('test/cubecalc.cc')
 	end
 
 	def tfolder

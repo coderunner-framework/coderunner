@@ -249,11 +249,75 @@ EOF
 	
 	end
   
+
+	def self.generate_cubecalc(copts={})
+		#return
+		File.open('cubecalc.cc', 'w') do |file|
+		file.puts <<EOF
+#include <stdio.h>
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+#include <cstring>
+#include <ctime>
+using namespace std;
+
+int main(int argc, char* argv[]){
+	string line;
+	cout << "Starting..." << endl;
+	
+	int calculate_sides = atoi(argv[1]); //Should the program calculate the area of the sides of the cube? 
+	cout << calculate_sides << endl;
+	
+	char* input_file_name = argv[2]; //Get the input file name from the command line
+	cout << input_file_name << endl;
+	
+	if (argc > 3){ //It has been told to sleep for a time
+		bool cont = true;
+		time_t start_t;
+		time(&start_t);
+		while (cont){
+			time_t new_t;
+			time(&new_t);
+			cont = (new_t < (start_t + atoi(argv[3]) * 1.0));
+		}
+	}
+	
+	ifstream edges_file(input_file_name); //Read the edges from the input file
+	float* edges = new float[3];
+	int j = 0;
+	while (edges_file >> edges[j++]){
+		cout << edges[j-1] << endl;
+	}
+	
+	
+	FILE* output = fopen("results.txt", "w"); //Write the volume to the output file
+	fprintf(output, "Volume was %f", edges[0] * edges[1] * edges[2]);
+	fclose(output);
+	
+	if (calculate_sides == 1){ //If it has been told to calculate the sides
+		cout << "calculating sides" << endl;
+		FILE* sides = fopen("sides.txt", "w");
+		for(int i=0; i<3; i++){
+			cout << "Side " << i << ": " << edges[(i%3)] * edges[((i+1)%3)] << endl;
+			fprintf(sides, "The area of side %d is %f\\n", i, edges[i%3] * edges[(i+1)%3]);
+		}
+		fclose(sides);
+	}
+}
+	
+
+
+EOF
+
+		end
+	end
 	def self.launcher_directory
 		ENV['HOME'] + "/.coderunner/to_launch/#{ENV['CODE_RUNNER_LAUNCHER']}"
 	end
   def self.start_launcher(refresh, max_queue, copts={})
-		raise "Raise refresh is #{refresh}: it must be >= 1" if refresh.to_i < 1
+		#eputs "Starting launcher!"
+		raise "Raise refresh is #{refresh}: it must be >= 0.1" if refresh < 0.1
 		raise "Raise max_queue is #{max_queue}: it must be >= 5" if max_queue.to_i < 5
     #raise "Launcher already running" if %x[ps -e -o cmd].split("\n").grep(/coderunner\s+launch/).size > 0
     require 'thread'
@@ -280,7 +344,7 @@ EOF
 			end
 		end
 
-    Dir.chdir(tl) do
+    #Dir.chdir(tl) do
       ppid = $$
       loop do
 				sleep refresh.to_i while processes.size >= max_queue.to_i
@@ -288,9 +352,10 @@ EOF
         Dir.entries(tl).grep(/(^.*)\.start/).each do |file|
           file =~ (/(^.*)\.start/)
           id = $1
-          command = File.read file
+          command = File.read tl + '/' + file
           pid = fork do
             processes.each do |wpid|
+							# Make sure all previously submitted jobs have finished.
               sleep refresh.to_i while %x[ps -e -o pid,ppid].split("\n").grep(Regexp.new("^\\s*#{wpid}\\s+#{ppid}")).size > 0
             end              
             exec(command)
@@ -298,15 +363,15 @@ EOF
 					`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`
           mutex.synchronize{processes.push pid}
 
-          File.open(id + '.pid', 'w'){|file| file.puts pid}
-          FileUtils.rm(file)
+          File.open(tl + '/' + id + '.pid', 'w'){|file| file.puts pid}
+          FileUtils.rm(tl + '/' + file)
           
           Thread.new{Process.wait pid; mutex.synchronize{processes.delete pid}}
         end
 #         processes.each{|pid| Process.wait pid}
         sleep refresh.to_i
       end
-    end
+    #end
   end
       
 	
@@ -473,6 +538,8 @@ EOF
 # 			exit
 		end
 		runner.submit(runs, nprocs: copts[:n], version: copts[:v], skip: copts[:k], job_chain: copts[:J], no_update_before_submit: copts[:no_update_before_submit])
+		#puts "Got here"
+		#exit(0)
 	end
 	def self.resubmit(copts = {})
 # 		process_copts(copts)

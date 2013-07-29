@@ -1088,8 +1088,8 @@ Conditions contain a single = sign: #{conditions}
 				sleep rand
 			end
 # 			old_trap = trap(0)
-			old_trap0 = trap(0){eputs "Aborted Submit!"; File.delete("#@root_folder/submitting"); exit!}
-			old_trap2 = trap(2){eputs "Aborted Submit!"; File.delete("#@root_folder/submitting") if FileTest.exist? "#@root_folder/submitting"; trap(2, "DEFAULT"); trap(0, "DEFAULT"); Process.kill(2, 0)}
+			#old_trap0 = trap(0){eputs "Aborted Submit (0)!"; File.delete("#@root_folder/submitting"); exit!}
+			old_trap2 = trap(2){eputs "Aborted Submit (2)!"; File.delete("#@root_folder/submitting") if FileTest.exist? "#@root_folder/submitting"; trap(2, "DEFAULT"); trap(0, "DEFAULT"); Process.kill(2, 0)}
 	# 		File.open("submitting", "w"){|file| file.puts ""}
 			FileUtils.touch("submitting")
 			unless options[:no_update_before_submit]
@@ -1191,7 +1191,7 @@ Conditions contain a single = sign: #{conditions}
 			@write_status_dots = wsd	
 			save_large_cache
 			File.delete("submitting")
-			trap(0, old_trap0)
+			#trap(0, old_trap0)
 			trap(2, old_trap2)
 	
 			
