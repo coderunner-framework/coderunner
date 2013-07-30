@@ -677,6 +677,9 @@ EOF
 		if copts[:j] # j can be a number '65' or list of numbers '65,43,382' 
 			copts[:f]= "#{eval("[#{copts[:j]}]").inspect}.include? id"
 		end
+		if copts[:X] and FileTest.exist? copts[:X]
+			copts[:X] = File.expand_path(copts[:X])
+		end
 		if copts[:z]
 			Log.log_file = Dir.pwd + '/.cr_logfile.txt'
 			Log.clean_up
