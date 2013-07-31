@@ -15,6 +15,7 @@ unless $cpp_command = ENV['CPP']
 end
 
 $ruby_command = "#{RbConfig::CONFIG['bindir']}/#{RbConfig::CONFIG['ruby_install_name']}"
+$coderunner_command = "#{$ruby_command}  -I lib/ lib/coderunner.rb"
 
 #Dir.chdir('test') do 
 	#raise "Couldn't build test program using #{string}" unless system string
@@ -130,6 +131,18 @@ class TestCodeRunner < Test::Unit::TestCase
 # 		sds.gnuplot
 		wdvh.close
 		puts 'testing remote coderunner complete'
+	end
+
+	def test_available_defauls
+		pipe = IO.popen("#$coderunner_command avd -Y test/results -C cubecalc -m empty")
+		str = ""
+	 	while line = pipe.gets
+			str += line
+		end	
+		assert_match(/sleep/, str)
+		assert_match(/cubecalc/, str)
+		assert_match(/Available/, str)
+		#STDIN.gets
 	end
 	
 	def test_run_eval_saving

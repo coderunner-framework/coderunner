@@ -42,16 +42,22 @@ class CodeRunner
 		process_command_options(copts)
 		puts "\nAvailable defaults files for #{copts[:C]}:"
 		entries = []
-		begin
-			entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/my_defaults_files")
-		rescue
-		end
-		begin
-			entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/defaults_files")
-		rescue
-		end
+		#begin
+			##entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/my_defaults_files")
+			#entries += 
+		#rescue
+		#end
+		#begin
+		#run_class = setup_run_class(copts[:C], modlet: copts[:m])
+		rc = run_class(copts)
+		entries = [rc.rcp.user_defaults_location, rc.rcp.code_module_folder	+ "/defaults_files"].map{|folder|  Dir.entries(folder).grep(/_defaults\.rb$/) rescue []}.sum
+			#entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/defaults_files")
+			#entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/defaults_files")
+		#rescue
+		#end
 		entries.each do |defaults_file|
-			puts "\t" + File.basename(defaults_file, '.rb').sub(/_defaults/, '') unless ['.', '..', '.svn', '.directory'].include? defaults_file
+			#puts "\t" + File.basename(defaults_file, '.rb').sub(/_defaults/, '') unless ['.', '..', '.svn', '.directory'].include? defaults_file
+			puts "\t" + File.basename(defaults_file, '.rb').sub(/_defaults/, '')
 		end
 	end
 	
@@ -438,7 +444,7 @@ EOF
 		runner.run_list[copts[:R]].recheck
 		runner.respond_to_requests
 	end
-	def self.code_command(string, copts = {})
+	def self.run_class(copts={})
 		process_command_options(copts)
 		copts[:no_update] = true
 		unless copts[:C]
@@ -452,8 +458,10 @@ EOF
 		end
 		#ep ['code', 'modlet is', copts[:C], copts[:m]]
 		            
-		run_class = setup_run_class(copts[:C], modlet: copts[:m])
-		run_class.class_eval(string)
+		return setup_run_class(copts[:C], modlet: copts[:m])
+	end
+	def self.code_command(string, copts = {})
+		run_class(copts).class_eval(string)
 		                            
 # 		 runner = fetch_runner(copts)
 # 		 runner.run_class.class_eval(string)
@@ -772,6 +780,7 @@ EOF
 
 
    def self.runner
+		@runners ||={}
 		@runners.values[0]
 	end
 
