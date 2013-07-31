@@ -40,7 +40,6 @@ class CodeRunner
 	
 	def self.available_defaults_files(copts={})
 		process_command_options(copts)
-		puts "\nAvailable defaults files for #{copts[:C]}:"
 		entries = []
 		#begin
 			##entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/my_defaults_files")
@@ -55,6 +54,7 @@ class CodeRunner
 			#entries += Dir.entries(SCRIPT_FOLDER + "/code_modules/#{copts[:C]}/defaults_files")
 		#rescue
 		#end
+		puts "\nAvailable defaults files for #{copts[:C]}:"
 		entries.each do |defaults_file|
 			#puts "\t" + File.basename(defaults_file, '.rb').sub(/_defaults/, '') unless ['.', '..', '.svn', '.directory'].include? defaults_file
 			puts "\t" + File.basename(defaults_file, '.rb').sub(/_defaults/, '')
