@@ -323,7 +323,7 @@ EOF
 	end
   def self.start_launcher(refresh, max_queue, copts={})
 		#eputs "Starting launcher!"
-		raise "Raise refresh is #{refresh}: it must be >= 0.1" if refresh < 0.1
+		raise "Raise refresh is #{refresh}: it must be >= 0.1" if refresh.to_f < 0.1
 		raise "Raise max_queue is #{max_queue}: it must be >= 5" if max_queue.to_i < 5
     #raise "Launcher already running" if %x[ps -e -o cmd].split("\n").grep(/coderunner\s+launch/).size > 0
     require 'thread'
