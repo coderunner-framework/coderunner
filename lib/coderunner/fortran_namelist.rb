@@ -37,7 +37,11 @@ class Run
 	# 		folder = File.dirname(__FILE__)
 
 
-		@namelists = eval(File.read(folder + '/namelists.rb'), binding, folder + '/namelists.rb')
+		namelist_file = folder + '/namelists.rb'
+		unless FileTest.exist?(namelist_file)
+			File.open(namelist_file, 'w'){|file| file.puts '{}'}
+		end
+		@namelists = eval(File.read(folder + '/namelists.rb'), binding, folder + '/namelists.rb') 
 
 		@variables_with_help = (@namelists.inject({}) do |hash, (namelist, namelist_hash)|
 			namelist_hash[:variables].each{|var, var_hash| hash[var] = var_hash[:help] if var_hash[:help]}
@@ -543,7 +547,7 @@ def self.parse_input_file(input_file, strict=true)
 	namelist_hash = {}
 	regex = Regexp.new("#{rcp.matching_regex.to_s}\\s*(?:\\!(?<comment>.*))?\\n")
 	#ep input_file
-	text.scan(/(?:^\s*\!\s*(?<namelist_comment>[^\n]+))?\n^\&(?<namelist>\S+).*?^\//m) do 
+	text.scan(/(?:(?:^|\A)\s*\!\s*(?<namelist_comment>[^\n]+)\n)?(?:^|\A)\&(?<namelist>\S+).*?^\//m) do 
 		namelist = $~[:namelist].to_sym
 		hash = namelist_hash[namelist] = {}
 		#p $~
@@ -553,7 +557,7 @@ def self.parse_input_file(input_file, strict=true)
 			hash[var] =  val
 		end
 	end
-# 	pp namelist_hash
+ 	pp 'inputfile', namelist_hash
 	namelist_hash
 end
 
@@ -1017,13 +1021,15 @@ end
 
 # Given the folder where the source code resides, return a single string containing all the code
 
+@fortran_namelist_source_file_match = /((\.f9[05])|(\.fpp))$/
+
 def self.get_aggregated_source_code_text(source_code_folder)
 	#p 'source_code_folder', source_code_folder
 	string = ""
 	(rcp.source_code_subfolders.map{|f| '/' + f} + [""]).map{|f| source_code_folder + f}.each do |folder|
 		Dir.chdir(folder) do 
 			Dir.entries.each do |file|
-				next unless file =~ /((\.f9[05])|(\.fpp))$/
+				next unless file =~ rcp.fortran_namelist_source_file_match
 				next if file =~ /ingen/
 				ep file
 				text = File.read(file) + "\n"
@@ -1035,12 +1041,9 @@ def self.get_aggregated_source_code_text(source_code_folder)
 	string
 end
 
-# Find unknown input variables in the source code and add them to the database of namelists
-# Delete input variables which are no longer present in the source code
-                                         
-def self.synchronise_variables(source_code_folder = ARGV[2])
-	source = get_aggregated_source_code_text(source_code_folder)
-# 	ep source.size
+# Find all input namelists and variables by scanning the source code
+#
+def self.get_namelists_and_variables_from_source_code(source)
 	nms = {}
 	all_variables_in_source = {}
 	namelist_declarations = {}
@@ -1066,48 +1069,11 @@ def self.synchronise_variables(source_code_folder = ARGV[2])
 		nms[namelist].uniq!
 		all_variables_in_source[namelist].uniq!
 	end
-	variables_to_delete = {}	
-	#pp 'namelists', rcp.namelists
-	rcp.namelists.each do |namelist, namelist_hash|
-		namelist_hash[:variables].each do |variable, var_hash|
-			code_variable = var_hash[:code_name] || variable
-			unless all_variables_in_source[namelist] and all_variables_in_source[namelist].map{|var| var.to_s.downcase.to_sym}.include? code_variable.to_s.downcase.to_sym
-				variables_to_delete[namelist] ||= []
-				variables_to_delete[namelist].push variable
-			end
-		end
-	end
-	variables_to_delete.each do |namelist, var_array|
-		#eputs namelist_declarations[namelist]
-		var_array.each do |var|
-			p "Namelist: #{namelist}   Variable: #{var}"
-		end
-	end
-	if variables_to_delete.find{|namelist, var_array| var_array.size > 0}
-		delete_old = Feedback.get_boolean("These variables are no longer present in the #{rcp.code_long} source folder. Do you wish to delete them?")
-		if delete_old
-			variables_to_delete.each do |namelist, var_array|
-				var_array.each do |var|
-					delete_variable(namelist, var)
-				end
-			end
-		end
-	end
+	return [nms, all_variables_in_source, namelist_declarations]
+end
 
-	eputs nms.keys.zip(nms.values.map{|vs| vs.size})
-	eputs "Namelists to be added to. (Press Enter)"; STDIN.gets
-	n = 0
-  ep nms
-# 	ep nms.values.sum
-	nms.values.sum.each do |var|
-		eputs var if variable_exists? var
-	end
-	eputs "Conflicting Variables. (Press Enter)";; STDIN.gets
-	nms.each do |namelist, vars|
-		ep namelist
-		ep vars
-		vars.each do |var|
-# 			next unless var == :w_antenna
+# Try to get a sample value of the 
+def self.get_sample_value(source, var)
 			ep var
 			values_text = source.scan(Regexp.new("\\W#{var}\\s*=\\s*.+")).join("\n") 
 			ep values_text
@@ -1141,6 +1107,60 @@ def self.synchronise_variables(source_code_folder = ARGV[2])
 				n +=1
 				
 			end
+			return sample_val
+end
+
+# Find unknown input variables in the source code and add them to the database of namelists
+# Delete input variables which are no longer present in the source code
+                                         
+def self.synchronise_variables(source_code_folder = ARGV[2])
+	source = get_aggregated_source_code_text(source_code_folder)
+	nms, all_variables_in_source, namelist_declarations = get_namelists_and_variables_from_source_code(source)
+# 	ep source.size
+	variables_to_delete = {}	
+	#pp 'namelists', rcp.namelists
+	rcp.namelists.each do |namelist, namelist_hash|
+		namelist_hash[:variables].each do |variable, var_hash|
+			code_variable = var_hash[:code_name] || variable
+			unless all_variables_in_source[namelist] and all_variables_in_source[namelist].map{|var| var.to_s.downcase.to_sym}.include? code_variable.to_s.downcase.to_sym
+				variables_to_delete[namelist] ||= []
+				variables_to_delete[namelist].push variable
+			end
+		end
+	end
+	variables_to_delete.each do |namelist, var_array|
+		#eputs namelist_declarations[namelist]
+		var_array.each do |var|
+			p "Namelist: #{namelist}   Variable: #{var}"
+		end
+	end
+	if variables_to_delete.find{|namelist, var_array| var_array.size > 0}
+		delete_old = Feedback.get_boolean("These variables are no longer present in the #{rcp.code_long} source folder. Do you wish to delete them?")
+		if delete_old
+			variables_to_delete.each do |namelist, var_array|
+				var_array.each do |var|
+					delete_variable(namelist, var)
+				end
+			end
+		end
+	end
+
+	raise "No namelists found" if nms.size == 0
+	eputs nms.keys.zip(nms.values.map{|vs| vs.size})
+	eputs "Namelists to be added to. (Press Enter)"; STDIN.gets unless ENV['CR_NON_INTERACTIVE']
+	n = 0
+  ep nms
+# 	ep nms.values.sum
+	nms.values.sum.each do |var|
+		eputs var if variable_exists? var
+	end
+	eputs "Conflicting Variables. (Press Enter)";; STDIN.gets unless ENV['CR_NON_INTERACTIVE']
+	nms.each do |namelist, vars|
+		ep namelist
+		ep vars
+		vars.each do |var|
+# 			next unless var == :w_antenna
+			sample_val = get_sample_value(source, var)
 			p namelist, var, sample_val
 			add_code_variable_to_namelist(namelist, var, sample_val)
 		end

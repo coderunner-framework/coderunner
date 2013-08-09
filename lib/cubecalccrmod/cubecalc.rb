@@ -1,13 +1,13 @@
 class CodeRunner
-	class Cubecalc < Run
+	class Cubecalc < Run::FortranNamelistC
 		
 # @code = 'cubecalc'
 
-@variables = [:calculate_sides, :width, :height, :depth, :area]
+@variables = [:calculate_sides, :width, :height, :depth]
 
 @naming_pars = [:width]
 
-@results = [:volume, :sides]
+@results = [:volume, :sides, :area]
 
 # e.g. number of iterations
 

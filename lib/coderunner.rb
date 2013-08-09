@@ -110,6 +110,8 @@ eprint '.' unless $has_put_startup_message_for_code_runner
 #eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/fortran_namelist.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
+load CodeRunner::SCRIPT_FOLDER + "/fortran_namelist_c.rb"
+eprint '.' unless $has_put_startup_message_for_code_runner
 
 CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s) rescue "test"
 

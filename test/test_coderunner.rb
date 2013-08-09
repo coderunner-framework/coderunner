@@ -21,6 +21,7 @@ $coderunner_command = "#{$ruby_command}  -I lib/ lib/coderunner.rb"
 	#raise "Couldn't build test program using #{string}" unless system string
 #end
 
+if true
 class TestSubmission  < Test::Unit::TestCase
 	def setup
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
@@ -349,6 +350,7 @@ EOF
 	end # if ENV['LATEX']
 		
 end # class TestCodeRunner
+end # if false/true
 
 #class TestFortranNamelist < Test::Unit::TestCase
 	##require 'gs2crmod'
@@ -359,3 +361,33 @@ end # class TestCodeRunner
 		#end
 	#end
 #end
+#
+#
+ENV['CR_NON_INTERACTIVE'] = 'true'
+class TestFortranNamelistC < Test::Unit::TestCase
+	def setup
+	end
+	def test_synchronise_variables
+		#FileUtils.rm('lib/cubecalccrmod/namelists.rb')
+		CodeRunner.setup_run_class('cubecalc', modlet: 'with_namelist')
+		assert_equal(File.read('test/cubecalc_namelist.cc').size+1, CodeRunner::Cubecalc::WithNamelist.get_aggregated_source_code_text('test').size)
+		CodeRunner::Cubecalc::WithNamelist.synchronise_variables('test')
+	end
+	def tfolder
+		'test/submit_with_namelist'
+	end
+	def test_submit
+		CodeRunner.setup_run_class('cubecalc', modlet: 'with_namelist')
+		assert_system("#$cpp_command test/cubecalc_namelist.cc -o test/cubecalc_namelist")
+		CodeRunner::Cubecalc::WithNamelist.make_new_defaults_file('cubecalctest', 'test/cubecalc.in')
+		FileUtils.mv('cubecalctest_defaults.rb', CodeRunner::Cubecalc::WithNamelist.rcp.user_defaults_location + '/cubecalctest_defaults.rb')
+		FileUtils.makedirs(tfolder)
+		CodeRunner.submit(C: 'cubecalc', m: 'with_namelist', Y: tfolder, X: Dir.pwd + '/test/cubecalc_namelist', D: 'cubecalctest')
+		CodeRunner.status(Y: tfolder)
+		runner = CodeRunner.fetch_runner(Y: tfolder)
+		assert_equal(86.35, runner.run_list[1].volume.round(2))
+		FileUtils.rm_r(tfolder)
+		FileUtils.rm(CodeRunner::Cubecalc::WithNamelist.rcp.user_defaults_location + '/cubecalctest_defaults.rb')
+		FileUtils.rm('test/cubecalc_namelist')
+	end
+end
