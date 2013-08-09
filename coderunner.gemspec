@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.12.19"
+  s.version = "0.13.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
-  s.date = "2013-08-07"
+  s.date = "2013-08-09"
   s.description = "CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes."
   s.email = "edmundhighcock@sourceforge.net"
   s.executables = ["coderunner"]
@@ -39,6 +39,7 @@ Gem::Specification.new do |s|
     "lib/coderunner/class_methods.rb",
     "lib/coderunner/feedback.rb",
     "lib/coderunner/fortran_namelist.rb",
+    "lib/coderunner/fortran_namelist_c.rb",
     "lib/coderunner/graphs_and_films.rb",
     "lib/coderunner/heuristic_run_methods.rb",
     "lib/coderunner/instance_methods.rb",
@@ -69,8 +70,13 @@ Gem::Specification.new do |s|
     "lib/cubecalccrmod/default_modlets/empty_defaults.rb",
     "lib/cubecalccrmod/defaults_files/cubecalc_defaults.rb",
     "lib/cubecalccrmod/defaults_files/sleep_defaults.rb",
+    "lib/cubecalccrmod/deleted_variables.rb",
     "lib/cubecalccrmod/empty.rb",
+    "lib/cubecalccrmod/namelists.rb",
     "lib/cubecalccrmod/sleep.rb",
+    "lib/cubecalccrmod/with_namelist.rb",
+    "test/cubecalc.in",
+    "test/cubecalc_namelist.cc",
     "test/fortran_namelist.in",
     "test/helper.rb",
     "test/old_test.rb",
