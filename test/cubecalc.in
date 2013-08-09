@@ -1,0 +1,7 @@
+&cubecalc
+  calculate_sides = 1
+  must_sleep = 1
+  edges(1) = 2.7
+  edges(2) = 3.9
+  edges(3) = 8.2
+/
