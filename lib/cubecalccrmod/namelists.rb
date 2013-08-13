@@ -10,7 +10,8 @@
        :must_pass=>
         [{:test=>"kind_of? Integer",
           :explanation=>"This variable must be an integer."}],
-       :type=>:Integer},
+       :type=>:Integer,
+       :autoscanned_defaults=>[0]},
      :must_sleep=>
       {:should_include=>"true",
        :description=>nil,
@@ -19,7 +20,8 @@
        :must_pass=>
         [{:test=>"kind_of? Integer",
           :explanation=>"This variable must be an integer."}],
-       :type=>:Integer},
+       :type=>:Integer,
+       :autoscanned_defaults=>[0]},
      :width=>
       {:should_include=>"true",
        :description=>nil,
@@ -29,7 +31,8 @@
         [{:test=>"kind_of? Numeric",
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
-       :type=>:Float},
+       :type=>:Float,
+       :autoscanned_defaults=>[1.0]},
      :depth=>
       {:should_include=>"true",
        :description=>nil,
@@ -39,7 +42,8 @@
         [{:test=>"kind_of? Numeric",
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
-       :type=>:Float},
+       :type=>:Float,
+       :autoscanned_defaults=>[1.0]},
      :height=>
       {:should_include=>"true",
        :description=>nil,
@@ -49,4 +53,5 @@
         [{:test=>"kind_of? Numeric",
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
-       :type=>:Float}}}}
+       :type=>:Float,
+       :autoscanned_defaults=>[1.0]}}}}

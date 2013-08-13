@@ -372,6 +372,12 @@ class TestFortranNamelistC < Test::Unit::TestCase
 		CodeRunner.setup_run_class('cubecalc', modlet: 'with_namelist')
 		assert_equal(File.read('test/cubecalc_namelist.cc').size+1, CodeRunner::Cubecalc::WithNamelist.get_aggregated_source_code_text('test').size)
 		CodeRunner::Cubecalc::WithNamelist.synchronise_variables('test')
+		CodeRunner::Cubecalc::WithNamelist.update_defaults_from_source_code('test')
+	end
+	def test_mediawiki_write
+		CodeRunner.setup_run_class('cubecalc', modlet: 'with_namelist')
+		CodeRunner::Cubecalc::WithNamelist.write_mediawiki_documentation
+		FileUtils.rm 'cubecalc_mediawiki.txt'
 	end
 	def tfolder
 		'test/submit_with_namelist'
