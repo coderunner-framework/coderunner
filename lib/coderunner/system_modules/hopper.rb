@@ -3,6 +3,9 @@ class CodeRunner
 	module Hopper 
 		include Moab
 	
+		def max_ppn
+			24
+		end
 	def batch_script
 		nodes, ppn = @nprocs.split(/x/)
 		eputs "Warning: Underuse of nodes (#{ppn} cores per node instead of 4)" if ppn.to_i < 4
