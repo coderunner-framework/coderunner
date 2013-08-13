@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.13.1"
+  s.version = "0.13.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -55,6 +55,7 @@ Gem::Specification.new do |s|
     "lib/coderunner/system_modules/genericlinux_testsystem.rb",
     "lib/coderunner/system_modules/hector.rb",
     "lib/coderunner/system_modules/helios.rb",
+    "lib/coderunner/system_modules/hopper.rb",
     "lib/coderunner/system_modules/iridis.rb",
     "lib/coderunner/system_modules/juropa.rb",
     "lib/coderunner/system_modules/load_leveler.rb",
