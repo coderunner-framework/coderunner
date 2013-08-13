@@ -7,7 +7,7 @@ class CodeRunner
 		nodes, ppn = @nprocs.split(/x/)
 		eputs "Warning: Underuse of nodes (#{ppn} cores per node instead of 4)" if ppn.to_i < 4
 		raise "Please specify project" unless @project
-		raise "Error: cores per node cannot excede 4" if ppn.to_i > 4
+		raise "Error: cores per node cannot excede 4" if ppn.to_i > max_ppn
 #		raise "Error: project (i.e. budget) not specified" unless @project
 		ppn ||= 4
 		if @wall_mins
