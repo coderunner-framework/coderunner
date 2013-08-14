@@ -298,7 +298,7 @@ def self.add_code_variable_to_namelist(namelist, var, value)
 	namelists = rcp.namelists
 	namelist_file = 'namelists.rb'
 # 	end
-	raise "This namelist: #{namelist} should have an enumerator and does not have one" if enum and not @namelists[namelist][:enumerator]
+	raise "This namelist: #{namelist} should have an enumerator and does not have one" if enum and not rcp.namelists[namelist][:enumerator]
   unless ENV['CR_NON_INTERACTIVE']
   	return unless Feedback.get_boolean("An unknown variable has been found in this input file: \n\n\t Namelist: #{namelist}, Name: #{code_name}, Sample Value: #{value.inspect}.\n\nDo you wish to add it to the CodeRunner module? (Recommended: answer yes as long as the variable is not a typo)")
   end
@@ -557,7 +557,7 @@ def self.parse_input_file(input_file, strict=true)
 			hash[var] =  val
 		end
 	end
- 	pp 'inputfile', namelist_hash
+ 	#pp 'inputfile', namelist_hash
 	namelist_hash
 end
 
@@ -1112,13 +1112,36 @@ def self.get_sample_value(source, var)
 			return sample_val
 end
 
+def self.synchronise_variables_from_input_file(input_file =  ARGV[2])
+	namelists = parse_input_file(input_file)
+	nms = {}
+	all_variables_in_source = {}
+	namelist_declarations = {}
+	namelists.each do |nmlist, vars|
+		all_variables_in_source[nmlist] = []
+		vars.each do |var, value|
+			all_variables_in_source[nmlist].push var
+			next if known_code_variable?(nmlist, var)
+			add_code_variable_to_namelist(nmlist, var, value)
+		end
+	end
+	delete_old_variables(all_variables_in_source)
+end
+
+
 # Find unknown input variables in the source code and add them to the database of namelists
 # Delete input variables which are no longer present in the source code
                                          
 def self.synchronise_variables(source_code_folder = ARGV[2])
 	source = get_aggregated_source_code_text(source_code_folder)
 	nms, all_variables_in_source, namelist_declarations = get_namelists_and_variables_from_source_code(source)
+	process_synchronisation(nms, all_variables_in_source, namelist_declarations)
+end
 # 	ep source.size
+
+# Delete variables unless they are still present in the source code
+
+def self.delete_old_variables(all_variables_in_source)
 	variables_to_delete = {}	
 	#pp 'namelists', rcp.namelists
 	rcp.namelists.each do |namelist, namelist_hash|
@@ -1146,6 +1169,10 @@ def self.synchronise_variables(source_code_folder = ARGV[2])
 			end
 		end
 	end
+end
+
+def self.process_synchronisation(nms, all_variables_in_source, namelist_declarations)
+	delete_old_variables(all_variables_in_source)
 
 	raise "No namelists found" if nms.size == 0
 	eputs nms.keys.zip(nms.values.map{|vs| vs.size})

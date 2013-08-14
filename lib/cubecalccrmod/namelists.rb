@@ -54,4 +54,25 @@
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
        :type=>:Float,
-       :autoscanned_defaults=>[1.0]}}}}
+       :autoscanned_defaults=>[1.0]}}},
+ :parameters=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :kt_grids_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :kt_grids_single_parameters=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :theta_grid_parameters=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :theta_grid_knobs=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :theta_grid_salpha_knobs=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :le_grids_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :dist_fn_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :fields_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :reinit_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :layouts_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
+ :collisions_knobs=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :nonlinear_terms_knobs=>
+  {:description=>"", :should_include=>"true", :variables=>{}},
+ :species_knobs=>{:description=>"", :should_include=>"true", :variables=>{}}}
