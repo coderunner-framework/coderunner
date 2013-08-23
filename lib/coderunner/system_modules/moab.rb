@@ -80,7 +80,7 @@ module Moab
 			raise "Please specify wall mins using the W flag"
 		end
 		eputs "Allotted wall time is " + sprintf("%02d:%02d:%02d", hours, mins, secs)
-		return [hours, minutes, seconds]
+		return [hours, mins, secs]
 	end
 	def ppn_checks
 		eputs "Warning: Underuse of nodes (#{ppn} cores per node instead of #{max_ppn})" if ppn.to_i < max_ppn 
@@ -88,7 +88,7 @@ module Moab
 	end
 	def batch_script
 		ppn_checks
-		hours, minutes, seconds = hours_minutes_seconds
+		hours, mins, secs = hours_minutes_seconds
 <<EOF
 	#!/bin/bash --login 
 	#PBS -N #{executable_name}.#{job_identifier}

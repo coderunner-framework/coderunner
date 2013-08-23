@@ -363,7 +363,7 @@ end # if false/true
 #end
 #
 #
-ENV['CR_NON_INTERACTIVE'] = 'true'
+#ENV['CR_NON_INTERACTIVE'] = 'true'
 class TestFortranNamelistC < Test::Unit::TestCase
 	def setup
 	end

@@ -14,7 +14,7 @@ class CodeRunner
 		
 		def batch_script
 			ppn_checks
-			hours, minutes, seconds = hours_minutes_seconds
+			hours, mins, secs = hours_minutes_seconds
 	<<EOF
 		#!/bin/bash --login 
 		#PBS -N #{executable_name}.#{job_identifier}
