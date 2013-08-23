@@ -1,4 +1,5 @@
 class CodeRunner
+	require 'coderunner/system_modules/moab.rb'
 	module Dirac
 		include Moab
 		def mpi_prog
