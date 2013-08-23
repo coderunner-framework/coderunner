@@ -2,6 +2,9 @@ class CodeRunner
 	require 'coderunner/system_modules/moab.rb'
 	module Dirac
 		include Moab
+		def max_ppn
+			16
+		end
 		def mpi_prog
 			"mpiexec -np #{nprocstot} "
 		end
