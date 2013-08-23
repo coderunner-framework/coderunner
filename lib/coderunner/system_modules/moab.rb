@@ -1,16 +1,16 @@
 class CodeRunner
 module Moab
 
-	def self.configure_environment
-		eputs "Configuring Hector"
-		conf = <<EOF
-eval `modulecmd bash swap PrgEnv-pgi PrgEnv-gnu`
-eval `modulecmd bash load fftw/3.2.2`
-export XTPE_LINK_TYPE=dynamic
-export LD_LIBRARY_PATH=/opt/xt-libsci/10.4.1/gnu/lib/44:$LD_LIBRARY_PATH
-EOF
-	Kernel.change_environment_with_shell_script(conf)
-	end
+	#def self.configure_environment
+		#eputs "Configuring Hector"
+		#conf = <<EOF
+#eval `modulecmd bash swap PrgEnv-pgi PrgEnv-gnu`
+#eval `modulecmd bash load fftw/3.2.2`
+#export XTPE_LINK_TYPE=dynamic
+#export LD_LIBRARY_PATH=/opt/xt-libsci/10.4.1/gnu/lib/44:$LD_LIBRARY_PATH
+#EOF
+	#Kernel.change_environment_with_shell_script(conf)
+	#end
 				
 	def queue_status
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
@@ -25,13 +25,17 @@ EOF
 		"aprun -n #{nprocstot} -N #{ppn}"
 	end
 
+	def nodes
+			nodes, ppn = @nprocs.split(/:/)[0].split(/x/)
+			nodes.to_i
+	end
 	def ppn
-			nodes, ppn = @nprocs.split(/x/)
-			ppn
+			nodes, ppn = @nprocs.split(/:/)[0].split(/x/)
+			ppn.to_i
 	end
 	def nprocstot
 		
-			nodes, ppn = @nprocs.split(/x/)
+			#nodes, ppn = @nprocs.split(/x/)
 			nprocstot = nodes.to_i * ppn.to_i
 	end
 	def run_command
@@ -39,8 +43,6 @@ EOF
 		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
 			return %[#{mpi_prog} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
-			nodes, ppn = @nprocs.split(/x/)
-			nprocstot = nodes.to_i * ppn.to_i
 			"#{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
 	end
@@ -61,36 +63,38 @@ EOF
 	end
 
 	def batch_script_file
-		"#{executable_name}_#{job_identifier}.sh"
+		"#{executable_name}.#{job_identifier}.sh"
 	end
 
 	def max_ppn
 		raise "Please define max_ppn for your system"
 	end
 	
-	def batch_script
-
-		nodes, ppn = @nprocs.split(/x/)
-		(eputs "Warning: number of nodes is not recommended (8, 16, 32, 64, 128, 256, 512, 1024, 2048 or 4096 recommended)"; sleep 0.2) unless [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096].include? nodes.to_i
-		(eputs "Warning: number of wall mins is not recommended (20, 60, 180, 360, 720 recomended)"; sleep 0.2) unless [20, 60, 180, 360, 720].include? @wall_mins.to_i
-		eputs "Warning: Underuse of nodes (#{ppn} cores per node instead of #{max_ppn})" if ppn.to_i < max_ppn 
-		raise "Error: cores per node cannot excede #{max_ppn}" if ppn.to_i > max_ppn
-#		raise "Error: project (i.e. budget) not specified" unless @project
-		ppn ||= max_ppn
+	def hours_minutes_seconds
 		if @wall_mins
 			ep @wall_mins
 			hours = (@wall_mins / 60).floor
 			mins = @wall_mins.to_i % 60
 			secs = ((@wall_mins - @wall_mins.to_i) * 60).to_i
+		else
+			raise "Please specify wall mins using the W flag"
 		end
 		eputs "Allotted wall time is " + sprintf("%02d:%02d:%02d", hours, mins, secs)
-		nprocstot = nodes.to_i * ppn.to_i
+		return [hours, minutes, seconds]
+	end
+	def ppn_checks
+		eputs "Warning: Underuse of nodes (#{ppn} cores per node instead of #{max_ppn})" if ppn.to_i < max_ppn 
+		raise "Error: cores per node cannot excede #{max_ppn}" if ppn.to_i > max_ppn
+	end
+	def batch_script
+		ppn_checks
+		hours, minutes, seconds = hours_minutes_seconds
 <<EOF
 	#!/bin/bash --login 
 	#PBS -N #{executable_name}.#{job_identifier}
 	#PBS -l mppwidth=#{nprocstot}
 	#PBS -l mppnppn=#{ppn}
-	#{@wall_mins ? "#PBS -l walltime=#{sprintf("%02d:%02d:%02d", hours, mins, secs)}" : ""}
+	#PBS -l walltime=#{sprintf("%02d:%02d:%02d", hours, mins, secs)}
 	#{@project ? "#PBS -A #@project" : ""}
 
 	### start of jobscript 
@@ -99,10 +103,7 @@ EOF
 #{code_run_environment}
 
 	echo "Submitting #{nodes}x#{ppn} job on #{CodeRunner::SYS} for project #@project..."
-	
-	
 EOF
-
 	end
 
 	def cancel_job
