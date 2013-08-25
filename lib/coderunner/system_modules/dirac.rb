@@ -25,6 +25,13 @@ class CodeRunner
 		#PBS -o #{executable_name}.#{job_identifier}.o$PBS_JOBID
 		#PBS -V
 		#PBS -q dirac_reg
+		#PBS -A gpgpu
+
+		module load cuda
+		module load nvidia-driver-util
+
+
+		#
 
 
 		### start of jobscript 
