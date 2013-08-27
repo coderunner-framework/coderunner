@@ -381,4 +381,15 @@
    :must_pass=>
     [{:test=>"kind_of? Integer",
       :explanation=>"This variable must be an integer."}],
-   :type=>:Integer}}
+   :type=>:Integer},
+ :dummy_for_arrays=>
+  {:should_include=>"true",
+   :description=>"",
+   :help=>"Tests whether the routines for writing arrays work",
+   :code_name=>:dummy_for_arrays,
+   :must_pass=>
+    [{:test=>"kind_of? Numeric",
+      :explanation=>
+       "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
+   :type=>:Float,
+   :autoscanned_defaults=>[]}}

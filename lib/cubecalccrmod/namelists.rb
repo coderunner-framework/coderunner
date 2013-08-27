@@ -54,6 +54,17 @@
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
        :type=>:Float,
+       :autoscanned_defaults=>[1.0]},
+     :dummy_for_arrays=>
+      {:should_include=>"true",
+       :description=>"",
+       :help=>"",
+       :code_name=>:dummy_for_arrays,
+       :must_pass=>
+        [{:test=>"kind_of? Numeric",
+          :explanation=>
+           "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
+       :type=>:Float,
        :autoscanned_defaults=>[1.0]}}},
  :parameters=>{:description=>"", :should_include=>"true", :variables=>{}},
  :kt_grids_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},

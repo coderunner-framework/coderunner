@@ -21,7 +21,7 @@ $coderunner_command = "#{$ruby_command}  -I lib/ lib/coderunner.rb"
 	#raise "Couldn't build test program using #{string}" unless system string
 #end
 
-if false
+if true
 class TestSubmission  < Test::Unit::TestCase
 	def setup
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
@@ -363,7 +363,7 @@ end # if false/true
 #end
 #
 #
-#ENV['CR_NON_INTERACTIVE'] = 'true'
+ENV['CR_NON_INTERACTIVE'] = 'true'
 class TestFortranNamelistC < Test::Unit::TestCase
 	def setup
 	end
@@ -389,7 +389,7 @@ class TestFortranNamelistC < Test::Unit::TestCase
 		CodeRunner::Cubecalc::WithNamelist.make_new_defaults_file('cubecalctest', 'test/cubecalc.in')
 		FileUtils.mv('cubecalctest_defaults.rb', CodeRunner::Cubecalc::WithNamelist.rcp.user_defaults_location + '/cubecalctest_defaults.rb')
 		FileUtils.makedirs(tfolder)
-		CodeRunner.submit(C: 'cubecalc', m: 'with_namelist', Y: tfolder, X: Dir.pwd + '/test/cubecalc_namelist', D: 'cubecalctest')
+		CodeRunner.submit(C: 'cubecalc', m: 'with_namelist', Y: tfolder, X: Dir.pwd + '/test/cubecalc_namelist', D: 'cubecalctest', p: '{dummy_for_arrays: [0.5, 0.6]}')
 		CodeRunner.status(Y: tfolder)
 		runner = CodeRunner.fetch_runner(Y: tfolder)
 		assert_equal(86.35, runner.run_list[1].volume.round(2))

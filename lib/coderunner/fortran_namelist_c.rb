@@ -4,7 +4,7 @@ class FortranNamelistC < FortranNamelist
 
 	@fortran_namelist_source_file_match = /(\.c|\.cpp|\.cu|\.cc)$/
 
-	@fortran_namelist_variable_match_regex = /^[^\/]*?fnr_get_(?<type>\w+)\(\&?[\w\s]+\s*,\s*["'](?<namelist>\w+)[\d()]*?['"]\s*,\s*['"](?<variable>\w+)['"],[^)]+\)\)\s*[\w\[\]\d]+\s*=\s*(?<default>\S+)\s*;/
+	@fortran_namelist_variable_match_regex = /^[^\/]*?fnr_get_(?<type>\w+)\(\&?[\w\s]+\s*,\s*["'](?<namelist>\w+)[\d()]*?['"]\s*,\s*['"](?<variable>\w+)[()0-9]*['"],[^)]+\)\)\s*[\w\[\]\d]+\s*=\s*(?<default>\S+)\s*;/
 		#
 	# Find all input namelists and variables by scanning the source code
 	#

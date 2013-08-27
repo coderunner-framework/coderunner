@@ -605,6 +605,19 @@ def input_file_text
 	text
 end
 
+def formatted_variable_output(value)
+	if String::FORTRAN_BOOLS.include? value # var is a Fortran Bool, not really a string
+		output = value.to_s
+	elsif value.kind_of? Complex
+		output = "(#{value.real}, #{value.imag})"
+	#elsif value.kind_of? Array
+		#output = "(/#{value.map{|v| formatted_variable_output(v)}.join(",")}/)" 
+	else
+		#p cr_var, cr_var.class
+		output = value.inspect
+	end
+	output
+end
 # Generate the input file text for the given namelist. Called by input_file_text.
 
 def namelist_text(namelist, enum = nil)
@@ -616,16 +629,17 @@ def namelist_text(namelist, enum = nil)
 	hash[:variables].each do |var, var_hash|
 		code_var = (var_hash[:code_name] or var)
 		cr_var = var+ext.to_sym 
+		value = send(cr_var)
 		if send(cr_var) and (not var_hash[:should_include] or  eval(var_hash[:should_include]))
-			if String::FORTRAN_BOOLS.include? send(cr_var) # var is a Fortran Bool, not really a string
-				output = send(cr_var).to_s
-			elsif (v = send(cr_var)).kind_of? Complex
-				output = "(#{v.real}, #{v.imag})"
+			if value.kind_of? Array
+				value.each_with_index do |v, i|
+					output = formatted_variable_output(v)
+					text << " #{code_var}(#{i+1}) = #{output} #{var_hash[:description] ? "! #{var_hash[:description]}": ""}\n"
+				end
 			else
-				#p cr_var, cr_var.class
-				output = send(cr_var).inspect
+				output = formatted_variable_output(value)
+				text << " #{code_var} = #{output} #{var_hash[:description] ? "! #{var_hash[:description]}": ""}\n"
 			end
-			text << " #{code_var} = #{output} #{var_hash[:description] ? "! #{var_hash[:description]}": ""}\n"
 		end
 	end
 	text << "/\n\n"

@@ -736,9 +736,11 @@ int main(int argc, char* argv[]){
 	}
 	
 	float* edges = new float[3];
+	float dummy_for_arrays;
 	if (fnr_get_float(&namelist_file, "cubecalc", "width", &edges[0])) edges[0] = 1.0;
 	if (fnr_get_float(&namelist_file, "cubecalc", "depth", &edges[1])) edges[1] = 1.0;
 	if (fnr_get_float(&namelist_file, "cubecalc", "height", &edges[2])) edges[2] = 1.0;
+	if (fnr_get_float(&namelist_file, "cubecalc", "dummy_for_arrays(1)", &dummy_for_arrays)) dummy_for_arrays = 1.0;
 	printf("edges[0] %f\n", edges[0]);
 	
 	
