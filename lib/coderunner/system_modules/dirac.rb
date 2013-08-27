@@ -14,7 +14,7 @@ class CodeRunner
 		
 		def batch_script
 			ppn_checks
-			hours, minutes, seconds = hours_minutes_seconds
+			hours, mins, secs = hours_minutes_seconds
 	<<EOF
 		#!/bin/bash --login 
 		#PBS -N #{executable_name}.#{job_identifier}
@@ -25,6 +25,13 @@ class CodeRunner
 		#PBS -o #{executable_name}.#{job_identifier}.o$PBS_JOBID
 		#PBS -V
 		#PBS -q dirac_reg
+		#PBS -A gpgpu
+
+		module load cuda
+		module load nvidia-driver-util
+
+
+		#
 
 
 		### start of jobscript 
