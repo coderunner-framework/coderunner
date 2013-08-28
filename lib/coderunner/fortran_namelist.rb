@@ -640,6 +640,8 @@ def namelist_text(namelist, enum = nil)
 				output = formatted_variable_output(value)
 				text << " #{code_var} = #{output} #{var_hash[:description] ? "! #{var_hash[:description]}": ""}\n"
 			end
+		elsif rcp.namelists_to_print_not_specified? and rcp.namelists_to_print_not_specified.include?(namelist) 
+			text << "  ! #{code_var} not specified --- #{var_hash[:description]}\n"
 		end
 	end
 	text << "/\n\n"

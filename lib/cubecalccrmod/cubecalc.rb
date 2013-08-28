@@ -29,6 +29,8 @@ class CodeRunner
 
 @code_module_folder = folder = File.dirname(File.expand_path(__FILE__)) # i.e. the directory this file is in
 
+@namelists_to_print_not_specified = []
+
 def process_directory_code_specific
 	if @running
 		@status = :Incomplete
