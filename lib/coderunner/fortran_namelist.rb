@@ -1177,7 +1177,11 @@ def self.delete_old_variables(all_variables_in_source)
 		end
 	end
 	if variables_to_delete.find{|namelist, var_array| var_array.size > 0}
-		delete_old = Feedback.get_boolean("These variables are no longer present in the #{rcp.code_long} source folder. Do you wish to delete them?")
+		unless ENV['CR_NON_INTERACTIVE']
+			delete_old = Feedback.get_boolean("These variables are no longer present in the #{rcp.code_long} source folder. Do you wish to delete them?")
+		else
+			delete_old = true
+		end
 		if delete_old
 			variables_to_delete.each do |namelist, var_array|
 				var_array.each do |var|

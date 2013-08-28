@@ -65,7 +65,17 @@
           :explanation=>
            "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
        :type=>:Float,
-       :autoscanned_defaults=>[1.0]}}},
+       :autoscanned_defaults=>[1.0]},
+     :dummy_complex=>
+      {:should_include=>"true",
+       :description=>nil,
+       :help=>nil,
+       :code_name=>:dummy_complex,
+       :must_pass=>
+        [{:test=>"kind_of? Complex",
+          :explanation=>"This variable must be a complex number."}],
+       :type=>:Complex,
+       :autoscanned_defaults=>[]}}},
  :parameters=>{:description=>"", :should_include=>"true", :variables=>{}},
  :kt_grids_knobs=>{:description=>"", :should_include=>"true", :variables=>{}},
  :kt_grids_single_parameters=>

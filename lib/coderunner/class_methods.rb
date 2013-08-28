@@ -358,12 +358,14 @@ EOF
         Dir.entries(tl).grep(/(^.*)\.start/).each do |file|
           file =~ (/(^.*)\.start/)
           id = $1
-          command = File.read tl + '/' + file
+					command = ""
+          command = File.read tl + '/' + file while command == ""
           pid = fork do
             processes.each do |wpid|
 							# Make sure all previously submitted jobs have finished.
               sleep refresh.to_i while %x[ps -e -o pid,ppid].split("\n").grep(Regexp.new("^\\s*#{wpid}\\s+#{ppid}")).size > 0
             end              
+						#p ["command", command]
             exec(command)
           end
 					`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`

@@ -5,4 +5,5 @@
   depth = 3.9
   height = 8.2
   dummy_for_arrays = 1.0
+  dummy_complex = (0.5, 5.0)
 /

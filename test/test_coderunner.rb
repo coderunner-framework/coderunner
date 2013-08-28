@@ -45,6 +45,8 @@ class TestSubmission  < Test::Unit::TestCase
 	def test_status_loop
 		unless ENV['SHORT_TEST']
 			ENV['CODE_RUNNER_LAUNCHER'] = '42323490qw4q4432407Q2342U3'
+			#@mutex = Mutex.new
+			#@launcher_started =
 			@thread = Thread.new{CodeRunner.start_launcher(0.5,10)}
 			sleep 0.1 while not FileTest.exist?(CodeRunner.launcher_directory)
 			CodeRunner.submit(Y: 'test/submission_results', C: 'cubecalc', m: 'sleep', X: Dir.pwd + '/test/submission_results/cubecalc', p: '{sleep_time: 2}')
@@ -389,7 +391,7 @@ class TestFortranNamelistC < Test::Unit::TestCase
 		CodeRunner::Cubecalc::WithNamelist.make_new_defaults_file('cubecalctest', 'test/cubecalc.in')
 		FileUtils.mv('cubecalctest_defaults.rb', CodeRunner::Cubecalc::WithNamelist.rcp.user_defaults_location + '/cubecalctest_defaults.rb')
 		FileUtils.makedirs(tfolder)
-		CodeRunner.submit(C: 'cubecalc', m: 'with_namelist', Y: tfolder, X: Dir.pwd + '/test/cubecalc_namelist', D: 'cubecalctest', p: '{dummy_for_arrays: [0.5, 0.6]}')
+		CodeRunner.submit(C: 'cubecalc', m: 'with_namelist', Y: tfolder, X: Dir.pwd + '/test/cubecalc_namelist', D: 'cubecalctest', p: '{dummy_for_arrays: [0.5, 0.6], dummy_complex: [Complex(0.4,0.5), Complex(1.3, 3.4)]}')
 		CodeRunner.status(Y: tfolder)
 		runner = CodeRunner.fetch_runner(Y: tfolder)
 		assert_equal(86.35, runner.run_list[1].volume.round(2))

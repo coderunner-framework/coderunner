@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-int FNR_DEBUG=0;
+int FNR_DEBUG=1;
 
 void fnr_error_message(char * message, int exit)
 {
@@ -230,7 +230,7 @@ void fnr_match_variables(char * text, char ** variable_names, char ** variable_v
 
 /* Compile regular expression */
 	/*reti = regcomp(&regex, "(^|\n)[[:space:]]*([_[:alnum:]]+)([[:blank:]]|=)[[:space:]]*=[[:space:]]*(\"([^\"]|\\\\|\\\")+\"|'([[^']|\\\\|\\')+'|[[:alnum:].+-]+)([[:blank:]\r\n]|!)", REG_EXTENDED|REG_NEWLINE);*/
-	reti = regcomp(&regex, "(^|\n|\r)[[:space:]]*([_[:alnum:]()]+)([[:blank:]]+=|=)[[:blank:]]*(\"([^\"]|\\\\|\\\")+\"|'([^']|\\\\|\\')+'|[[:alnum:].+-]+)([[:blank:]\r\n]|!)", REG_EXTENDED|REG_NEWLINE);
+	reti = regcomp(&regex, "(^|\n|\r)[[:space:]]*([_[:alnum:]()]+)([[:blank:]]+=|=)[[:blank:]]*(\"([^\"]|\\\\|\\\")+\"|'([^']|\\\\|\\')+'|[[:alnum:].+-]+|[(][[:blank:]]*[[:alnum:].+-]+[[:blank:]]*,[[:blank:]]*[[:alnum:].+-]+[)])([[:blank:]\r\n]|!)", REG_EXTENDED|REG_NEWLINE);
 	if( reti ){ fprintf(stderr, "Could not compile regex for matching namelist names and texts\n"); exit(1); }
   int i = 0;
 

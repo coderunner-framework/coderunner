@@ -392,4 +392,14 @@
       :explanation=>
        "This variable must be a floating point number (an integer is also acceptable: it will be converted into a floating point number)."}],
    :type=>:Float,
+   :autoscanned_defaults=>[]},
+ :dummy_complex=>
+  {:should_include=>"true",
+   :description=>nil,
+   :help=>nil,
+   :code_name=>:dummy_complex,
+   :must_pass=>
+    [{:test=>"kind_of? Complex",
+      :explanation=>"This variable must be a complex number."}],
+   :type=>:Complex,
    :autoscanned_defaults=>[]}}
