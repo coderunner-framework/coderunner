@@ -155,6 +155,7 @@ class CodeRunner
 	["--sort", "-O", GetoptLong::REQUIRED_ARGUMENT, %[Specify the sort order for the runs. Used for a variety of commands, for example status. It is a string of semicolon separated sort keys: for example -O height;width will sort the runs by height and then width.]],
 	["--project", "-P", GetoptLong::REQUIRED_ARGUMENT, %[Specify the project to be used for billing purposes. Only necessary on some systems.]],
 	["--parameters", "-p",  GetoptLong::REQUIRED_ARGUMENT, %[A hash of parameters for the simulation. For example -p '{height: 20, width: 2.3}'. These parameters will override the defaults in the local defaults file.]],
+	["--queue", "-Q", GetoptLong::REQUIRED_ARGUMENT, %[The name of the queue to submit to on HPC systems. Not yet implemented for all systems. Please submit a feature request if it is not working on your system.]],
 	["--no-auto-create-runner", "-q", GetoptLong::NO_ARGUMENT, %[Used for interactive mode when you don't want CodeRunner to analyse the current directory.]],
 	["--terminal-size", "-t", GetoptLong::REQUIRED_ARGUMENT, %[Specify the terminal size for situations where CodeRunner cannot work it out:  -t '[rows, cols]' (square brackets are part of the syntax)]],
 	["--test-submission", "-T", GetoptLong::NO_ARGUMENT, %[Don't actually submit the run, but exit after printing out the run parameters and generating any input files necessary.]],

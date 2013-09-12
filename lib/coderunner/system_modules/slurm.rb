@@ -71,6 +71,7 @@ module Slurm
 #SBATCH -o #{executable_name}.#{job_identifier}.o%j              # strout filename (%j is jobid)
 #SBATCH -e #{executable_name}.#{job_identifier}.e%j               # stderr filename (%j is jobid)
 #{@project ? "#SBATCH -A #@project # project to charge" : ""}
+#{@queue ? "#SBATCH -p #@queue # submission queue" : ""}
 #{@wall_mins ? "#SBATCH -t #{sprintf("%02d:%02d:%02d", hours, mins, secs)} # walltime" : ""}
 
 #{code_run_environment}

@@ -65,7 +65,7 @@ class CodeRunner
 	
 	# Parameters important to the submission of a run, which can be set by command line flags. The runner values provide the default values for the submit function, but can be overidden in that function. All the runner does with them is set them as properties of the run to be submitted. It is the run itself for which the options are relevant.
 	
-	SUBMIT_OPTIONS = [:nprocs, :wall_mins, :sys, :project, :comment, :executable]
+	SUBMIT_OPTIONS = [:nprocs, :wall_mins, :sys, :project, :queue, :comment, :executable]
 	
 	# A hash containing the defaults for most runner options. They are overridden by any options provided during initialisation. They are mostly set at the command line (in practice, the command line flags are read into the command options, which set these defaults in the function CodeRunner.process_command_options which calls CodeRunner.set_runner_defaults). However, if Code Runner is being scripted, these defaults must be set manually or else the options they specify must be provided when initialising a runner.
 	
