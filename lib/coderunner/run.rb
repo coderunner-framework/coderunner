@@ -280,12 +280,12 @@ def process_directory
 		puts 'Results file possibly corrupted for ' + @run_name
 	end	
 
+	@running = (@@current_status =~ Regexp.new(@job_no.to_s)) ? true : false 
 	if methods.include? :get_run_status
 		@status = get_run_status(@job_no, @@current_status) rescue :Unknown
 	else
 		@status ||= :Unknown
 	end
-	@running = (@@current_status =~ Regexp.new(@job_no.to_s)) ? true : false 
 	#logi '@@current_status', @@current_status, '@job_no', @job_no
 	#logi '@running', @running
 	process_directory_code_specific	

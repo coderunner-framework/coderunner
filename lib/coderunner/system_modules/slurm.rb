@@ -108,11 +108,13 @@ def get_run_status(job_no, current_status)
 	unless line
 		return :Unknown
 	else 
+		@running = true
 		if line =~ /\sPD\s/
 			return :Queueing
 		elsif line =~ /\sR\s/
 			return :Running
 		elsif line =~ /\sC\s/
+			@running = false
 			return :Unknown
 		else
 			ep 'line', line
