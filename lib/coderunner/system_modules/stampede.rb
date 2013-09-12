@@ -17,5 +17,9 @@ class CodeRunner
 				"ibrun #{executable_location}/#{executable_name} #{parameter_string}"
 			end
 		end
+		def batch_script
+			raise "Please specify the queue to submit to using the -Q (or Q:) flag" unless @queue
+			super
+		end	
 	end
 end
