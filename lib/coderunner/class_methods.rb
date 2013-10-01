@@ -835,18 +835,19 @@ COMMANDS
     ---------------------------------------------
 
 #{(COMMANDS_WITH_HELP.sort_by{|arr| arr[0]}.map do |arr| 
-	   sprintf("    %s %s(%s) \n           %s", "#{arr[0]}(#{arr[1]})",    arr[4].map{|arg| "<#{arg}>"}.join(' ').sub(/(.)$/, '\1 '), arr[5].map{|op| op.to_s}.join(','), arr[3], )
+	   sprintf(" %s %s(%s) \n\t%s", "#{arr[0]}(#{arr[1]})",    arr[4].map{|arg| "<#{arg}>"}.join(' ').sub(/(.)$/, '\1 '), arr[5].map{|op| op.to_s}.join(','), arr[3], )
     end).join("\n\n")}
 
 OPTIONS
 
 #{((COMMAND_LINE_FLAGS_WITH_HELP + LONG_COMMAND_LINE_OPTIONS).map do |arr|
-   sprintf("    %-15s %-2s\n       %s", arr[0], arr[1], arr[3])
+   sprintf("%-15s %-2s\n\t%s", arr[0], arr[1], arr[3])
   end).join("\n\n")
 		}
 
 EOF
-		puts help.gsub(/(.{63,73} |.{73})/){"#$1\\\n "}
+		 #help.gsub(/(.{63,73} |.{73})/){"#$1\n\t"}.paginate
+		 help.paginate
 		end
 
 

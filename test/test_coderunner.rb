@@ -66,6 +66,9 @@ class TestSubmission  < Test::Unit::TestCase
 	def test_command_line_submission
 	   assert_system("#{$ruby_command}  -I lib/ lib/coderunner.rb submit -C cubecalc -m sleep -D sleep -X #{Dir.pwd}/test/submission_results/cubecalc -Y test/submission_results")
 	end
+	def test_manual
+		#CodeRunner.manual
+	end
 	def teardown
 		FileUtils.rm_r('test/submission_results')
 		FileUtils.rm_r('test/cubecalc.cc')
