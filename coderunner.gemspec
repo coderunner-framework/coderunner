@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.13.19"
+  s.version = "0.13.20"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
     "lib/coderunner/remote_code_runner.rb",
     "lib/coderunner/run.rb",
     "lib/coderunner/system_modules/blue_joule.rb",
-    "lib/coderunner/system_modules/cronos.rb",
     "lib/coderunner/system_modules/dirac.rb",
     "lib/coderunner/system_modules/edison.rb",
     "lib/coderunner/system_modules/franklin.rb",
@@ -65,6 +64,7 @@ Gem::Specification.new do |s|
     "lib/coderunner/system_modules/macosx.rb",
     "lib/coderunner/system_modules/moab.rb",
     "lib/coderunner/system_modules/new_hydra.rb",
+    "lib/coderunner/system_modules/saturne.rb",
     "lib/coderunner/system_modules/slurm.rb",
     "lib/coderunner/system_modules/stampede.rb",
     "lib/coderunner/test.rb",
