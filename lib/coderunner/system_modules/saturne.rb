@@ -1,5 +1,5 @@
 class CodeRunner
-  module Cronos
+  module Saturne
       include GenericLinux
   end
 end
