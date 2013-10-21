@@ -1,12 +1,12 @@
-cass CodeRunner
+class CodeRunner
 	require SCRIPT_FOLDER + '/system_modules/moab.rb'
-	module Edison
+	 module Edison
 		include Moab
- 		def batch_script
+ 	 	def batch_script
 			#raise "Please specify project" unless @project
 			"#PBS -q regular\n" + super
 		end
-		def max_ppn
+	 	def max_ppn
 			16
 		end
 	end
