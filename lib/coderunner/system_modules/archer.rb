@@ -1,6 +1,6 @@
 class CodeRunner
 	require SCRIPT_FOLDER + '/system_modules/moab.rb'
-	module Hector
+	module Archer
 		include Moab
 
 		def batch_script
@@ -9,7 +9,7 @@ class CodeRunner
 
 		ppn_checks
 		hours, mins, secs = hours_minutes_seconds
-<<EOF
+<<EOF 
 	#!/bin/bash --login 
 	#PBS -N #{executable_name}.#{job_identifier}
 	#PBS -l select=#{nodes}
@@ -30,7 +30,7 @@ EOF
 			24
 		end
 
-	def mpi_prog
+	def  mpi_prog
 		"aprun -n #{ppn}"
 	end
 
