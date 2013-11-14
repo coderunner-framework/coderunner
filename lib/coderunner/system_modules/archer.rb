@@ -2,14 +2,36 @@ class CodeRunner
 	require SCRIPT_FOLDER + '/system_modules/moab.rb'
 	module Hector
 		include Moab
+
 		def batch_script
 			raise "Please specify project" unless @project
-			(eputs "Warning: number of nodes is not recommended (8, 16, 32, 64, 128, 256, 512, 1024, 2048 or 4096 recommended)"; sleep 0.2) unless [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096].include? nodes.to_i
 			(eputs "Warning: number of wall mins is not recommended (20, 60, 180, 360, 720 recomended)"; sleep 0.2) unless [20, 60, 180, 360, 720].include? @wall_mins.to_i
-			super
-		end
-		def max_ppn
-			32
-		end
+
+		ppn_checks
+		hours, mins, secs = hours_minutes_seconds
+<<EOF
+	#!/bin/bash --login 
+	#PBS -N #{executable_name}.#{job_identifier}
+	#PBS -l select=#{nodes}
+	#PBS -l walltime=#{sprintf("%02d:%02d:%02d", hours, mins, secs)}
+	#{@project ? "#PBS -A #@project" : ""}
+
+	### start of jobscript 
+	cd $PBS_O_WORKDIR 
+	echo "workdir: $PBS_O_WORKDIR" 
+#{code_run_environment}
+
+	echo "Submitting #{nodes}x#{ppn} job on #{CodeRunner::SYS} for project #@project..."
+EOF
 	end
+		end
+
+		def max_ppn
+			24
+		end
+
+	def mpi_prog
+		"aprun -n #{ppn}"
+	end
+
 end
