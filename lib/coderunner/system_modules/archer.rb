@@ -24,14 +24,13 @@ class CodeRunner
 	echo "Submitting #{nodes}x#{ppn} job on #{CodeRunner::SYS} for project #@project..."
 EOF
 	end
-		end
 
-		def max_ppn
-			24
-		end
+    def max_ppn
+      24
+    end
 
-	def  mpi_prog
-		"aprun -n #{ppn}"
-	end
-
+    def  mpi_prog
+    "aprun -n #{ppn}"
+    end
+  end
 end
