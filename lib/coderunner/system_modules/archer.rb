@@ -30,7 +30,7 @@ EOF
     end
 
     def  mpi_prog
-    "aprun -n #{ppn}"
+    "aprun -n #{ppn*nodes}"
     end
   end
 end
