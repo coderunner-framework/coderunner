@@ -19,7 +19,7 @@ module Slurm
 		else
 			nodes, ppn = @nprocs.split(/x/)
 			nprocstot = nodes.to_i * ppn.to_i
-			"mpirun -np #{nprocstot}  #{executable_location}/#{executable_name} #{parameter_string}"
+			"#@preamble mpirun -np #{nprocstot}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
 	end
 

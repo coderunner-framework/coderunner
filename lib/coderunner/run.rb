@@ -804,7 +804,7 @@ to your code module.
 
 		@run_info = rcp.run_info || [] # Run info can optionally be defined in the code module.
 # 		ep @run_info
-		@run_info = rcp.run_info + ([:job_no, :running, :id, :status, :sys, :is_phantom, :naming_pars, :run_name, :resubmit_id, :real_id, :phantom_runs, :parameter_hash, :output_file, :error_file] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
+		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_phantom, :naming_pars, :run_name, :resubmit_id, :real_id, :phantom_runs, :parameter_hash, :output_file, :error_file] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
