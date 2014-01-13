@@ -7,7 +7,7 @@ class CodeRunner
 			"#PBS -q regular\n" + super
 		end
 	 	def max_ppn
-			16
+			24
 		end
 	end
 end
