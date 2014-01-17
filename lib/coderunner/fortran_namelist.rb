@@ -1154,7 +1154,7 @@ end
 def self.synchronise_variables(source_code_folder = ARGV[2])
 	source = get_aggregated_source_code_text(source_code_folder)
 	nms, all_variables_in_source, namelist_declarations = get_namelists_and_variables_from_source_code(source)
-	process_synchronisation(nms, all_variables_in_source, namelist_declarations)
+	process_synchronisation(source, nms, all_variables_in_source, namelist_declarations)
 end
 # 	ep source.size
 
@@ -1194,7 +1194,7 @@ def self.delete_old_variables(all_variables_in_source)
 	end
 end
 
-def self.process_synchronisation(nms, all_variables_in_source, namelist_declarations)
+def self.process_synchronisation(source, nms, all_variables_in_source, namelist_declarations)
 	delete_old_variables(all_variables_in_source)
 
 	raise "No namelists found" if nms.size == 0
