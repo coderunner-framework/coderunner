@@ -144,21 +144,26 @@ def self.read_mediawiki_documentation(file = ARGV[2])
 	documentation.sub!(/\A.*=Namelists=/m, '')
 	documentation.sub!(/\<\/textarea.*\Z/m, '')
 	#documentation.scan(/(?<markup>=+)(?<namelist>\w+)\k<markup>(?<vars>.+?)\s+(?=\k<markup>|\|\})/m) do
+	eputs 'Scanning mediawiki markup...'
 	documentation.scan(/(?<markup>=+)(?<namelist>\w+)\k<markup>(?<vars>.+?)\s+(?=\|\})/m) do
 		p 'nmlist', namelist = $~[:namelist].downcase.to_sym
 		vars = $~[:vars]
 		p vars
 		#vars.scan(/^\*\s*(?:\[\[)?(?<var>\w+)(?:\]\])?\s*:\s+(?<help>.+?)(?=\n\*[^*]|\s*\Z)/m) do
-		vars.scan(/\|\-\s+\|'''\[\[\w+\]\]'''\s+\|\|.*?\|\|.*?\|\|\s*?
-							(?<var>\w+)
+		vars.scan(/\|\-\s+\|'''\[\[(?<altvar>\w+)\]\]'''\s+\|\|.*?\|\|.*?\|\|\s*?
+							(?<var>\w+)?
 							\s*\|\s*
 							\<\!\-\-\s*begin\s+help\s*\-\-\>
 													 (?<help>.+?)
 													 \<\!\-\-\s*end\s+help\s*\-\-\>
 													 /mx) do
-			var = $~[:var].downcase.to_sym
+		  if $~[:var]
+				var = $~[:var].downcase.to_sym
+			else
+				var = $~[:altvar].downcase.to_sym
+			end
 			help = $~[:help].sub(/\A\s*\*\s*/, '')
-			#p var, help
+			p var, help
 			sync_variable_help(namelist, var, help) if help.length > 0
 		end
 	end
@@ -1122,7 +1127,7 @@ def self.get_sample_value(source, var)
 				end
 # 				type = Feedback.get_choice("Found the following possible values for '#{var}' in namelist '#{namelist}': #{values.inspect} but cannot determine its type. Please choose its type", ['Float', 'Integer', 'String', 'Unknown' ])
 # 				ep type
-				n +=1
+				#n +=1
 				
 			end
 			return sample_val
