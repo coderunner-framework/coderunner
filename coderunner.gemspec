@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "coderunner"
-  s.version = "0.13.29"
+  s.version = "0.13.30"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Edmund Highcock"]
-  s.date = "2014-01-13"
+  s.date = "2014-01-20"
   s.description = "CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes."
   s.email = "edmundhighcock@sourceforge.net"
   s.executables = ["coderunner"]
@@ -92,7 +92,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = Gem::Requirement.new(">= 1.9.1")
   s.rubyforge_project = "coderunner"
-  s.rubygems_version = "1.8.11"
+  s.rubygems_version = "1.8.23"
   s.summary = "A framework for the automated running and analysis of simulations."
 
   if s.respond_to? :specification_version then
