@@ -991,7 +991,9 @@ def executable_name
 end
 
 def executable_location
-	File.dirname(@executable||=@runner.executable)
+	@executable||=@runner.executable
+	raise "No executable" unless @executable
+	File.dirname(@executable)
 end
 
 def update_in_queue

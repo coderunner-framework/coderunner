@@ -267,7 +267,7 @@ class CodeRunner
 			end
 		end
 		
-		raise "No default information exists for this folder. If you are running CodeRunner from the commmand line please run again with the -C <code> and -X <executable> (and -m <modlet>, if required) flag (you only need to specify these flags once in each folder). Else, please specify :code and :executable (and :modlet if required) as options in CodeRunner.new(folder, options)" unless @code and @executable
+		raise "No default information exists for this folder. If you are running CodeRunner from the commmand line please run again with the -C <code> (and -m <modlet>, if required) flag (you only need to specify these flags once in each folder). Else, please specify :code (and :modlet if required) as options in CodeRunner.new(folder, options)" unless @code 
 	end
 
 	# Here we redefine the inspect function p to raise an error if anything is written to standard out

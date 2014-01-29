@@ -755,9 +755,23 @@ def self.update_folder_defaults #updates the defaults file in the current folder
 
 end
 
+# Makes a new defaults file from the given input file, copies it to the user defaults location and then sets the folder up to use it
+def self.use_new_defaults_file(name=ARGV[-2], input_file=ARGV[-1])
+	raise "Please specify a name and an input file" if name == "use_new_defaults_file"
+	defaults_filename = "#{name}_defaults.rb"
+	central_defaults_filename = rcp.user_defaults_location + "/" + defaults_filename
+	raise "Defaults file: #{central_defaults_filename} already exists" if FileTest.exist? central_defaults_filename
+	make_new_defaults_file(name, input_file)
+	FileUtils.mv(defaults_filename, central_defaults_filename)
+	#modlet = rcp.modlet? ? rcp.modlet : nil
+	#executable = rcp.executable? ? rcp.executable : CodeRunner::DEFAULT_RUNNER_OPTIONS
+	CodeRunner.fetch_runner(D: name) #(C: rcp.code, m: rcp.modlet, D: name, CodeRunner)
+end
+
 # The name is self-explanatory: this method takes an input file and generates a CodeRunner defaults file. The first argument is the name of the new defaults file.
 
 def self.make_new_defaults_file(name=ARGV[-2], input_file=ARGV[-1])
+	raise "Please specify a name and an input file" if name == "make_new_defaults_file"
 	string = defaults_file_text_from_input_file(input_file)
 	defaults_filename = "#{name}_defaults.rb"
 	raise "This defaults name already exists" if FileTest.exist? defaults_filename
