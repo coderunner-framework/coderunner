@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Edmund Highcock"]
-  s.date = "2014-01-28"
+  s.date = "2014-01-29"
   s.description = "CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes."
   s.email = "edmundhighcock@sourceforge.net"
   s.executables = ["coderunner"]
@@ -110,7 +110,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<bundler>, ["> 1.0.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.8.4"])
+      s.add_development_dependency(%q<jeweler>, [">= 2.0.0"])
     else
       s.add_dependency(%q<graphkit>, [">= 0.2.0"])
       s.add_dependency(%q<parallelpipes>, [">= 1.0.0"])
@@ -121,7 +121,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<bundler>, ["> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
+      s.add_dependency(%q<jeweler>, [">= 2.0.0"])
     end
   else
     s.add_dependency(%q<graphkit>, [">= 0.2.0"])
@@ -133,7 +133,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<bundler>, ["> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
+    s.add_dependency(%q<jeweler>, [">= 2.0.0"])
   end
 end
 
