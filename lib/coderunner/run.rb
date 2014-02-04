@@ -400,6 +400,8 @@ def self.load(dir, runner)
 	run.runner = runner
 	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{run.runner.class} instead of CodeRunner") unless run.runner.class.to_s == "CodeRunner"
 	run.directory = dir
+	# For backwards compatibility with versions < 0.14
+	run.instance_variable_set(:@component_run_list, run.instance_variable_get(:@phantom_run_list)) if run.instance_variable_get(:@phantom_run_list) 
 	run.component_runs.each{|r| runner.add_component_run(r)} if run.component_runs
 	#@component_runs = []
 	return run
