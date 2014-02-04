@@ -24,11 +24,11 @@ class RemoteCodeRunner < CodeRunner
 # 	end	
 # 	end
 		
-	attr_accessor :combined_ids, :phantom_ids, :ids, :combined_run_list, :phantom_run_list, :run_list, :remote_cache, :libraries
+	attr_accessor :combined_ids, :component_ids, :ids, :combined_run_list, :component_run_list, :run_list, :remote_cache, :libraries
 	
 # 	include Log
 # 	puts instance_methods; exit
-# 	SHOULD_NOT_BE_CALLED = :add_phantom
+# 	SHOULD_NOT_BE_CALLED = :add_component
 	class << self
 		aliold :new
 		def new(host, folder, copts = {})
@@ -158,7 +158,7 @@ cd #@folder
 export ROWS=#{Terminal.terminal_size[0]}
 export COLS=#{Terminal.terminal_size[1]} 
 source /etc/bashrc /etc/profile > /dev/null 2> /dev/null
-source ~/.bashrc ~/.bash_login ~/.bash_profile ~/.profile > /dev/null 2> /dev/null
+#{%w{ ~/.bashrc ~/.bash_login ~/.bash_profile ~/.profile}.map{|w| "source #{w} > /dev/null 2> /dev/null "}.join(" && ")}
 if [ "$CODE_RUNNER_COMMAND" ]
 	then
 		$CODE_RUNNER_COMMAND runner_eval #{string.inspect} -Z #{@copts.inspect.inspect}	
@@ -269,8 +269,19 @@ EOF
 		instance_vars.each do |var, val|
 # 		        puts val.class
 # 		        raise 'found it ' + var.to_s if val.class == CodeRunner
-			next if [:@server, :@sys].include? var
-			instance_variable_set(var, val)
+			#next if [:@server, :@sys].include? var
+			case var
+			when :@server, :@sys
+				next
+			when	:@use_phantom
+			  # For backwards compatbility with versions < 0.14
+				instance_variable_set(:@use_component, val)
+			when :@phantom_run_list
+			  # For backwards compatbility with versions < 0.14
+				instance_variable_set(:@component_run_list, val)
+			else
+				instance_variable_set(var, val)
+			end
 		end
 # 		@run_class.executable = instance_vars[:@executable]
 

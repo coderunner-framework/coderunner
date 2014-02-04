@@ -26,11 +26,11 @@ class Run
 # 
 # @@readout_real_run_list = true
 # @@print_out_real_run_list = true
-# @@readout_phantom_run_list = false
-# @@print_out_phantom_run_list = false
+# @@readout_component_run_list = false
+# @@print_out_component_run_list = false
 
 
-# class_accessor :readout_real_run_list, :print_out_real_run_list, :readout_phantom_run_list, :print_out_phantom_run_list, 
+# class_accessor :readout_real_run_list, :print_out_real_run_list, :readout_component_run_list, :print_out_component_run_list, 
 
 class_accessor :current_status, :runner
 
@@ -293,7 +293,7 @@ def process_directory
 	raise CRFatal.new("status must be one of #{PERMITTED_STATI.inspect}") unless PERMITTED_STATI.include? @status
 	@max = {}
 	write_results
-	generate_phantom_runs
+	generate_component_runs
 	save
 	return self
 end
@@ -337,7 +337,7 @@ def results_file
 # ID:		#{@id}
 
 # Results:
-#{(rcp.results+rcp.run_info - [:phantom_runs]).inject({}){|hash, (var,type_co)| hash[var] = send(var); hash}.pretty_inspect}
+#{(rcp.results+rcp.run_info - [:component_runs]).inject({}){|hash, (var,type_co)| hash[var] = send(var); hash}.pretty_inspect}
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 EOF
@@ -360,16 +360,18 @@ end
 # Cache the run object in the file <tt>.code_runner_run_data</tt>
 
 def save
+	
 	logf(:save)
 	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{@runner.class} instead of CodeRunner") unless @runner.class.to_s == "CodeRunner"
 	runner, @runner = @runner, nil
 	@system_triers, old_triers = nil, @system_triers
-	@phantom_runs.each{|run| run.runner = nil} if @phantom_runs
-	#@phantom_runs.each{|run| run.runner = nil} if @phantom_runs
+	@component_runs.each{|run| run.runner = nil} if @component_runs
+	#@component_runs.each{|run| run.runner = nil} if @component_runs
 # 	logi(self)
+	#pp self
 	Dir.chdir(@directory){File.open(".code_runner_run_data", 'w'){|file| file.puts Marshal.dump(self)}}
 	@runner = runner
-	@phantom_runs.each{|run| run.runner = runner} if @phantom_runs
+	@component_runs.each{|run| run.runner = runner} if @component_runs
 	@system_triers = old_triers 
 end
 
@@ -398,8 +400,8 @@ def self.load(dir, runner)
 	run.runner = runner
 	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{run.runner.class} instead of CodeRunner") unless run.runner.class.to_s == "CodeRunner"
 	run.directory = dir
-	run.phantom_runs.each{|r| runner.add_phantom_run(r)} if run.phantom_runs
-	#@phantom_runs = []
+	run.component_runs.each{|r| runner.add_component_run(r)} if run.component_runs
+	#@component_runs = []
 	return run
 end
 
@@ -689,7 +691,7 @@ def info_file
 # #{@job_no ? "Job_No:		#{@job_no}" : ""}
 
 # Parameters:
-#{(rcp.variables + rcp.run_info + [:version, :code, :modlet, :sys] - [:phantom_runs]).inject({}){|hash, var| hash[var] = send(var) unless (!send(var) and send(var) ==  nil); hash}.pretty_inspect}
+#{(rcp.variables + rcp.run_info + [:version, :code, :modlet, :sys] - [:component_runs]).inject({}){|hash, var| hash[var] = send(var) unless (!send(var) and send(var) ==  nil); hash}.pretty_inspect}
 
 
 # Actual Command:
@@ -804,7 +806,7 @@ to your code module.
 
 		@run_info = rcp.run_info || [] # Run info can optionally be defined in the code module.
 # 		ep @run_info
-		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_phantom, :naming_pars, :run_name, :resubmit_id, :real_id, :phantom_runs, :parameter_hash, :output_file, :error_file] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
+		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :output_file, :error_file] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
@@ -841,13 +843,13 @@ def dup
 	return self.class.new(@runner).learn_from(self)
 end
 
-def create_phantom
-	@phantom_runs ||= []
+def create_component
+	@component_runs ||= []
 	new_run = dup
-	new_run.is_phantom = true
+	new_run.is_component = true
 	new_run.real_id = @id
-	@runner.add_phantom_run(new_run)
-	@phantom_runs.push new_run
+	@runner.add_component_run(new_run)
+	@component_runs.push new_run
 	new_run
 end
 
@@ -890,7 +892,7 @@ def recheck
 	end
 end
 
-def generate_phantom_runs
+def generate_component_runs
 end
 	
 def generate_combined_ids(type)

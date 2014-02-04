@@ -481,7 +481,7 @@ EOF
 		runner.filtered_ids.each do |id|
 			run = runner.combined_run_list[id]
 			
-			if no_save or run.is_phantom
+			if no_save or run.is_component
 				if copts[:M]
 					fork{run.instance_eval(string)}
 				else

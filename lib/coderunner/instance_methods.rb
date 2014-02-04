@@ -69,7 +69,7 @@ class CodeRunner
 	
 	# A hash containing the defaults for most runner options. They are overridden by any options provided during initialisation. They are mostly set at the command line (in practice, the command line flags are read into the command options, which set these defaults in the function CodeRunner.process_command_options which calls CodeRunner.set_runner_defaults). However, if Code Runner is being scripted, these defaults must be set manually or else the options they specify must be provided when initialising a runner.
 	
-	DEFAULT_RUNNER_OPTIONS = ([:conditions, :sort, :debug, :script_folder, :recalc_all, :multiple_processes, :heuristic_analysis, :test_submission, :reprocess_all, :use_large_cache, :use_large_cache_but_recheck_incomplete, :use_phantom, :no_run, :server, :version, :parameters] + SUBMIT_OPTIONS + FOLDER_DEFAULTS).inject({}){|hash, option| hash[option] = nil; hash}
+	DEFAULT_RUNNER_OPTIONS = ([:conditions, :sort, :debug, :script_folder, :recalc_all, :multiple_processes, :heuristic_analysis, :test_submission, :reprocess_all, :use_large_cache, :use_large_cache_but_recheck_incomplete, :use_component, :no_run, :server, :version, :parameters] + SUBMIT_OPTIONS + FOLDER_DEFAULTS).inject({}){|hash, option| hash[option] = nil; hash}
 	
 	# Options that apply across the CodeRunner class 
 	
@@ -100,7 +100,7 @@ class CodeRunner
 # 		end
 # 	end
 
-	DEFAULT_RUNNER_OPTIONS[:use_phantom] = :real
+	DEFAULT_RUNNER_OPTIONS[:use_component] = :real
 	DEFAULT_RUNNER_OPTIONS[:script_folder] = SCRIPT_FOLDER  #File.dirname(File.expand_path(__FILE__)) 
 
 	# These are properties of the run class that must be defined. For more details see CodeRunner::Run.
@@ -153,7 +153,7 @@ class CodeRunner
 	
 	
 
-	attr_accessor :run_list, :phantom_run_list, :combined_run_list, :ids, :phantom_ids, :combined_ids, :current_status, :run_class, :requests, :current_request, :root_folder, :print_out_size, :cache, :modlet, :code, :executable, :defaults_file
+	attr_accessor :run_list, :component_run_list, :combined_run_list, :ids, :component_ids, :combined_ids, :current_status, :run_class, :requests, :current_request, :root_folder, :print_out_size, :cache, :modlet, :code, :executable, :defaults_file
 	attr_reader :max_id, :maxes, :cmaxes, :mins, :cmins, :start_id
 
 	# Instantiate a new runner. The root folder contains a set of simulations, each of which has a unique ID. There is a one-to-one correspondence between a runner and a root folder: no two runners should ever be given the same root folder in the same script (there are safeguards to prevent this causing much trouble, but it should still be avoided on philosophical grounds), and no runner should be given a folder which has more than one set of simulations within it (as these simulations will contain duplicate IDs).
@@ -190,8 +190,8 @@ class CodeRunner
 		@run_list = {}; @ids = []
 		set_max_id(0)
 
-		@phantom_run_list = {}; @phantom_ids = []
-		@phantom_id = -1
+		@component_run_list = {}; @component_ids = []
+		@component_id = -1
 
 		@combined_run_list = {}; @combined_ids = []
 	
@@ -615,9 +615,9 @@ EOF
 	#
 	# Then the runs will be sorted according to first height, then (descending) weight, then colour. What actually happens is that the variable <tt>@ids</tt> is sorted, rather than <tt>@run_list</tt>. For this to work, height, weight and colour must be either variables or results or instance methods of the run class.
 	#
-	# Type can be either '' or 'phantom', in which case the variable sorted will be either <tt>@ids</tt> or <tt>@phantom_ids</tt> respectively.
+	# Type can be either '' or 'component', in which case the variable sorted will be either <tt>@ids</tt> or <tt>@component_ids</tt> respectively.
 
-	def sort_runs(type = @use_phantom.to_s.sub(/real/, ''))
+	def sort_runs(type = @use_component.to_s.sub(/real/, ''))
 		logf(:sort_runs)
 		log(:type, type)
 		#ep 'sort', @sort
@@ -714,11 +714,11 @@ EOF
 	
 # 	def filtered_run_list
 # 		logf :filtered_run_list
-# 		unless @use_phantom == :phantom
+# 		unless @use_component == :component
 # 			return @run_list.find_all{|id, run| filter(run)}
 # 		else
-# 			log 'using phantom'
-# 			return @phantom_run_list.find_all{|id, run| filter(run)}
+# 			log 'using component'
+# 			return @component_run_list.find_all{|id, run| filter(run)}
 # 		end
 # 	end
 	
@@ -742,7 +742,7 @@ EOF
 		@run = run
 # 		to_instance_variables(directory)
 		return true unless conditions 
-#		p conditions, @run.id, @run.is_phantom
+#		p conditions, @run.id, @run.is_component
 		conditions = conditions.dup	
 		raise CRFatal.new("
 -----------------------------
@@ -817,8 +817,8 @@ Conditions contain a single = sign: #{conditions}
 
 		@run_list={}
 		@ids=[]
-		@phantom_run_list = {}
-		@phantom_ids = []
+		@component_run_list = {}
+		@component_ids = []
 		@run_store =[]
 # 		@multiple_processes_directories = []
 		set_max_id 0
@@ -877,9 +877,9 @@ Conditions contain a single = sign: #{conditions}
 # 							raise CRFatal.new("Directory #{run.directory} not found")
 # 						end
 # 					end
-# 					eputs @use_phantom
-					#run.generate_phantom_runs #if @use_phantom.to_s =~ /phantom/i
-					run.phantom_runs.each{|r| add_phantom_run(r)} if run.phantom_runs
+# 					eputs @use_component
+					#run.generate_component_runs #if @use_component.to_s =~ /component/i
+					run.component_runs.each{|r| add_component_run(r)} if run.component_runs
 				end
 				eputs if @write_status_dots
 				save_large_cache if fix_directories
@@ -899,8 +899,8 @@ Conditions contain a single = sign: #{conditions}
 		log("not using large cache")
 		@run_list={}
 		@ids=[]
-		@phantom_run_list = {}
-		@phantom_ids = []
+		@component_run_list = {}
+		@component_ids = []
 		@run_store =[]
 # 		@multiple_processes_directories = []
 		set_max_id 0
@@ -921,7 +921,7 @@ Conditions contain a single = sign: #{conditions}
 		@recalc_all = false
 # 		pp @run_list
 		save_large_cache
-		#@run_list.each{|id, run| run.generate_phantom_runs}
+		#@run_list.each{|id, run| run.generate_component_runs}
 		#trap(2, old_trap2)
 		#Process.kill(2, 0) if interrupted
 		return self
@@ -938,7 +938,7 @@ Conditions contain a single = sign: #{conditions}
 		instance_vars[:@run_list].values.each{|run| run.runner=nil}
 		#Kernel.puts server_dump(instance_vars)
 		instance_vars[:@cache]={}
-		instance_vars[:@phantom_run_list].values.each{|run| run.runner = nil}
+		instance_vars[:@component_run_list].values.each{|run| run.runner = nil}
 		#ep 'marsh2'
 		#eputs instance_vars.pretty_inspect
 		#instance_vars.each do |var, val|
@@ -958,9 +958,9 @@ Conditions contain a single = sign: #{conditions}
 # 		pp @run_list.values.map{|run| run.instance_variables.map{|var| [var, run.instance_variable_get(var).class]}}
 		
 		generate_combined_ids
-		@combined_run_list.each{|id, run| run.runner = nil; run.phantom_runs.each{|pr| pr.runner=nil} if run.phantom_runs}
+		@combined_run_list.each{|id, run| run.runner = nil; run.component_runs.each{|pr| pr.runner=nil} if run.component_runs}
 		File.open(@root_folder + "/.CODE_RUNNER_TEMP_RUN_LIST_CACHE", 'w'){|file| file.puts Marshal.dump @run_list}
-		@combined_run_list.each{|id, run| run.runner = self; run.phantom_runs.each{|pr| pr.runner=self} if run.phantom_runs}
+		@combined_run_list.each{|id, run| run.runner = self; run.component_runs.each{|pr| pr.runner=self} if run.component_runs}
 	end
 
 	# Self-explanatory! Call CodeRunner::Run#process_directory for every run whose status is not either :Complete or :Failed. (Note, for historical reasons traverse_directories is called rather than CodeRunner::Run#process_directory directly but the effect is nearly the same).
@@ -1029,7 +1029,7 @@ Conditions contain a single = sign: #{conditions}
 	def respond_to_requests
 		logf(:respond_to_requests)
 		logi(:@requests, @requests)
-		log('@phantom_run_list.class', @phantom_run_list.class)
+		log('@component_run_list.class', @component_run_list.class)
 		while @requests[0]
 			old_requests = @requests.uniq
 			@requests = []
@@ -1038,8 +1038,8 @@ Conditions contain a single = sign: #{conditions}
 				if request == :traverse_directories # a special case
 					@ids = []
 					@run_list = {}
-					@phantom_run_list = {}
-					@phantom_ids = []
+					@component_run_list = {}
+					@component_ids = []
 
 					Dir.chdir(@root_folder){traverse_directories}
 				else
@@ -1446,7 +1446,7 @@ EOF
 	def similar_runs(exclude_variables=[], run=@run) #all runs for which variables are the same as 'run', with the exception of exclude_variables
 		logf(:similar_runs)
 		raise CRFatal.new("generate_combined_ids must be called before this function is called") unless (@combined_run_list.size > 0 and @combined_ids.size > 0) or @ids.size ==0
-		command = (run.class.rcp.variables+run.class.rcp.run_info-exclude_variables  - [:output_file, :error_file, :runner, :phantom_runs]).inject("@combined_ids.find_all{|id| @combined_run_list[id].class == run.class}"){ |s,v|	
+		command = (run.class.rcp.variables+run.class.rcp.run_info-exclude_variables  - [:output_file, :error_file, :runner, :component_runs]).inject("@combined_ids.find_all{|id| @combined_run_list[id].class == run.class}"){ |s,v|	
 			s + %<.find_all{|id| @combined_run_list[id].#{v}.class == #{run.send(v).inspect}.class and @combined_run_list[id].#{v} == #{run.send(v).inspect}}>} #the second send call retrieves the type conversion
 
 #  		log command
@@ -1528,8 +1528,8 @@ EOF
 	def dup
 		logf(:dup)
 		new_one = self.class.new(@code, @root_folder, modlet: @modlet, version: @version)
-		new_one.ids = @ids.dup; new_one.phantom_ids = @phantom_ids.dup;
-		new_one.run_list = @run_list.dup; new_one.phantom_run_list = @phantom_run_list.dup
+		new_one.ids = @ids.dup; new_one.component_ids = @component_ids.dup;
+		new_one.run_list = @run_list.dup; new_one.component_run_list = @component_run_list.dup
 		new_one.run_class = @run_class
 		return new_one
 	end
@@ -1600,12 +1600,12 @@ EOF
 # 		@recalc_all = old_recalc
 # 	end
 
-	def add_phantom_run(run)
-		@phantom_run_list[@phantom_id] = run
-		@phantom_ids.push @phantom_id
+	def add_component_run(run)
+		@component_run_list[@component_id] = run
+		@component_ids.push @component_id
 		#run.real_id = run.id
-		run.id = @phantom_id
-		@phantom_id += -1
+		run.id = @component_id
+		@component_id += -1
 	end
 
 	def generate_combined_ids(kind= nil)
@@ -1613,28 +1613,28 @@ EOF
 # 		case purpose
 # 		when :print_out
 # 			@combined_ids = []
-# 			@combined_ids += @phantom_ids if @run_class.print_out_phantom_run_list
+# 			@combined_ids += @component_ids if @run_class.print_out_component_run_list
 # 			@combined_ids += @ids if @run_class.print_out_real_run_list
 # 		when :readout
 # 			@combined_ids = []
-# 			@combined_ids += @phantom_ids if @run_class.readout_phantom_run_list
+# 			@combined_ids += @component_ids if @run_class.readout_component_run_list
 # 			@combined_ids += @ids if @run_class.readout_real_run_list
 # 		when :submitting
 # 			@combined_ids = @ids
-		kind ||= @use_phantom
+		kind ||= @use_component
 		case kind
 		when :real
 			@combined_ids = @ids
-		when :phantom
-			@combined_ids = @phantom_ids
+		when :component
+			@combined_ids = @component_ids
 		when :both
-			@combined_ids = @ids + @phantom_ids
+			@combined_ids = @ids + @component_ids
 		else
-			raise CRFatal.new("Bad use phantom variable: #{kind.inspect}")
+			raise CRFatal.new("Bad use component variable: #{kind.inspect}")
 		end
-		log('@phantom_run_list.class', @phantom_run_list.class)
-		#puts 'crlist', @phantom_run_list.keys, @run_list.keys
-		@combined_run_list = @phantom_run_list + @run_list
+		log('@component_run_list.class', @component_run_list.class)
+		#puts 'crlist', @component_run_list.keys, @run_list.keys
+		@combined_run_list = @component_run_list + @run_list
 		log(:kind, kind)
 # 		log(:combined_ids, @combined_ids)
 		sort_runs(:combined)

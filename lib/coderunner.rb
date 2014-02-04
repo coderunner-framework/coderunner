@@ -143,7 +143,7 @@ class CodeRunner
 	["--run-graph", "-g", GetoptLong::REQUIRED_ARGUMENT, %[Specify a run_graphkit to plot. A run_graphkit is one that is plotted for an individual run. The run graphkits available depend on the code module. The syntax is graphkit shorthand:\n       -g '<graph_name>[ ; <graph_options> [ ; <conditions> [ ; <sort> ] ] ]'\n where conditions (i.e. filter) and sort will override the -f and -O flags respectively. The -g flag can be specified multiple times, which will plot multiple graphs on the same page.]],
 	["--graph", "-G", GetoptLong::REQUIRED_ARGUMENT, %[Specify a graphkit to plot. A graphkit combines data for every filtered run. The syntax is graphkit shorthand:\n        -G '<axis1>[ : <axis2> [ : <axis3 [ : <axis4> ] ] ] [ ; <graph_options> [ ; <conditions> [ ; <sort> ] ] ]'\n        where conditions (i.e. filter) and sort will override the -f and -O flags respectively. <axis1> etc are strings which can be evaluated by the runs. The -G flag can be specified multiple times, which will plot multiple graphs on the same page. For example\n                   -G 'width : 2*height ; {} ; depth == 2 ; width'\n          will plot twice the height against the width for every run where the depth is equal to 2, and will order the data points by width.]],
 	["--heuristic-analysis", "-H", GetoptLong::NO_ARGUMENT, %[Should be specified whenever CodeRunner is being used to analyse simulations which did not originally submit (and which will therefore not have the usual CodeRunner meta data stored with them).] ],
-	["--use-phantom", "-h", GetoptLong::OPTIONAL_ARGUMENT, %[Specify whether to use real or phantom runs]],
+	["--use-component", "-h", GetoptLong::OPTIONAL_ARGUMENT, %[Specify whether to use real or component runs]],
 	["--just", "-j",  GetoptLong::REQUIRED_ARGUMENT, %[Specify individual run ids. For example -j 45,63,128 is shorthand for -f 'id==45 or id==63 or id==128']],
 	["--job_chain", "-J",  GetoptLong::NO_ARGUMENT, %[Chain multiple simulations into one batch/submission job. Most useful for HPC systems.]],
 	["--skip-similar-jobs-off", "-k", GetoptLong::NO_ARGUMENT, %[Normally CodeRunner will not submit a run whose input parameters identical to a previous run (to avoid wasting computer time). Specifying the flag will override that behaviour and force submission of an identical run.]],
@@ -294,8 +294,8 @@ EOF
 			copts[:u]=true
 		when "--wall-mins"
 			copts[:W] = arg.to_i
-		when "--use-phantom"
-			copts[:h] = (arg and arg =~ /\S/) ? arg.to_sym : :phantom 
+		when "--use-component"
+			copts[:h] = (arg and arg =~ /\S/) ? arg.to_sym : :component 
 		when "--terminal-size"
 			array = eval arg
 			ENV['ROWS'], ENV['COLS'] = array[0].to_s, array[1].to_s 
