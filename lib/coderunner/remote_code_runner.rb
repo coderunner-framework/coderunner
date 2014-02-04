@@ -224,12 +224,6 @@ EOF
 			eputs data[0..100] if err.class == TypeError
 			raise err unless err.message =~ /undefined class/
 			self.class.repair_marshal_run_class_not_found_error(err)
-			#NB this means that all code_names have to contain only lowercase letters:
-# 			code, modlet = err.message.scan(/CodeRunner\:\:([A-Z][a-z0-9]+)([A-Z][\w]+)?Run/)[0]
-# 			ep code, modlet
-# 			modlet.gsub!(/\B([A-Z])/, '_\1') if modlet 
-# 			modlet = modlet.downcase if modlet
-# 			@run_class = CodeRunner.setup_run_class(code.downcase, modlet: modlet)
 			retry
 		end
 
@@ -241,35 +235,9 @@ EOF
 
 	end
 	def update
-# 		ep '@server1', @server
-
 		instance_vars = retrieve_method(:marshalled_variables) #.sub(/\A\s*/, '')
-		#begin
-			#instance_vars = Marshal.load(data)
-		#rescue TypeError, ArgumentError => err
-			#eputs err
-			#eputs data [0..100] if err.class == TypeError
-			#raise err unless err.message =~ /undefined class/
-			#self.class.repair_marshal_run_class_not_found_error(err)
-			##NB this means that all code_names have to contain only lowercase letters:
-## 			code, modlet = err.message.scan(/CodeRunner\:\:([A-Z][a-z0-9]+)([A-Z][\w]+)?Run/)[0]
-## 			ep code, modlet
-## 			modlet.gsub!(/\B([A-Z])/, '_\1') if modlet 
-## 			modlet = modlet.downcase if modlet
-## 			@run_class = CodeRunner.setup_run_class(code.downcase, modlet: modlet)
-			#retry
-		#end
-# 		ep @run_class.executable
 		instance_vars[:@run_list].values.each{|run| run.runner=self}
-# 		class_vars.each do |var, val|
-# # 		  		        raise 'found it ' + var.to_s if val.class == CodeRunner
-# 			next if [:@@global_binding, :@@server, :SCRIPT_FOLDER, :@@sys].include? var
-# 			self.class.class_variable_set(var, val)
-# 		end
 		instance_vars.each do |var, val|
-# 		        puts val.class
-# 		        raise 'found it ' + var.to_s if val.class == CodeRunner
-			#next if [:@server, :@sys].include? var
 			case var
 			when :@server, :@sys
 				next
@@ -283,12 +251,7 @@ EOF
 				instance_variable_set(var, val)
 			end
 		end
-# 		@run_class.executable = instance_vars[:@executable]
-
-		# 		ep @run_class.executable
-# 		ep '@sort', @sort
 		sort_runs
-# 		ep '@server', @server
 		return self
 	end
 end
