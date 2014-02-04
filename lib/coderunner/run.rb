@@ -402,7 +402,7 @@ def self.load(dir, runner)
 	run.directory = dir
 	# For backwards compatibility with versions < 0.14
 	run.instance_variable_set(:@component_run_list, run.instance_variable_get(:@phantom_run_list)) if run.instance_variable_get(:@phantom_run_list) 
-	run.component_runs.each{|r| runner.add_component_run(r)} if run.component_runs
+	run.component_runs.each{|r| runner.add_component_run(r); r.runner = runner} if run.component_runs
 	#@component_runs = []
 	return run
 end
