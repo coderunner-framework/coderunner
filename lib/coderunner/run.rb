@@ -1042,16 +1042,26 @@ end
 		""
 	end
 
+# Prints a warning message, useful for pre-submit checks.
 def warning(message)
-	eputs "Warning: " + message; sleep 0.3
+	eputs "Warning: " + message; sleep 0.1
 end
 
 class SubmitError < StandardError
 end
 
+# Prints an error message and raises a SubmitError, useful for pre-submit checks.
 def error(message)
 	raise("Error: " + message)
 end
+
+# Returns the number of nodes times the number of cores, assuming the processor 
+# layout is specified as either cores, nodesxcores, or nodesxcoresxthreads
+def actual_number_of_processors
+	  raise "Please specify the processor layout using the -n or (n:) option" unless @nprocs
+		  @nprocs.split('x').slice(0..1).map{|n| n.to_i}.inject(1){|ntot, n| ntot*n}
+end
+
 end
 
 end
