@@ -665,6 +665,10 @@ def generate_run_name
 		@run_name = %[v#@version] + @naming_pars.inject("") do |str, par|
 			str+="_#{par}_#{send(par).to_s[0...8]}"
 		end
+    #FVW: special case for preamble which is not an input paramter and for which 'send' does not work
+    if @naming_pars.include?:preamble
+      @run_name += "_preamble_#{@runner.run_list[@restart_id].preamble.to_s[0...8]}"
+    end
 		@run_name = @run_name.gsub(/\s+/, "_").gsub(/\//, '') + "_id_#@id"
 end
 

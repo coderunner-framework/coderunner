@@ -849,7 +849,7 @@ def make_info_file(file=ARGV[-1], strict=true)
 			set(var, value)
 		end
 		set(:run_name, file.sub(/\.in/, ''))
-# 		p 'hello'
+#		p 'hello'
 		File.open(filename, 'w'){|file| file.puts info_file}	
 		File.open(".code_runner_version.txt", 'w'){|file| file.puts CODE_RUNNER_VERSION}
 	end
