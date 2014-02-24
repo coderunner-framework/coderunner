@@ -747,7 +747,7 @@ EOF
 			return Merged.new(*runners)
 		end
 		process_command_options(copts)
- 		ep copts
+ 		#ep copts
 		@runners ||= {}
 		runner = nil
 		if copts[:Y] and copts[:Y] =~ /:/ 
