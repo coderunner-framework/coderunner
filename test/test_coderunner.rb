@@ -205,6 +205,7 @@ class TestCodeRunner < Test::Unit::TestCase
 	
 	def test_status_with_component
 		CodeRunner.status(Y: tfolder, h: :c)
+		CodeRunner.show_values_of('area', Y: tfolder, h: :c)
 	end
 	def test_alter_ids
 		FileUtils.rm_r tfolder2 if FileTest.exist?(tfolder2)

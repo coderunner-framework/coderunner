@@ -11,7 +11,7 @@ class CodeRunner
 
 # e.g. number of iterations
 
-@run_info = [:phantom_run_description]
+@run_info = [:component_run_description]
 
 # @@executable_name = 'cubecalc'
 
@@ -49,11 +49,11 @@ def process_directory_code_specific
 end
 
 def print_out_line
-	if @is_phantom
-		if @phantom_run_description == :area
+	if @is_component
+		if @component_run_description == :area
 			return sprintf("%d:%d %30s %10s %f %s", @id, @job_no, @run_name, @status, (@volume or 0.0), @area.to_s)
 		else
-			raise 'there is only one phantom_run_description at the moment'
+			raise 'there is only one component_run_description at the moment'
 		end
 	else
 		return sprintf("%d:%d %30s %10s %f %s", @id, @job_no, @run_name, @status, (@volume or 0.0), @sides.to_s)
@@ -80,13 +80,13 @@ end
 #end
 	
 
-def generate_phantom_runs
+def generate_component_runs
 	return unless @sides
 	@sides.each do |area|
-# 		puts 'creating phantom: ' + @run_name
-		phantom = create_phantom
-		phantom.area = area
-		phantom.phantom_run_description = :area
+# 		puts 'creating component: ' + @run_name
+		component = create_component
+		component.area = area
+		component.component_run_description = :area
 	end
 end
 

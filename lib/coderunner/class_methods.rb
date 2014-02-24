@@ -609,7 +609,7 @@ EOF
 	end
 	def self.show_values_of(expression, copts={})
 		runner = fetch_runner(copts)
-		p runner.filtered_ids.map{|id| runner.run_list[id].instance_eval(expression)}.uniq.sort
+		p runner.filtered_ids.map{|id| runner.combined_run_list[id].instance_eval(expression)}.uniq.sort
 	end
 	def self.status_with_comments(copts={})
 		copts[:with_comments] = true
