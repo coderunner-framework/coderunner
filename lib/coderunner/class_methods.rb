@@ -84,7 +84,7 @@ class CodeRunner
 	end
 	def self.differences_between(copts = {})
 		runner = fetch_runner(copts)
-		runs = runner.filtered_ids.map{|id| runner.run_list[id]}
+		runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
 		rcp_fetcher = (runs[0] || runner.run_class).rcp
 		vars = rcp_fetcher.variables.dup + rcp_fetcher.run_info.dup
 		vars.delete_if{|var| runs.map{|r| r.send(var)}.uniq.size == 1}
@@ -705,6 +705,12 @@ EOF
 # 		end
 		copts[:p] = [copts[:p]].compact unless copts[:p].class == Array
 		#for i in 0...copts[:p].size
+		case copts[:h]
+		when :c
+			copts[:h] = :component
+		when :r
+			copts[:h] = :real
+		end
 
 		copts[:Y] ||= DEFAULT_COMMAND_OPTIONS[:Y] if DEFAULT_COMMAND_OPTIONS[:Y]
 		if copts[:Y] and copts[:Y] =~ /:/ 
@@ -722,6 +728,7 @@ EOF
 		copts.keys.map{|k| k.to_s}.grep(/_options$/).map{|k| k.to_sym}.each do |k|
 	 		CODE_OPTIONS[k.to_s.sub('_options','').to_sym] = copts[k]
 		end	
+
 			
 	end
 
@@ -740,7 +747,7 @@ EOF
 			return Merged.new(*runners)
 		end
 		process_command_options(copts)
-# 		ep copts
+ 		ep copts
 		@runners ||= {}
 		runner = nil
 		if copts[:Y] and copts[:Y] =~ /:/ 

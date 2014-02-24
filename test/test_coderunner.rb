@@ -203,6 +203,9 @@ class TestCodeRunner < Test::Unit::TestCase
 		FileUtils.rm_r tfolder2
 	end
 	
+	def test_status_with_component
+		CodeRunner.status(Y: tfolder, h: :c)
+	end
 	def test_alter_ids
 		FileUtils.rm_r tfolder2 if FileTest.exist?(tfolder2)
 		#FileUtils.mkdir(tfolder2)
