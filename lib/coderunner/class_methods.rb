@@ -85,7 +85,8 @@ class CodeRunner
 	def self.differences_between(copts = {})
 		runner = fetch_runner(copts)
 		runs = runner.filtered_ids.map{|id| runner.run_list[id]}
-		vars = runner.run_class.rcp.variables.dup + runner.run_class.rcp.run_info.dup
+		rcp_fetcher = (runs[0] || runner.run_class).rcp
+		vars = rcp_fetcher.variables.dup + rcp_fetcher.run_info.dup
 		vars.delete_if{|var| runs.map{|r| r.send(var)}.uniq.size == 1}
 		vars.delete :id
 		vars.delete :run_name
