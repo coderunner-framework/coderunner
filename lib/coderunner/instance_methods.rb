@@ -372,7 +372,6 @@ class CodeRunner
 		modlet = options[:modlet]
 		version = options[:version]
 # 		log('modlet in setup_run_class', modlet)
-		eputs "Loading modules for #{code}, #{modlet.inspect}..."
 		
 # 		modlet = modlet.sub(/\.rb$/, '') if modlet
 		raise CRFatal.new("Code must contain only lowercase letters, digits, and underscore, and must begin with a letter or underscore; it is '#{code}'") unless code =~ /\A[a-z_][a-z_\d]*\Z/ 
@@ -384,6 +383,7 @@ class CodeRunner
 
 		return recursive_const_get(run_class_name) if SETUP_RUN_CLASSES.include?(run_class_name) #constants.include? (run_class_name).to_sym unless options[:force] #and const_get(run_class_name).rcp.code?
 		#return const_get(run_class_name) if constants.include? (run_class_name).to_sym unless options[:force] #and const_get(run_class_name).rcp.code?
+		eputs "Loading modules for #{code}, #{modlet.inspect}..."
 		SETUP_RUN_CLASSES.push run_class_name #.downcase
 		FileUtils.makedirs(ENV['HOME'] + "/.coderunner/#{code}crmod/")
 		FileUtils.makedirs(ENV['HOME'] + "/.coderunner/#{code}crmod/defaults_files")
