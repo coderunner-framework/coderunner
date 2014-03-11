@@ -37,10 +37,11 @@ class TestSubmission  < Test::Unit::TestCase
 		assert_equal(ENV['HOME'] + '/.coderunner/cubecalccrmod/defaults_files', CodeRunner::Cubecalc::Sleep.rcp.user_defaults_location)
 	end
 	def test_submission
-		CodeRunner.submit(Y: 'test/submission_results', C: 'cubecalc', m: 'empty', X: Dir.pwd + '/test/submission_results/cubecalc')
+		CodeRunner.submit(Y: 'test/submission_results', C: 'cubecalc', m: 'empty', X: Dir.pwd + '/test/submission_results/cubecalc', p: %|{extra_files: ["#{Dir.pwd}/test/test_coderunner.rb"]}|)
 		CodeRunner.status(Y: 'test/submission_results')
 		assert(FileTest.exist?('test/submission_results/v'))
 		assert(FileTest.exist?('test/submission_results/v/id_1'))
+		assert(FileTest.exist?('test/submission_results/v/id_1/test_coderunner.rb'))
 		assert(FileTest.exist?('test/submission_results/cubecalc_defaults.rb'))
 	end
 	def test_status_loop

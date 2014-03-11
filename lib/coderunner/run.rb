@@ -529,7 +529,7 @@ EOF
 	parameters.each do |var, value|
 		raise CRFatal.new('Cannot specify id as a parameter') if var.to_sym == :id
 		set(var, value) unless value == :default
-		next if [:comment].include? var
+		next if [:comment, :extra_files].include? var
 		@naming_pars.push var
 	end
 	@naming_pars.uniq!
@@ -654,12 +654,23 @@ def prepare_submission(options={})
 	FileUtils.makedirs(@dir_name)
 	Dir.chdir(@dir_name) do 
 		generate_input_file
+    copy_extra_files
 		
 		File.open(".code_runner_version.txt", 'w'){|file| file.puts CODE_RUNNER_VERSION}
 		#File.open("code_runner_modlet.rb", 'w'){|file| file.puts rcp.modlet_source} if rcp.modlet_required
 	end
 	@dir_name = nil
 
+end
+
+#This function copies any files which are required at run time into the run folder.
+#It takes the form of an input parameter 'extra_files' which takes in an array
+#of file locations and copies them when the run folder is set up. It is called in prepare_submission. 
+def copy_extra_files
+  if @extra_files.kind_of?Array
+    @extra_files.each{|file| 
+    FileUtils.cp(file, File.basename(file))}
+  end
 end
 
 def generate_run_name
@@ -809,7 +820,7 @@ to your code module.
 
 		@run_info = rcp.run_info || [] # Run info can optionally be defined in the code module.
 # 		ep @run_info
-		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :output_file, :error_file] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
+		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :output_file, :error_file, :extra_files] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
