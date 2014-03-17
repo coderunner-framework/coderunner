@@ -667,6 +667,9 @@ end
 #It takes the form of an input parameter 'extra_files' which takes in an array
 #of file locations and copies them when the run folder is set up. It is called in prepare_submission. 
 def copy_extra_files
+  if @extra_files.kind_of?String
+    @extra_files = [@extra_files]
+  end
   if @extra_files.kind_of?Array
     @extra_files.each{|file| 
     FileUtils.cp(file, File.basename(file))}
