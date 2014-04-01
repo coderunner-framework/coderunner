@@ -369,6 +369,7 @@ EOF
 	end
 	
 	def self.run_script
+		set_default_command_options_from_command_line
 		if DEFAULT_COMMAND_OPTIONS[:Z]
 			DEFAULT_COMMAND_OPTIONS.absorb(eval(DEFAULT_COMMAND_OPTIONS[:Z])) 
 			puts "Begin Output"
@@ -389,7 +390,7 @@ $stderr.puts unless $has_put_startup_message_for_code_runner
 $has_put_startup_message_for_code_runner = true
 
 
-CodeRunner.set_default_command_options_from_command_line
+#CodeRunner.set_default_command_options_from_command_line
 
 do_profile = (ENV['CODE_RUNNER_PROFILE'] and ENV['CODE_RUNNER_PROFILE'].size > 0) ?  ENV['CODE_RUNNER_PROFILE'] : false
 
