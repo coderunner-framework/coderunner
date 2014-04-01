@@ -143,7 +143,12 @@ class RemoteCodeRunner < CodeRunner
 	end
 	def retrieve(string)
 		#ep '@host', @host, '@remote_cache', @remote_cache
-    cachename = self.class.cache_folder(@host, @folder) + '/' + string.gsub(/[\/:\\\[\]\(\)]/, '.')
+		filename = string.gsub(/[\/:\\\[\]\(\)]/, '.')
+		if filename.size > 100
+			require 'digest'
+			filename = Digest::MD5.hexdigest(filename)
+		end
+    cachename = self.class.cache_folder(@host, @folder) + '/' + filename
 		if @remote_cache == :auto and 	FileTest.exist?(cachename)
 			return eval(File.read(cachename))
 		end
@@ -153,12 +158,13 @@ class RemoteCodeRunner < CodeRunner
 		eputs "Loading folder #{@folder}..."
 # 		eval = 
 # 		> /dev/null 2> /dev/null > /dev/null 2> /dev/null
+#{%w{ ~/.bashrc ~/.bash_login ~/.bash_profile ~/.profile}.map{|w| "source #{w} > /dev/null 2> /dev/null "}.join(" && ")}
 		shell_script = <<EOF
 cd #@folder
 export ROWS=#{Terminal.terminal_size[0]}
 export COLS=#{Terminal.terminal_size[1]} 
 source /etc/bashrc /etc/profile > /dev/null 2> /dev/null
-#{%w{ ~/.bashrc ~/.bash_login ~/.bash_profile ~/.profile}.map{|w| "source #{w} > /dev/null 2> /dev/null "}.join(" && ")}
+#{%w{ ~/.bashrc ~/.bash_login ~/.bash_profile ~/.profile}.map{|w| "source #{w} > /dev/null 2> /dev/null "}.join(" ; ")}
 if [ "$CODE_RUNNER_COMMAND" ]
 	then
 		$CODE_RUNNER_COMMAND runner_eval #{string.inspect} -Z #{@copts.inspect.inspect}	

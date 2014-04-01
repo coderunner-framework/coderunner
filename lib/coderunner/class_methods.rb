@@ -515,6 +515,8 @@ EOF
 	def self.runner_eval(string, copts = {})
 # 		 process_copts(copts)
 		 runner = fetch_runner(copts)
+
+		 #ep ['server string is', string]
 		 
 		 return_val = runner.instance_eval(string)
 

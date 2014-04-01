@@ -136,6 +136,10 @@ class TestCodeRunner < Test::Unit::TestCase
 		assert_equal(1, wdvh.data.size)
 		assert_equal([30.0, 18.0, 24.0, 108.0, 27.0, 198.0], wdvh.data[0].axes[:f].data)
 		sds = rc.run_graphkit('sides;;[1,2].include? id')
+		str = "A very very very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonnnnnnnnnnnnnnnnnnnnnnnnnng string"
+		str2 = rc.retrieve(str.inspect)
+		assert_equal(str, str2)
+
 # 		sds.gnuplot
 		wdvh.close
 		puts 'testing remote coderunner complete'
