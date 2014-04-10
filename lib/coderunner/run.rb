@@ -524,6 +524,7 @@ EOF
 		evaluate_defaults_file(defaults_file_name)
 	end
 	return unless parameters
+	@parameter_hash_string = parameters
 	raise "parameters: #{parameters.inspect} must be a string which evaluates to a hash" unless parameters.class == String and parameters = eval(parameters) and parameters.class == Hash # parameters.class == String and parameters =~ /\S/
 	@parameter_hash = parameters 
 	parameters.each do |var, value|
@@ -823,7 +824,7 @@ to your code module.
 
 		@run_info = rcp.run_info || [] # Run info can optionally be defined in the code module.
 # 		ep @run_info
-		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :output_file, :error_file, :extra_files] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
+		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :parameter_hash_string, :output_file, :error_file, :extra_files] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}

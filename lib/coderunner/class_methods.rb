@@ -564,10 +564,11 @@ EOF
 			runs = runner.filtered_ids.map do |id|
 				eputs id
 				run = runner.run_list[id].dup
+
+			  run.resubmit_id = run.id
 				if copts[:smart_resubmit_name]
 					eputs "Smart name"
 					run.set(:naming_pars,  [:resubmit_id])
-					run.resubmit_id = run.id
 				end
 				run.update_submission_parameters(copts[:p][0], false)
 				run.run_name = nil unless copts[:rerun]
@@ -711,6 +712,8 @@ EOF
 		when :c
 			copts[:h] = :component
 		when :r
+			copts[:h] = :real
+		else
 			copts[:h] = :real
 		end
 
