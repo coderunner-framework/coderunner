@@ -709,9 +709,9 @@ EOF
 		copts[:p] = [copts[:p]].compact unless copts[:p].class == Array
 		#for i in 0...copts[:p].size
 		case copts[:h]
-		when :c
+		when :c, :component
 			copts[:h] = :component
-		when :r
+		when :r, :real
 			copts[:h] = :real
 		else
 			copts[:h] = :real
