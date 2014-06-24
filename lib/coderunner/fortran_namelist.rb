@@ -1085,7 +1085,7 @@ def self.get_namelists_and_variables_from_source_code(source)
 	all_variables_in_source = {}
 	namelist_declarations = {}
 	#source.scan(/^\s*namelist\s*\/(?<namelist>\w+)\/(?<variables>(?:(?:&\s*[\n\r]+)|[^!\n\r])*)/) do 
-	source.scan(Regexp.new("#{/^\s*namelist\s*\/\s*(?<namelist>\w+)\s*\//}(?<variables>#{FORTRAN_SINGLE_LINE})")) do 
+	source.scan(Regexp.new("#{/^\s*namelist\s*\/\s*(?<namelist>\w+)\s*\//}(?<variables>#{FORTRAN_SINGLE_LINE})", Regexp::IGNORECASE)) do 
 		namelist = $~[:namelist].to_s.downcase.to_sym
 		variables = $~[:variables].gsub(/!.*/, '')
 		eputs namelist, variables
