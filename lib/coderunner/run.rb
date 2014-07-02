@@ -824,7 +824,7 @@ to your code module.
 
 		@run_info = rcp.run_info || [] # Run info can optionally be defined in the code module.
 # 		ep @run_info
-		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :parameter_hash_string, :output_file, :error_file, :extra_files] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
+		@run_info = rcp.run_info + ([:preamble, :job_no, :running, :id, :status, :sys, :is_component, :naming_pars, :run_name, :resubmit_id, :real_id, :component_runs, :parameter_hash, :parameter_hash_string, :output_file, :error_file, :extra_files, :code_run_environment] + SUBMIT_OPTIONS) #.each{|v| RUN_INFO.push v} unless RUN_INFO.include? :job_no
 		@all = (rcp.variables + rcp.results + rcp.run_info) #.each{|v| ALL.push v}
 # 		ep "GOT HERE"
 		(@all + [:directory, :run_name, :modlet, :relative_directory]).each{|var| send(:attr_accessor, var)}
@@ -1055,7 +1055,7 @@ end
 	# is to return an empty string.
 
 	def code_run_environment
-		""
+		@code_run_environment
 	end
 
 # Prints a warning message, useful for pre-submit checks.

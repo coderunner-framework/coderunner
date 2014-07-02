@@ -569,10 +569,12 @@ end
 # Scan the text of a namelist from an input file and return an array variables with their default values
 
 def self.scan_text_for_variables(text)
-	regex = Regexp.new("#{rcp.matching_regex.to_s}\\s*(?:\\!(?<comment>.*))?[\\n|;]")
+	regex = Regexp.new("#{rcp.matching_regex.to_s}\\s*(?:\\!(?<comment>.*))?(?:\\n|;|\\Z)")
 	arr = []
+	#ep ['scanning text', text]
 	text.scan(regex) do
 		match = $~
+		#ep ['scan_match', match]
 		var = match[:name].downcase.to_sym
 		default = match[:default.to_sym]
 		default = (match[:float] or match[:complex]) ? match[:default].gsub(/(\.)(\D|$)/, '\10\2').gsub(/[dD]/, 'e').gsub(/(\D|^)(\.)/, '\10\2') : match[:default]
@@ -1085,7 +1087,7 @@ def self.get_namelists_and_variables_from_source_code(source)
 	all_variables_in_source = {}
 	namelist_declarations = {}
 	#source.scan(/^\s*namelist\s*\/(?<namelist>\w+)\/(?<variables>(?:(?:&\s*[\n\r]+)|[^!\n\r])*)/) do 
-	source.scan(Regexp.new("#{/^\s*namelist\s*\/\s*(?<namelist>\w+)\s*\//}(?<variables>#{FORTRAN_SINGLE_LINE})", Regexp::IGNORECASE)) do 
+	source.scan(Regexp.new("#{/^\s*namelist\s*\/\s*(?<namelist>\w+)\s*\//i}(?<variables>#{FORTRAN_SINGLE_LINE})", Regexp::IGNORECASE)) do 
 		namelist = $~[:namelist].to_s.downcase.to_sym
 		variables = $~[:variables].gsub(/!.*/, '')
 		eputs namelist, variables
@@ -1112,9 +1114,9 @@ end
 # Try to get a sample value of the 
 def self.get_sample_value(source, var)
 			ep var
-			values_text = source.scan(Regexp.new("\\W#{var}\\s*=\\s*.+")).join("\n") 
+			values_text = source.scan(Regexp.new("\\W#{var}\\s*=\\s*.+", Regexp::IGNORECASE)).join("\n") 
 			ep values_text
-			values = scan_text_for_variables(values_text).map{|(v,val)| val} 
+			values = scan_text_for_variables(values_text.sub(/_RKIND/, '')).map{|(v,val)| val} 
 			values.uniq!
 # 			ep values if var == :nbeta
 			values.delete_if{|val| val.kind_of? String} if values.find{|val| val.kind_of? Numeric}
