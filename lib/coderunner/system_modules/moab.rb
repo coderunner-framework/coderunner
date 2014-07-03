@@ -41,7 +41,8 @@ module Moab
 	def run_command
 # 		"qsub #{batch_script_file}"
 		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
-			return %[#{mpi_prog} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+			return %[#{code_run_environment}
+				#{mpi_prog} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
 			"#{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
