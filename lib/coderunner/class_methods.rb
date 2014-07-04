@@ -335,52 +335,75 @@ EOF
     eputs "Starting launcher\n"
 		at_exit{FileUtils.rm_r tl}
     FileUtils.makedirs tl
-		Thread.new{loop{`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`; sleep 1}}
-		
-    mutex = Mutex.new
-    processes= []
 
-		Thread.new do
-			loop do
-        Dir.entries(tl).each do |file|
-          next unless file =~ (/(^.*)\.stop/)
-					pid = $1
-					mutex.synchronize{Process.kill(pid); processes.delete pid}
+		unless ENV['CODE_RUNNER_LAUNCHER'] =~ /serial/
+			Thread.new{loop{`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`; sleep 1}}
+			
+			mutex = Mutex.new
+			processes= []
+
+			Thread.new do
+				loop do
+					Dir.entries(tl).each do |file|
+						next unless file =~ (/(^.*)\.stop/)
+						pid = $1
+						mutex.synchronize{Process.kill(pid); processes.delete pid}
+					end
+					sleep refresh.to_i
 				end
-				sleep refresh.to_i
 			end
-		end
 
-    #Dir.chdir(tl) do
-      ppid = $$
-      loop do
-				sleep refresh.to_i while processes.size >= max_queue.to_i
-#         processes = []
-        Dir.entries(tl).grep(/(^.*)\.start/).each do |file|
-          file =~ (/(^.*)\.start/)
-          id = $1
-					command = ""
-          command = File.read tl + '/' + file while command == ""
-          pid = fork do
-            processes.each do |wpid|
-							# Make sure all previously submitted jobs have finished.
-              sleep refresh.to_i while %x[ps -e -o pid,ppid].split("\n").grep(Regexp.new("^\\s*#{wpid}\\s+#{ppid}")).size > 0
-            end              
-						#p ["command", command]
-            exec(command + "; wait")
-          end
-					`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`
-          mutex.synchronize{processes.push pid}
+			#Dir.chdir(tl) do
+				ppid = $$
+				loop do
+					sleep refresh.to_i while processes.size >= max_queue.to_i
+	#         processes = []
+					Dir.entries(tl).grep(/(^.*)\.start/).each do |file|
+						file =~ (/(^.*)\.start/)
+						id = $1
+						command = ""
+						command = File.read tl + '/' + file while command == ""
+						pid = fork do
+							processes.each do |wpid|
+								# Make sure all previously submitted jobs have finished.
+								sleep refresh.to_i while %x[ps -e -o pid,ppid].split("\n").grep(Regexp.new("^\\s*#{wpid}\\s+#{ppid}")).size > 0
+							end              
+							#p ["command", command]
+							exec(command + "; wait")
+						end
+						`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`
+						mutex.synchronize{processes.push pid}
 
-          File.open(tl + '/' + id + '.pid', 'w'){|file| file.puts pid}
-          FileUtils.rm(tl + '/' + file)
-          
-          Thread.new{Process.wait pid; mutex.synchronize{processes.delete pid}}
-        end
-#         processes.each{|pid| Process.wait pid}
-        sleep refresh.to_i
-      end
-    #end
+						File.open(tl + '/' + id + '.pid', 'w'){|file| file.puts pid}
+						FileUtils.rm(tl + '/' + file)
+						
+						Thread.new{Process.wait pid; mutex.synchronize{processes.delete pid}}
+					end
+	#         processes.each{|pid| Process.wait pid}
+					sleep refresh.to_i
+				end
+			#end
+				#
+			else
+				loop do
+					Dir.entries(tl).grep(/(^.*)\.start/).each do |file|
+						file =~ (/(^.*)\.start/)
+						id = $1
+						command = ""
+						command = File.read tl + '/' + file while command == ""
+						pid = 12345
+						File.open(tl + '/' + id + '.pid', 'w'){|file| file.puts pid}
+						File.open("#{tl}/queue_status.txt", "w"){|file| file.puts pid}
+						`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt`
+						FileUtils.rm(tl + '/' + file)
+						system "#{command} \n\n wait \n\n"
+						File.open("#{tl}/queue_status.txt", "w"){|file| file.puts}
+						`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt`
+					end
+					sleep refresh.to_i
+				end
+			end
+
   end
       
 	
