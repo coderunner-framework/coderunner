@@ -1078,6 +1078,38 @@ def actual_number_of_processors
 		  @nprocs.split('x').slice(0..1).map{|n| n.to_i}.inject(1){|ntot, n| ntot*n}
 end
 
+def latex_report_header
+#gsub is a hack which removes 14 spaces from the beginning of the file. This allows nice code indentation here.
+<<-EOF.gsub(/^ {4}/, "")
+    % Set up  
+    \\documentclass[11pt, twocolumn]{report}
+    \\usepackage{amsmath}
+    \\usepackage{amsthm}
+    \\usepackage{amssymb}
+    \\usepackage{graphicx}
+    \\usepackage{caption}
+    \\usepackage{subcaption}
+    \\usepackage{wrapfig}
+    \\usepackage{epstopdf}
+    \\usepackage{fullpage}
+
+    \\newcommand{\\newfig}[1]{
+    \\includegraphics[width=\\linewidth]{#1}
+    }
+
+    \\begin{document}
+
+    % Title Page
+    \\title{Run summary for run number #{id}}
+    \\date{#{Time.now}}
+    \\author{CodeRunner}
+                  
+    \\maketitle
+
+EOF
+
+end
+
 end
 
 end
