@@ -131,7 +131,7 @@ class CodeRunner
 
 
 # Here are all the methods that map the command line invocation into the correct class method call
-		COMMAND_LINE_FLAGS_WITH_HELP = [
+ 	   COMMAND_LINE_FLAGS_WITH_HELP = [
 	["--recalc-all", "-A", GetoptLong::NO_ARGUMENT, %[Causes each directory to be reprocessed, rather than reading the cache of data. Its exact effect depends on the code module being used. By convention it implies that ALL data analysis will be redone.]],
 	["--reprocess-all", "-a", GetoptLong::NO_ARGUMENT, %[Causes each directory to be reprocessed, rather than reading the cache of data. Its exact effect depends on the code module being used. By convention it implies that VERY LITTLE data analysis will be redone.]],
 	["--code", "-C", GetoptLong::REQUIRED_ARGUMENT, %[The code that is being used for simulations in this folder. This string must correspond to a code module supplied to CodeRunner. It usually only needs to be specified once as it will be stored as a default in the folder.]],
