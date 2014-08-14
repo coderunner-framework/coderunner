@@ -1,6 +1,4 @@
 
-# A comment
-
 class CodeRunner # declare the constant
 end
 
@@ -1166,6 +1164,7 @@ Conditions contain a single = sign: #{conditions}
 				# A hook... default is to do nothing
 				@submission_script = @run_class.modify_job_script(self, runs, @submission_script)
 				# To get out of job_chain_files folder
+        p 'test'
 				@submission_script = "cd .. \n" + @submission_script
 				old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
 				################ Submit the run
@@ -1727,23 +1726,23 @@ EOF
 				unless FileTest.exist? temp_root +  relative + archive_name
 				eputs "Archiving #{index} out of #{size}" if options[:verbose]
 					Dir.chdir(run.directory + '/..') do
-							command =  "tar -cW#{very_verbose}f #{tar_name} #{File.basename(run.directory)}"
-							eputs command if options[:verbose]
-							unless system command
-								raise "Archiving failed"
-							end
-							break unless comp
-							command = "gzip -4 -vf #{tar_name}"
-							eputs command if options[:verbose]
-							unless system command
-								raise "Compression failed"
-							end
-							command = "gzip -t #{archive_name}"
-							eputs command if options[:verbose]
-							unless system command
-								raise "Compression failed"
-							end
-							#exit
+            command =  "tar -cW#{very_verbose}f #{tar_name} #{File.basename(run.directory)}"
+            eputs command if options[:verbose]
+            unless system command
+              raise "Archiving failed"
+            end
+            break unless comp
+            command = "gzip -4 -vf #{tar_name}"
+            eputs command if options[:verbose]
+            unless system command
+              raise "Compression failed"
+            end
+            command = "gzip -t #{archive_name}"
+            eputs command if options[:verbose]
+            unless system command
+              raise "Compression failed"
+            end
+            #exit
 					end
 					FileUtils.mv(relative.delsubstr('/') + archive_name, temp_root + '/' + relative + archive_name)
 				end
@@ -1770,22 +1769,10 @@ EOF
 			#FileUtils.rm_r(".tmparch")
 		end
 	end
-
-
-
-	
-	
 end
 
-
-
-
-
-
-
-
 [
-	"/graphs_and_films.rb", 
+  "/graphs_and_films.rb",
 	"/remote_code_runner.rb", 
 	"/merged_code_runner.rb",
 	'/run.rb', 

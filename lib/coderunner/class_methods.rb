@@ -78,6 +78,59 @@ class CodeRunner
 		runner.continue_in_new_folder(folder, options)
 	end
 	
+  # This section defines the report report writing function in. The latex header is defined in run.rb. It is a run method and can be redefined in a particular CRMOD.
+  # The function is simply called as follows:
+  # 
+  #   interactively: wr j:<run no.>
+  #   command line: coderunner write_report -j <run no>
+  #
+  # The requirements to use this function are:
+  #
+  #   1. pdflatex version 2014 or higher
+  #   2. gnuplot
+  #   3. ability to write eps graphs
+  #
+  # The graphs which are written out to the PDF are read in from a given CRMOD. It should be defined in the main .rb file for the CRMOD, e.g. gs2.rb. 
+  # As seen below, this function should be called 'latex_graphs'. To see an example of what this function should look like see GS2CRMOD, but it is simply an array of graphkits
+  # and latex code blocks which describe plots.
+  def self.write_report(copts={})
+    runner = fetch_runner(copts)
+		runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
+
+    #Loop through the runs and write a latex file for each
+    runs.each do |r|
+      Dir.chdir(runner.root_folder) do
+        FileUtils.makedirs("run_docs")
+        FileUtils.makedirs("run_docs/id_#{r.id}")
+        Dir.chdir("run_docs/id_#{r.id}") do
+
+          File.open("summary.tex", 'w') do |file|
+            file.puts r.latex_report_header           
+            file.puts <<-EOF.gsub(/^ {14}/, "")
+              \\begin{itemize}
+            EOF
+
+            #Need to call some methods here which reads the graphs we want from gs2crmod, generates the graphs
+            #then generates the latex code to display graphs.
+            latex_code = r.latex_graphs.inject("") do |tmp_latex_code, (kit, latexstring)|
+              kit.gnuplot_write(kit.file_name) #write the graph
+              tmp_latex_code += "\\item " + latexstring + " \n\n\\newfig{#{kit.file_name}}" 
+              tmp_latex_code += "\n\n"
+              tmp_latex_code
+            end
+
+            file.puts <<-EOF.gsub(/^ {14}/, "")
+              #{latex_code}
+              \\end{itemize}
+              \\end{document}
+            EOF
+          end #file write
+          system "pdflatex summary.tex" 
+        end
+      end #chdir
+		end # run loop
+  end
+
 	def self.delete(copts={})
 		runner = fetch_runner(copts)
 		runner.destroy

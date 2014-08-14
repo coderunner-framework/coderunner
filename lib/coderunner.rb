@@ -231,7 +231,8 @@ EOF
 		["status_loop", "sl", 0, 'Loop, updating the filtered runs, then printing out a summary of the status of the filtered runs.  ', [], [:U, :N, :j, :f, :O]],
 		["submit", "sub", 0, 'Submit a run to be simulated.', [], [:p, :n, :W, :k, :v, :T, :d, :J]],
 		["submit_command", "subcom", 2, 'Submit an arbitrary shell command to the batch queue.', ['job name', 'command'], [:n, :W, :v, :T, :d]],
-		["write_graph", "wg", 1, 'Write a graph to disk.', ['filename'], [:G, :g, :w, :O, :U, :N, :j, :f]]
+		["write_graph", "wg", 1, 'Write a graph to disk.', ['filename'], [:G, :g, :w, :O, :U, :N, :j, :f]],
+		["write_report", "wr", 0, 'Writes out a summary of a given run in a LaTeX document.', [], [:j, :f, :U, :N]],
 	] 
 	
 		# This lists all the commands available on the command line. The first two items in each array indicate the long and short form of the command, and the third indicates the number of arguments the command takes. They are all implemented as Code Runner class methods (the method is named after the long form). The short form of the command is available as a global method in Code Runner interactive mode.

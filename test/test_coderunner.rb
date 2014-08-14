@@ -128,6 +128,7 @@ class TestCodeRunner < Test::Unit::TestCase
 	def test_remote_coderunner
 		puts 'testing remote coderunner'
 		rc = RemoteCodeRunner.new(ENV['USER'] + '@localhost', Dir.pwd + '/test/results', U: true, N: true).update
+    p rc
 		assert_equal(@runner.ids.sort, rc.ids.sort)
 		rc.print_out(0)
 		wdvh = rc.graphkit("width:height:depth:volume;;;height")
