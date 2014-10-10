@@ -1164,7 +1164,6 @@ Conditions contain a single = sign: #{conditions}
 				# A hook... default is to do nothing
 				@submission_script = @run_class.modify_job_script(self, runs, @submission_script)
 				# To get out of job_chain_files folder
-        p 'test'
 				@submission_script = "cd .. \n" + @submission_script
 				old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
 				################ Submit the run
