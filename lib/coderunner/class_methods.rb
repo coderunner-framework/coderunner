@@ -219,7 +219,7 @@ class CodeRunner
 	def self.print_queue_status(copts={})
 		begin 
 			eputs queue_status
-		rescue => err
+		rescue => _err
 			eputs "General queue status doesn't work on this system; showing queue status for this folder"
 # 			p err
 			runner = fetch_runner(copts)
@@ -640,6 +640,8 @@ EOF
 			runs = runner.filtered_ids.map do |id|
 				eputs id
 				run = runner.run_list[id].dup
+        run.output_file = nil
+        run.error_file = nil
 
 			  run.resubmit_id = run.id
 				if copts[:smart_resubmit_name]
