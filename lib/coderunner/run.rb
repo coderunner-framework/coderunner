@@ -363,7 +363,7 @@ end
 def save
 	
 	logf(:save)
-	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{@runner.class} instead of CodeRunner") unless @runner.class.to_s == "CodeRunner"
+	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{@runner.class} instead of CodeRunner") unless @runner.class.to_s =~ /^CodeRunner(::Merged)?/
 	runner, @runner = @runner, nil
 	@system_triers, old_triers = nil, @system_triers
 	@component_runs.each{|run| run.runner = nil} if @component_runs

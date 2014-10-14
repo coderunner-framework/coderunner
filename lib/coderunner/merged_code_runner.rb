@@ -51,6 +51,9 @@ class CodeRunner
       run.id[0].to_s + ","
       #""
     end
+    # Do nothing
+    def save_large_cache
+    end
     # Merge an additional runner. 
 		def add_runner(runner)
       index = @runners.size
@@ -85,6 +88,8 @@ class CodeRunner
   # run has a unique id, and the merged runner can treat the Run::Merged objects
   # exactly as if they were simply Run objects.
   class Run::Merged
+    #(Object.instance_methods - [:send,:set,:object_id, :__send__, :__id__]).each{|meth| undef_method meth}
+    undef_method :test
     attr_reader :run
     attr_accessor :id
     def initialize(runner_index, run)
@@ -92,6 +97,9 @@ class CodeRunner
       @run = run
       @id = [@runner_index, @run.id]
     end
+    #def send(meth, *args)
+      #@run.send(meth, *args)
+    #end
     def method_missing(meth, *args)
       @run.send(meth, *args)
     end
