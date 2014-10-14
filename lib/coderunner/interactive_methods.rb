@@ -24,6 +24,13 @@ class CodeRunner
 		def runs
 			CodeRunner.runner.run_list
 		end
+    # Change the default root folder(s) for commands. If a runner
+    # has not been loaded for a given folder, it will be loaded
+    # as subsequently required.
+    def change_root_folder(folder)
+      DEFAULT_COMMAND_OPTIONS[:Y] = folder
+    end
+    alias :crf :change_root_folder
 
 
 			
