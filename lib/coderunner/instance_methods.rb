@@ -633,8 +633,14 @@ EOF
 			end)
 	end
 	
+  # Returns an empty string. A hook for CodeRunner::Merged
+  def merged_runner_info(run)
+    ""
+  end
+
 	# Print out a summary of all the runs in the root folder, formatted in nice pretty colours. Since this is often called in a loop, if called twice without any arguments it will erase the first printout. To stop this happening set rewind to 0. If the command is being issued not in a terminal, so that CodeRunner cannot determine the size of the terminal, the second argument must be passed as an array of [rows, columns].
 
+  
 	def print_out(rewind = nil, options={}) # terminal_size = [rows, cols]
 		rewind ||= @print_out_size
 		terminal_size = options[:terminal_size]
@@ -680,6 +686,8 @@ EOF
 					#@split_point = @new_split_point
 					eprint j%2==0 ? j%4==0 ? cyan : green : dc
 					line = options[:with_comments] ? @run.comment_line : @run.print_out_line.chomp  
+          # if this is not a merged runner, merged_runner_info is an empty string
+          line = merged_runner_info(@run) + line
 					eprint line
 					eputs cln
 	# 				puts (line.size / Terminal.terminal_size[1]).class

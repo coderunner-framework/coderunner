@@ -165,7 +165,7 @@ class CodeRunner
 	["--wall-mins", "-W", GetoptLong::REQUIRED_ARGUMENT, %[Specify the wall clock limit in minutes.]],
 	["--write-options", "-w", GetoptLong::REQUIRED_ARGUMENT, %[Use when plotting graphs. A hash of custom options which are applied to the graphkit just before plotting it; for example: -w '{xlabel: 'X Axis Quantity, log_axis: 'y'}']],
 	["--executable", "-X", GetoptLong::REQUIRED_ARGUMENT, %[Specify the location of the executable of the simulation code. It only needs to be specified once in any folder, unless it needs to be changed.]],
-	["--other-folder", "-Y", GetoptLong::REQUIRED_ARGUMENT, %[Run CodeRunner in a different folder. On a local machine 'coderunner st -Y some/other/folder' is identical to 'cd some/other/folder; coderunner st -Y'. However, this flag can also be used for remote folders using RemoteCodeRunner (as long as CodeRunner is installed on the remote machine). e.g. -Y username@machine.location:path/to/folder.]],
+	["--other-folder", "-Y", GetoptLong::REQUIRED_ARGUMENT, %[Run CodeRunner in a different folder. On a local machine 'coderunner st -Y some/other/folder' is identical to 'cd some/other/folder; coderunner st -Y'. However, this flag can also be used for remote folders using RemoteCodeRunner (as long as CodeRunner is installed on the remote machine). e.g. -Y username@machine.location:path/to/folder. If this option is specified multiple times, a merged runner will be created from the set of specified folders.]],
 	["--supplementary-options", "-y", GetoptLong::REQUIRED_ARGUMENT],
 	["--server", "-Z", GetoptLong::REQUIRED_ARGUMENT, %[Technical use only]],	
 	["--log", "-z", GetoptLong::NO_ARGUMENT, %[Switch logging on (currently not working very well (05/2010)).]]	 # :nodoc:
@@ -282,6 +282,16 @@ EOF
 			copts[:G].push arg
 		when "--run-graph"
 			copts[:g].push arg
+    when "--other-folder"
+      if copts[:Y]
+        if copts[:Y].kind_of? String
+          copts[:Y] = [copts[:Y], arg]
+        else
+          copts[:Y].push arg
+        end
+      else
+        copts[:Y] = arg
+      end
 # 		when "--cancel"
 # 			copts[:K] = arg.to_i
 		when "--multiple-processes"

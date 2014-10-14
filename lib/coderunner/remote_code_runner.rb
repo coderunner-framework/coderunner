@@ -1,6 +1,6 @@
 class RemoteCodeRunner < CodeRunner
 	(CodeRunner.instance_methods - (Object.instance_methods + Log.instance_methods)).each do |meth|
-		next if [:sort_runs, :print_out, :filter, :similar_runs, :get_max, :get_min, :generate_combined_ids, :setup_run_class, :get_run_class_name, :readout, :graphkit_from_lists, :graphkit, :graphkit_shorthand, :run_graphkit_shorthand, :axiskit, :filtered_ids,  :filtered_run_list, :make_film_from_lists, :sweep_graphkits, :cache].include? meth
+		next if [:sort_runs, :print_out, :filter, :similar_runs, :get_max, :get_min, :generate_combined_ids, :setup_run_class, :get_run_class_name, :readout, :graphkit_from_lists, :graphkit, :graphkit_shorthand, :run_graphkit_shorthand, :axiskit, :filtered_ids,  :filtered_run_list, :make_film_from_lists, :sweep_graphkits, :cache, :merged_runner_info].include? meth
 		next if CodeRunner::DEFAULT_RUNNER_OPTIONS.keys.include? meth
 		next if CodeRunner::DEFAULT_RUNNER_OPTIONS.keys.map{|meth| (meth.to_s + '=').to_sym}.include? meth
 

@@ -203,9 +203,16 @@ class TestCodeRunner < Test::Unit::TestCase
 		@runner3 = CodeRunner.new(tfolder2).update
 		assert_nothing_raised{@mrunner = CodeRunner::Merged.new(@runner, @runner3)}
 		@mrunner.print_out(0)
+    #STDIN.gets
 		assert_equal(@runner.run_list.size + 1, @mrunner.run_list.size)
 		@mrunner2 = @runner.merge(@runner3)
 		assert_equal(@mrunner2.run_list.keys, @mrunner.run_list.keys)
+    assert_nothing_raised{@mrunner.add_runner(@runner)}
+    assert_equal(CodeRunner::Run::Merged, @mrunner.run_list[[2, 6]].class)
+    assert_equal(6, @mrunner.run_list[[2, 6]].run.id)
+    assert_system("#$coderunner_command st -Y #{tfolder} -Y #{tfolder2}")
+    assert_raise(RuntimeError){@mrunner.submit}
+    #STDIN.gets
 		FileUtils.rm_r tfolder2
 	end
 	

@@ -614,7 +614,7 @@ EOF
 #     raise "something is already submitting" if FileTest.exist? "submitting"
     runs = []
     raise "Parameters must be an array of inspected hashes" unless copts[:p].kind_of? Array
-    Dir.chdir(copts[:Y]) do
+    Dir.chdir(runner.root_folder) do
 
       copts[:p].push nil if copts[:p] == []
   #         ep copts[:p]; exit
@@ -636,7 +636,7 @@ EOF
 #     raise "something is already submitting" if FileTest.exist? "submitting"
     runs = []
     raise "Parameters must be an array of inspected hashes" unless copts[:p].kind_of? Array
-    Dir.chdir(copts[:Y]) do
+    Dir.chdir(runner.root_folder) do
       runs = runner.filtered_ids.map do |id|
         eputs id
         run = runner.run_list[id].dup
@@ -795,7 +795,22 @@ EOF
       copts[:h] = :real
     end
 
+#     ep Log.log_file
+    #copts[:code_copts].each{|k,v| CODE_OPTIONS[k] = v} if copts[:code_copts]
+    copts.keys.map{|k| k.to_s}.grep(/_options$/).map{|k| k.to_sym}.each do |k|
+      CODE_OPTIONS[k.to_s.sub('_options','').to_sym] = copts[k]
+    end
+
+
+  end
+
+  # Analyse copts[:Y], the choice of the root folder for the runner, and make appropriate
+  # modifications to the command options for running remotely, etc.
+  def self.process_root_folder(copts)
     copts[:Y] ||= DEFAULT_COMMAND_OPTIONS[:Y] if DEFAULT_COMMAND_OPTIONS[:Y]
+    if copts[:Y] and copts[:Y].kind_of? Array
+      eputs "Warning: ignoring additional folders... selecting folder: #{copts[:Y]=copts[:Y][0]}"
+    end
     if copts[:Y] and copts[:Y] =~ /:/
       set_class_defaults(copts)
       copts[:running_remotely] = true
@@ -806,13 +821,6 @@ EOF
 #         ep DEFAULT_RUNNER_OPTIONS
       end
     end
-#     ep Log.log_file
-    #copts[:code_copts].each{|k,v| CODE_OPTIONS[k] = v} if copts[:code_copts]
-    copts.keys.map{|k| k.to_s}.grep(/_options$/).map{|k| k.to_sym}.each do |k|
-      CODE_OPTIONS[k.to_s.sub('_options','').to_sym] = copts[k]
-    end
-
-
   end
 
   CODE_OPTIONS={}
@@ -821,7 +829,10 @@ EOF
 
   def self.fetch_runner(copts={})
 #     ep copts
+    #read_default_command_options(copts)
+    process_command_options(copts)
     # If copts(:Y) is an array of locations, return a merged runner of those locations
+    #copts[:Y] ||= DEFAULT_COMMAND_OPTIONS[:Y] if DEFAULT_COMMAND_OPTIONS[:Y]
     if copts[:Y].kind_of? Array
       runners = copts[:Y].map do |location|
         new_copts = copts.dup.absorb(Y: location)
@@ -829,7 +840,7 @@ EOF
       end
       return Merged.new(*runners)
     end
-    process_command_options(copts)
+    process_root_folder(copts)
     #ep copts
     @runners ||= {}
     runner = nil
