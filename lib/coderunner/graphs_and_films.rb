@@ -529,6 +529,7 @@ class CodeRunner
 		eputs "Waiting on subprocesses..."
 		Process.waitall
 		end
+
 		unless options[:skip_encoding]
 		eputs "making film"
 		frame_rate = (options[:frame_rate] or options[:fr] || 15)
@@ -733,11 +734,30 @@ class CodeRunner
 		eputs "Waiting on subprocesses..."
 		Process.waitall
 		end
+    if options[:negative]
+      options[:image_magick] = (options[:image_magick] ? options[:image_magick] + ";" : "") + " mogrify -negate -format png8 file; mv file8 file"
+    end
+    if options[:image_magick]
+      Dir.chdir('film_frames') do
+        Dir.entries.pieces(no_forks).each do |piece|
+          fork do
+            piece.each do |file|
+              system str=options[:image_magick].gsub(/file/, file)
+              p "image_magick", str
+            end
+          end
+        end
+      end
+    end
+		Process.waitall
 		unless options[:skip_encoding]
 		eputs "making film"
 		frame_rate = (options[:frame_rate] or options[:fr] || 15)
 		film_name = (options[:film_name] or options [:fn] or graphkit_frame_array[0][1].file_name + '_film').gsub(/\s/, '_')
-		puts `ffmpeg -y #{options[:bitrate] ? "-b #{options[:bitrate]}" : ""} -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  #{film_name}.mp4`
+		#puts `ffmpeg -y #{options[:bitrate] ? "-b #{options[:bitrate]}" : ""} -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  #{film_name}.mp4`
+		str =  "avconv  -y -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  #{film_name}.mp4"
+    puts str
+    system str
 		end
 	end
 
