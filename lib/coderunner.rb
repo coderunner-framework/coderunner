@@ -181,6 +181,7 @@ class CodeRunner
 	LONG_COMMAND_LINE_OPTIONS = [
 	["--replace-existing", "", GetoptLong::NO_ARGUMENT, %[Use with resubmit: causes each resubmitted run to replace the run being resubmitted.]],
 	["--smart-resubmit-name", "", GetoptLong::NO_ARGUMENT, %[Use with resubmit: causes each resubmitted run to only contain its original id and changed parameters in its run name.]],
+  ["--submit-runner-index", "", GetoptLong::NO_ARGUMENT, %[Use with submit or resubmit when specifying multiple root folders... selects which runner will be used for submitting (i.e. which root folder the runs will be submitted in.]],
 	] + CODE_COMMAND_OPTIONS
 	LONG_COMMAND_LINE_FLAGS = LONG_COMMAND_LINE_OPTIONS.map{|arr| [arr[0], arr[2]]}
 

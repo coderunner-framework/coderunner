@@ -23,9 +23,14 @@ class CodeRunner
     # Iterates over the runners contained within the merged runner.
     # E.g.
     #   merged_runner.each{|runner| p runner.root_folder}
+    attr_reader :runners
 		def each
 			@runners.each{|r| yield(r)}
 		end
+    # Iterate over each of the merged runners, updating them.
+    def update(*args)
+      each{|r| r.update(*args)}
+    end
 		include Enumerable
     # Create a new merged runner. <tt>runners</tt> is an array of standard runners
     # (i.e. instances of CodeRunner).

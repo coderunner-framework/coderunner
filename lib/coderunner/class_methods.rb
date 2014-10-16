@@ -610,10 +610,11 @@ EOF
   end
   def self.submit(copts = {})
 #     process_copts(copts)
-    runner = fetch_runner(copts)
+    runner = get_submit_runner(copts)
 #     raise "something is already submitting" if FileTest.exist? "submitting"
     runs = []
     raise "Parameters must be an array of inspected hashes" unless copts[:p].kind_of? Array
+    #raise "Can't submit using a merged runner" if runner.kind_of? CodeRunner::Merged
     Dir.chdir(runner.root_folder) do
 
       copts[:p].push nil if copts[:p] == []
@@ -630,9 +631,26 @@ EOF
     #puts "Got here"
     #exit(0)
   end
-  def self.resubmit(copts = {})
-#     process_copts(copts)
+  # Fetch a runner appropriate for submitting simulations. In 
+  # all usual cases this is just the default runner for the command
+  # but where several folders have been specified and we are dealing
+  # with a merged runner, a single runner is chosen from the merged
+  # runners using submit_runner_index
+  def self.get_submit_runner(copts)
     runner = fetch_runner(copts)
+    unless runner.kind_of? CodeRunner::Merged
+      return runner
+    else
+      unless copts[:submit_runner_index]
+        raise "You can't submit runs using a merged runner. Please specify the option --submit-runner-index (or submit_runner_index in interactive mode)"
+      else
+        return runner.runners[copts[:submit_runner_index]]
+      end
+    end
+  end
+  def self.resubmit(copts = {})
+    runner = get_submit_runner(copts)
+#     process_copts(copts)
 #     raise "something is already submitting" if FileTest.exist? "submitting"
     runs = []
     raise "Parameters must be an array of inspected hashes" unless copts[:p].kind_of? Array
