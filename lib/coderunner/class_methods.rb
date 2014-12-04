@@ -628,7 +628,6 @@ EOF
 #       exit
     end
     runner.submit(runs, nprocs: copts[:n], version: copts[:v], skip: copts[:k], job_chain: copts[:J], no_update_before_submit: copts[:no_update_before_submit])
-    #puts "Got here"
     #exit(0)
   end
   # Fetch a runner appropriate for submitting simulations. In 
