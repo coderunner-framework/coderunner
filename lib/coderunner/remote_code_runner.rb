@@ -150,7 +150,8 @@ class RemoteCodeRunner < CodeRunner
 		end
     cachename = self.class.cache_folder(@host, @folder) + '/' + filename
 		if @remote_cache == :auto and 	FileTest.exist?(cachename)
-			return eval(File.read(cachename))
+			data = eval(File.read(cachename))
+      return data if not data.nil?
 		end
 		string = @libraries.map{|lib| "require #{lib}"}.join(";") + ";" + string
 

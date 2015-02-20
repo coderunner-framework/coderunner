@@ -625,7 +625,7 @@ class CodeRunner
 					g.modify(options)
 					g.instance_eval options[:graphkit_modify] if options[:graphkit_modify]
 # 					p g; exit
-				        g.title +=  sprintf(", frame %0#{fd}d", frame_index) unless options[:frame_title] == false
+				        g.title = (g.title||"") + sprintf(", frame %0#{fd}d", frame_index) unless options[:frame_title] == false
 # 					folder = ("film_frames/"); 
 # 					file_name = sprintf("frame_%0#{fd}d", actual_frames[frame_index])
 # 					g.gnuplot; gets; g.close
@@ -653,80 +653,31 @@ class CodeRunner
 # 		fa = (options[:frame_array] or options[:fa] or list[0][0].run_list[list[0][0].filtered_ids[0]].frame_array(options)	)
 
 		fd = frame_digits = options[:fd]||Math.log10(graphkit_frame_array.map{|f, g| f}.max).ceil
+    fd = 8 if options[:concatenate]
+
 		extension = (options[:extension] or options[:ext] or '.png')
 		extension = '.' + extension unless extension =~ /^\./
 		unless options[:skip_frames] or options[:sf]
-		FileUtils.rm_r('film_frames') if FileTest.exist?('film_frames')
+		FileUtils.rm_r('film_frames') if FileTest.exist?('film_frames') and not options[:concatenate]
 
 		FileUtils.makedirs('film_frames')
-# 		puts @@multiple_processes; gets
 		no_forks = (@@multiple_processes or 1)
 		ep @@multiple_processes, no_forks
-# 		end_graphkit = graphkit_multiple_runners(list, frame_index: fa[1])
-# 		begin_graphkit = graphkit_multiple_runners(list, frame_index: fa[0])
-
-# 		end_area = end_graphkit.plot_area_size
-# 		begin_area = begin_graphkit.plot_area_size
-# 		p end_area, begin_area, options
-# 		plot_size = {}
-# 		axes = [:x, :y, :z]
-# 		options[:normalize] ||= options[:nm]  
-# 		options[:normalize_pieces] ||= options[:nmp]
-# 		for i in 0...end_area.size
-# 			next unless options[:normalize] and options[:normalize].include? axes[i]
-# 			min = [end_area[i][0], begin_area[i][0]].min
-# 			max = [end_area[i][1], begin_area[i][1]].max
-# 			key =  axes[i]
-# 			plot_size[key + :range] = [min, max]
-# 		end
-# 		ep plot_size
-# 		exit
-# 		frames = []
-# 		actual_frames = {}
-# 		i = fa[0]
-# 		j = 0
-# 		while i <= fa[1]
-# 			frames.push i
-# 			actual_frames[i] = j
-# 			i += (options[:ic] or options[:increment] or 1)
-# 			j += 1
-# 		end
 		i = 0
+    if options[:concatenate] and (ents = Dir.entries('film_frames').grep(/frame_/)).size > 0
+      i = ents.map{|fn| fn.gsub(/\D/, '').to_i}.max + 1
+    end
+
 		actual_frames = graphkit_frame_array.map{|f, g| f}.inject({}){|hash, f| hash[f] = i; i+=1; hash}
 		graphkit_frame_array.pieces(no_forks).each_with_index do |graphkit_frame_array_piece, myrank|
 			fork do
-# 				if options[:normalize_pieces]
-# 				end_area = graphkit_multiple_runners(list, frame_index: piece.max).plot_area_size
-# 				begin_area = graphkit_multiple_runners(list, frame_index: piece.min).plot_area_size
-# 				axes = [:x, :y, :z]
-# 				for i in 0...end_area.size
-# 					next unless options[:normalize_pieces].include? axes[i]
-# 					min = [end_area[i][0], begin_area[i][0]].min
-# 					max = [end_area[i][1], begin_area[i][1]].max
-# 					key =  axes[i]
-# 
-# 					plot_size[key + :range] = [min, max]
-# 				end
-# 				end
-# 				eputs 'making graphs...'; sleep 1
-# 				graph_array = graphkit_multiple_runners_with_frame_array(piece, list, myrank==0)
-# # 				ep graph_array
-# 				eputs
 				graphkit_frame_array_piece.each_with_index do |(frame_index,g), pindex|
 					if myrank == 0
 						eputs "\033[2A" # Terminal jargon - go back one line
 						eputs sprintf("Plotting graphs: %2.2f", pindex.to_f/graphkit_frame_array_piece.size.to_f * 100.0) + "% Complete"
 					end
-# 					g = graph_kit_multiple_runners(list, plot_size + {frame_index: frame_index})
-					
-# 					g.modify(plot_size)
-# 					g.modify(options)
-# 					p g; exit
-# 				        g.title +=  sprintf(", frame %0#{fd}d", frame_index) unless options[:frame_title] == false
 					folder = ("film_frames/"); 
 					file_name = sprintf("frame_%0#{fd}d", actual_frames[frame_index])
-# 					g.gnuplot; gets; g.close
-# 					ep folder + file_name + '.png'; gets
 					g.gnuplot_write(folder + file_name + extension, size: options[:size])
 				end
 			end
