@@ -17,11 +17,14 @@ module Slurm
 		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
 			return %[mpiexec -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
-			nodes, ppn = @nprocs.split(/x/)
-			nprocstot = nodes.to_i * ppn.to_i
-			"#@preamble mpirun -np #{nprocstot}  #{executable_location}/#{executable_name} #{parameter_string}"
+			"#@preamble #{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
 	end
+  def mpi_prog
+	  nodes, ppn = @nprocs.split(/x/)
+	  nprocstot = nodes.to_i * ppn.to_i
+    "mpirun -np #{nprocstot}"
+  end 
 
 	def execute
 		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
