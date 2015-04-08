@@ -1,20 +1,22 @@
 class CodeRunner
-	# A module to let CodeRunner run using the SLURM queue system,
-	# used on certain HPC systems.
+require SCRIPT_FOLDER + '/system_modules/launcher.rb'
+# A module to let CodeRunner run using the SLURM queue system,
+# used on certain HPC systems.
 module Slurm
+  include Launcher
 				
 	def queue_status
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
+		if use_launcher
+      queue_status_launcher
 		else
-			%x[squeue | grep #{ENV['USER'][0..7]}]
+			#%x[squeue | grep #{ENV['USER'][0..7]}]
+			%x[squeue -u $USER]
 		end
 	end
 
 	def run_command
 # 		"qsub #{batch_script_file}"
-		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
+		if use_launcher
 			return %[mpiexec -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
 			"#@preamble #{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
@@ -27,17 +29,11 @@ module Slurm
   end 
 
 	def execute
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			launch_id = "#{Time.now.to_i}#{$$}"
-			fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{launch_id}"
-			File.open(fname + '.start', 'w'){|file| file.puts "cd #{Dir.pwd};#{run_command}"}
-			sleep 1 until FileTest.exist? fname + '.pid'
-			pid = File.read(fname + '.pid').to_i
-			FileUtils.rm fname + '.pid'
-			return pid
+		if use_launcher
+      return execute_launcher
 		else
 			File.open(batch_script_file, 'w'){|file| file.puts batch_script + run_command + "\n"}
-			pid = %x[sbatch #{batch_script_file}].to_i
+			_pid = %x[sbatch #{batch_script_file}].to_i
 			return nil
 		end
 	end
@@ -87,9 +83,8 @@ EOF
 	end
 
 	def cancel_job
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			 fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{$$}.stop"
-			 File.open(fname, 'w'){|file| file.puts "\n"}
+		if use_launcher
+      cancel_job_launcher
 		else
 			`scancel #{@job_no}`
 		end
@@ -104,7 +99,7 @@ EOF
 	end
 
 def get_run_status(job_no, current_status)
-	if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
+	if use_launcher
 		return :Unknown
 	end
 	line = current_status.split(/\n/).grep(Regexp.new(job_no.to_s))[0]
@@ -126,5 +121,5 @@ def get_run_status(job_no, current_status)
 	end
 end
 
-	end
+end
 end
