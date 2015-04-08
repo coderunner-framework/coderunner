@@ -11,8 +11,8 @@ class CodeRunner
 		end
 		def run_command
 	# 		"qsub #{batch_script_file}"
-			if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
-				return %[ibrun -n #{@nprocs} -o 0 #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+			if use_launcher
+				return %[#{code_run_environment}\n ibrun -n #{@nprocs} -o 0 #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 			else
 				"ibrun #{executable_location}/#{executable_name} #{parameter_string}"
 			end

@@ -422,7 +422,7 @@ EOF
               sleep refresh.to_i while %x[ps -e -o pid,ppid].split("\n").grep(Regexp.new("^\\s*#{wpid}\\s+#{ppid}")).size > 0
             end
             #p ["command", command]
-            exec(command + "; wait")
+            exec(command + "\n wait")
           end
           `cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`
           mutex.synchronize{processes.push pid}
