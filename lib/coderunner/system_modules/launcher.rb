@@ -11,12 +11,12 @@ class CodeRunner
       launcher_prefix and launcher_prefix.size > 0
     end
     def queue_status_launcher
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status.txt]  +
-			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{prefix}/queue_status2.txt] 
+			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{launcher_prefix}/queue_status.txt]  +
+			%x[cat #{ENV['HOME']}/.coderunner_to_launch_#{launcher_prefix}/queue_status2.txt] 
     end 
     def execute_launcher
       launch_id = "#{Time.now.to_i}#{$$}"
-      fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{launch_id}"
+      fname = ENV['HOME'] + "/.coderunner_to_launch_#{launcher_prefix}/#{launch_id}"
       File.open(fname + '.start', 'w'){|file| file.puts "cd #{Dir.pwd};#{run_command}"}
       sleep 1 until FileTest.exist? fname + '.pid'
       pid = File.read(fname + '.pid').to_i
@@ -24,7 +24,7 @@ class CodeRunner
       return pid
     end
     def cancel_job_launcher
-      fname = ENV['HOME'] + "/.coderunner_to_launch_#{prefix}/#{$$}.stop"
+      fname = ENV['HOME'] + "/.coderunner_to_launch_#{launcher_prefix}/#{$$}.stop"
       File.open(fname, 'w'){|file| file.puts "\n"}
     end
   end
