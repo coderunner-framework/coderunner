@@ -9,6 +9,8 @@ source "http://rubygems.org"
   gem "gsl_extras", ">= 0.3.0"
   #gem "ruby-netcdf", ">= 0.6.6"
 	gem "hostmanager", "> 0.1.0"
+	gem "command-line-flunky", "> 0.1.0"
+  gem "git", ">= 1.2.9"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

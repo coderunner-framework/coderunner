@@ -1,4 +1,4 @@
-
+if false
 require 'helper'
 require 'rbconfig'
 CodeRunner::RemoteCodeRunner::DISPLAY_REMOTE_INVOCATION = true
@@ -420,4 +420,6 @@ class TestFortranNamelistC < Test::Unit::TestCase
 		FileUtils.rm(CodeRunner::Cubecalc::WithNamelist.rcp.user_defaults_location + '/cubecalctest_defaults.rb')
 		FileUtils.rm('test/cubecalc_namelist')
 	end
+end
+
 end
