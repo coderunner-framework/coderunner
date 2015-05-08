@@ -54,6 +54,7 @@ EOF
     ['add_remote', 'adrm', 2,  'Add a remote url to the repository.', ['name', 'url'], [:Y]],
     ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
     ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates one there before pushing.', ['name', 'url'], [:r, :Y]],
+    ['pull_repository', 'pull', 2,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
 
   ]
 
@@ -133,9 +134,17 @@ class CodeRunner
             namehost = $~[:namehost]
             folder = $~[:folder]
             p namehost, folder
-            system %[ssh #{namehost} "mkdir -p #{folder} && cd #{folder} && git init --bare"]
+            system %[git bundle create .tmpbundle --all]
+            system %[ssh #{namehost} "mkdir -p #{folder}"]
+            system %[scp .tmpbundle #{namehost}:#{folder}/.]
+            system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
+            system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
+            #push_repository(copts.dup.absorb(r: r.name))
+            repo.remotes.each do |other_remote|
+              next if other_remote.name == r.name
+              system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote add #{other_remote.name} #{other_remote.url}"]
+            end
           end 
-          push_repository(copts)
         }
       end
       def push_repository(copts)
@@ -147,6 +156,17 @@ class CodeRunner
             rems = repo.remotes
           end
           rems.each{|r| repo.push(r)}
+        }
+      end
+      def pull_repository(copts)
+        Dir.chdir(copts[:Y]){
+          repo = Repository.open(Dir.pwd)
+          if copts[:r]
+            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+          else
+            rems = repo.remotes
+          end
+          rems.each{|r| repo.pull(r)}
         }
       end
     end
