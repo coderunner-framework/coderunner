@@ -50,11 +50,12 @@ EXAMPLES
 EOF
 
   COMMANDS_WITH_HELP = [
-    ['init_repository', 'init', 1,  'Create a new repository with the given name.', ['name'], []],
     ['add_remote', 'adrm', 2,  'Add a remote url to the repository.', ['name', 'url'], [:Y]],
-    ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
-    ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates one there before pushing.', ['name', 'url'], [:r, :Y]],
+    ['add_folder', 'add', 1,  'Add the folder to the repository... this adds the directory tree and all coderunner data files to the repository, e.g. .code_runner_info.rb, script defaults, command histories etc. Note that this command must be issued in the root of the repository, or with the -Y flag giving the root of the repository.', ['folder'], [:Y]],
+    ['init_repository', 'init', 1,  'Create a new repository with the given name.', ['name'], []],
     ['pull_repository', 'pull', 2,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
+    ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates a bundle which is then copied to and cloned on the remote destination to create the repository.', ['name', 'url'], [:r, :Y]],
+    ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
 
   ]
 
@@ -121,6 +122,9 @@ class CodeRunner
           repo.add_remote(name, url)
         }
       end
+      def try_system(str)
+        raise "Failed command: #{str}" unless system str
+      end
       def push_and_create_repository(copts)
         Dir.chdir(copts[:Y]){
           repo = Repository.open(Dir.pwd)
@@ -134,18 +138,19 @@ class CodeRunner
             namehost = $~[:namehost]
             folder = $~[:folder]
             p namehost, folder
-            system %[git bundle create .tmpbundle --all]
-            system %[ssh #{namehost} "mkdir -p #{folder}"]
-            system %[scp .tmpbundle #{namehost}:#{folder}/../.]
-            #system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
-            system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
-            #system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
-            system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
+            try_system %[git bundle create .tmpbundle --all]
+            try_system %[ssh #{namehost} "mkdir -p #{folder}"]
+            try_system %[scp .tmpbundle #{namehost}:#{folder}/../.]
+            try_system %[rm .tmpbundle]
+            #try_system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
+            try_system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
+            #try_system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
+            try_system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
             #push_repository(copts.dup.absorb(r: r.name))
             repo.remotes.each do |other_remote|
               next if other_remote.name == r.name
-              system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
-              #system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
+              try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
+              #try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
             end
           end 
         }
@@ -171,6 +176,20 @@ class CodeRunner
           end
           rems.each{|r| repo.pull(r)}
         }
+      end
+      def add_folder(folder, copts)
+        repo = Repository.open(copts[:Y])
+        Dir.chdir(folder) do
+          require 'find'
+          #files = []
+          Find.find('.') { |e| (puts e; repo.add(e)) if
+            e =~ /code_runner_info.rb/ or
+            e =~ /code_runner_results.rb/ or 
+            e =~ /.code-runner-irb-save-history/ or
+            e =~ /.code_runner_script_defaults.rb/
+          }
+        end
+        repo.commit_all("Added folder #{folder}")
       end
     end
   end
