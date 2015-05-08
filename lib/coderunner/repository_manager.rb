@@ -51,7 +51,9 @@ EOF
 
   COMMANDS_WITH_HELP = [
     ['init_repository', 'init', 1,  'Create a new repository with the given name.', ['name'], []],
-    ['add_remote', 'adrm', 2,  'Add a remote url to the repository.', ['name', 'url'], []],
+    ['add_remote', 'adrm', 2,  'Add a remote url to the repository.', ['name', 'url'], [:Y]],
+    ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
+    ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates one there before pushing.', ['name', 'url'], [:r, :Y]],
 
   ]
 
@@ -59,6 +61,7 @@ EOF
 
   COMMAND_LINE_FLAGS_WITH_HELP = [
     #['--boolean', '-b', GetoptLong::NO_ARGUMENT, 'A boolean option'],
+    ['--remotes', '-r', GetoptLong::REQUIRED_ARGUMENT, 'A comma separated list of remotes.'],
     ['--other-folder', '-Y', GetoptLong::REQUIRED_ARGUMENT, 'Specify the path of the folder where you want to run this command.'],
 
     ]
@@ -101,6 +104,7 @@ class CodeRunner
       # options (copts) hash
       def setup(copts)
         copts[:Y] ||= Dir.pwd
+        copts[:Y] = File.expand_path(copts[:Y])
       end
       def verbosity
         2
@@ -114,6 +118,35 @@ class CodeRunner
         Dir.chdir(copts[:Y]){
           repo = Repository.open(Dir.pwd)
           repo.add_remote(name, url)
+        }
+      end
+      def push_and_create_repository(copts)
+        Dir.chdir(copts[:Y]){
+          repo = Repository.open(Dir.pwd)
+          if copts[:r]
+            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+          else
+            raise "Must specify remotes using the -r flag when calling push_and_create_repository"
+          end
+          rems.each do |r|
+            r.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+            namehost = $~[:namehost]
+            folder = $~[:folder]
+            p namehost, folder
+            system %[ssh #{namehost} "mkdir -p #{folder} && cd #{folder} && git init --bare"]
+          end 
+          push_repository(copts)
+        }
+      end
+      def push_repository(copts)
+        Dir.chdir(copts[:Y]){
+          repo = Repository.open(Dir.pwd)
+          if copts[:r]
+            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+          else
+            rems = repo.remotes
+          end
+          rems.each{|r| repo.push(r)}
         }
       end
     end
@@ -130,5 +163,4 @@ require 'command-line-flunky'
 
 if $0==__FILE__
   CommandLineFlunky.run_script
-
 end

@@ -24,7 +24,8 @@ class TestCreate < Test::Unit::TestCase
   def test_create
     Dir.chdir(tfolder) {
       assert_system("#$coderunnerrepo_command init myrepo")
-      assert_system("#$coderunnerrepo_command adrm local edmundhighcock@localhost:#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm local ssh://edmundhighcock@localhost/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
     }
   end
   def teardown
