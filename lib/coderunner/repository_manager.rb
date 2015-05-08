@@ -136,13 +136,16 @@ class CodeRunner
             p namehost, folder
             system %[git bundle create .tmpbundle --all]
             system %[ssh #{namehost} "mkdir -p #{folder}"]
-            system %[scp .tmpbundle #{namehost}:#{folder}/.]
-            system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
-            system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
+            system %[scp .tmpbundle #{namehost}:#{folder}/../.]
+            #system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
+            system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
+            #system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
+            system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
             #push_repository(copts.dup.absorb(r: r.name))
             repo.remotes.each do |other_remote|
               next if other_remote.name == r.name
-              system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote add #{other_remote.name} #{other_remote.url}"]
+              system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
+              #system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
             end
           end 
         }
