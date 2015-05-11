@@ -56,6 +56,7 @@ EOF
     ['pull_repository', 'pull', 2,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
     ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates a bundle which is then copied to and cloned on the remote destination to create the repository.', ['name', 'url'], [:r, :Y]],
     ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
+    ['set_repo_metadata', 'mdata', 1,  "Give a hash of metadata to modify e.g., '{autocommit: false}. Things that can be modified are: autocommit: true/false, automatically commit repo changes made by CodeRunner, default true'.", ['hash'], [:Y]],
 
   ]
 
@@ -113,6 +114,7 @@ class CodeRunner
       end
       def init_repository(name, copts)
         repo = Repository.init(name)
+        repo.init_metadata
         repo.init_readme
         repo.init_defaults_folder
       end
@@ -178,7 +180,7 @@ class CodeRunner
         }
       end
       def add_folder(folder, copts)
-        repo = Repository.open(copts[:Y])
+        repo = Repository.open_in_subfolder(folder)
         Dir.chdir(folder) do
           require 'find'
           #files = []
@@ -189,7 +191,7 @@ class CodeRunner
             e =~ /.code_runner_script_defaults.rb/
           }
         end
-        repo.commit_all("Added folder #{folder}")
+        repo.autocommit_all("Added folder #{repo.relative_path(folder)}")
       end
     end
   end

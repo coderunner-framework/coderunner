@@ -17,6 +17,14 @@ class CodeRunner
 		def setup_interactive
 			@runner = CodeRunner.fetch_runner(CodeRunner::DEFAULT_COMMAND_OPTIONS.dup) unless CodeRunner::DEFAULT_COMMAND_OPTIONS[:q]
 			@r = @runner
+      if FileTest.exist?(@r.root_folder + '.code-runner-irb-save-history')
+        if @r.is_in_repo?
+          repo = Repository.open_in_subfolder(@r.root_folder)
+          repo.add(@r.root_folder + '/.code-runner-irb-save-history')
+          repo.autocommit("--Updated save history in #{repo.relative_path(@r.root_folder)}")
+        end
+      end
+
 		end
 		def pwd
 			puts Dir.pwd

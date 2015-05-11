@@ -171,6 +171,15 @@ class CodeRunner
 			key = LONG_TO_SHORT.key(key) if LONG_TO_SHORT.key(key)
 			set(key, value) if value
 		end
+    if is_in_repo?
+      repo = Repository.open_in_subfolder(@root_folder)
+      Dir.chdir(@root_folder) do
+        repo.add('.code_runner_script_defaults.rb')
+        repo.autocommit("Updated script defaults in #{repo.relative_path}")
+        #repo.add('.code-runner-irb-save-history')
+      end
+    end
+
 # 		ep options
 		
 		log 'modlet in initialize', @modlet
@@ -1193,7 +1202,13 @@ Conditions contain a single = sign: #{conditions}
 			runs.each do |run| 
 # 				ep run.id, run_list.keys		
 				Dir.chdir(run.directory){traverse_directories}
+
 			end
+      if is_in_repo? @root_folder
+        runs.each do |run| 
+          Dir.chdir(run.directory){run.add_to_repo}
+        end
+      end
 			@write_status_dots = wsd	
 			save_large_cache
 			File.delete("submitting")

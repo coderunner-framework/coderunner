@@ -1,13 +1,67 @@
 require 'git'
 class CodeRunner
+  def is_in_repo?(folder=@root_folder)
+    Repository.repo_folder(folder) ?  true : false
+  end
+  class Run
+    def add_to_repo
+      Dir.chdir(@directory) do
+        repo = Repository.open_in_subfolder
+        repo.add("code_runner_info.rb")
+        repo.add("code_runner_results.rb")
+        repo.autocommit("Submitted simulation id #{id} in folder #{repo.relative_path(@runner.root_folder)}")
+      end
+    end
+  end
   class Repository < Git::Base
+    # If the folder is within a coderunner repository
+    # return the root folder of the repository; else 
+    # return nil
+    def self.repo_folder(folder = Dir.pwd)
+      f2 = File.expand_path(folder)
+      while not (Dir.entries(f2).include?('.git') and 
+            Dir.entries(f2).include?('.code_runner_repo_metadata'))
+        f2 = File.expand_path(f2 + '/..')
+        (f2=nil; break) if f2 == '/' 
+        p 'f2 is ', f2
+      end
+      return f2
+    end
+    # Open a git object from within a subfolder of a repository
+    # Checks to see if the subfolder actually is inside a CodeRunner
+    # repository.
+    def self.open_in_subfolder(folder = Dir.pwd)
+      f2 = repo_folder(folder)
+      raise "#{folder} is not a coderunner repository " if not f2
+      return open(f2)
+    end
+    def relative_path(folder=Dir.pwd)
+      File.expand_path(folder).sub(File.expand_path(dir.to_s) + '/', '')
+    end
     def repo_file(path)
       "#{dir}/#{path}"
     end
     def init_readme
       File.open(repo_file("README.md"), "w"){|f| f.puts readme_text}
       add(repo_file("README.md"))
-      commit_all('Added README.md')
+      autocommit_all('Added README.md')
+    end
+    def init_metadata
+      Hash.phoenix(repo_file('.code_runner_repo_metadata')) do |hash|
+        hash[:creation_time] = Time.now.to_i
+        hash[:autocommit] = true
+      end
+      add(repo_file('.code_runner_repo_metadata'))
+      autocommit_all('Added metadata')
+    end
+    def metadata
+      Hash.phoenix(repo_file('.code_runner_repo_metadata'))
+    end
+    def autocommit(*args)
+      commit(*args) if metadata[:autocommit]
+    end
+    def autocommit_all(*args)
+      commit_all(*args) if metadata[:autocommit]
     end
     def init_defaults_folder
       FileUtils.makedirs(repo_file("defaults_files"))
@@ -21,7 +75,7 @@ EOF
       
       }
       add(repo_file("defaults_files/README"))
-      commit_all('Added defaults folder')
+      autocommit_all('Added defaults folder')
     end
     def readme_text
       return <<EOF
