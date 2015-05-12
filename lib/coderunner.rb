@@ -70,7 +70,7 @@ require "getoptlong"
 require "thread"
 require "fileutils"
 require "drb"
-require "test/unit/assertions"
+#require "test/unit/assertions"
 require 'parallelpipes'
 require 'find'
 

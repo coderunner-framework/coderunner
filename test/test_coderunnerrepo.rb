@@ -8,7 +8,7 @@ unless $cpp_command = ENV['CPP']
 end
 $coderunner_folder = File.dirname(File.expand_path(__FILE__)) + '/../'
 
-module Test::Unit::Assertions
+module MiniTest::Assertions
 	def assert_system(string)
 		assert(system(string), "System Command: '#{string}'")
 	end
@@ -20,7 +20,7 @@ $coderunnerrepo_command = "#{$ruby_command}  -I #{$coderunner_folder}lib/ #{$cod
 class Dummy
   include CodeRunner::InteractiveMethods
 end
-class TestCreate < Test::Unit::TestCase
+class TestCreate < MiniTest::Test
   def tfolder
     'test/createrepo'
   end
@@ -37,8 +37,8 @@ class TestCreate < Test::Unit::TestCase
   def test_create
     Dir.chdir(tfolder) {
       assert_system("#$coderunnerrepo_command init myrepo")
-      assert_system("#$coderunnerrepo_command adrm local ssh://edmundhighcock@localhost/#{Dir.pwd}/remote -Y myrepo")
-      assert_system("#$coderunnerrepo_command adrm dummy ssh://edmundhighcock@nohost/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`echo $HOSTNAME`.chomp}/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote -Y myrepo")
       assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
       #assert_equal(false, system("#$coderunnerrepo_command pushcr -r local -Y myrepo"))
       assert_system("cd myrepo; git remote rm dummy")
