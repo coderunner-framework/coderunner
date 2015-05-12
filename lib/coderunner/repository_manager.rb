@@ -181,17 +181,7 @@ class CodeRunner
       end
       def add_folder(folder, copts)
         repo = Repository.open_in_subfolder(folder)
-        Dir.chdir(folder) do
-          require 'find'
-          #files = []
-          Find.find('.') { |e| (puts e; repo.add(e)) if
-            e =~ /code_runner_info.rb/ or
-            e =~ /code_runner_results.rb/ or 
-            e =~ /.code-runner-irb-save-history/ or
-            e =~ /.code_runner_script_defaults.rb/
-          }
-        end
-        repo.autocommit_all("Added folder #{repo.relative_path(folder)}")
+        repo.add_folder(folder)
       end
     end
   end

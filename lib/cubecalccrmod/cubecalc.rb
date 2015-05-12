@@ -25,9 +25,11 @@ class CodeRunner
 
 @uses_mpi = false
 
+@repo_file_match = /results.txt/
+
 #@readout_list = @variables + @results
 
-@code_module_folder = folder = File.dirname(File.expand_path(__FILE__)) # i.e. the directory this file is in
+@code_module_folder = File.dirname(File.expand_path(__FILE__)) # i.e. the directory this file is in
 
 @namelists_to_print_not_specified = []
 

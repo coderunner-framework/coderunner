@@ -4,11 +4,17 @@ class CodeRunner
     Repository.repo_folder(folder) ?  true : false
   end
   class Run
+    # Add CodeRunner files within the run folder to git. If
+    # the run_class for this run defines the run class property
+    # repo_file_match, also add any files which match any of 
     def add_to_repo
       Dir.chdir(@directory) do
         repo = Repository.open_in_subfolder
         repo.add("code_runner_info.rb")
         repo.add("code_runner_results.rb")
+        Dir.entries.each do |f|
+          repo.add(f) if rcp.repo_file_match? and f =~ rcp.repo_file_match
+        end
         repo.autocommit("Submitted simulation id #{id} in folder #{repo.relative_path(@runner.root_folder)}")
       end
     end
@@ -56,6 +62,26 @@ class CodeRunner
     end
     def metadata
       Hash.phoenix(repo_file('.code_runner_repo_metadata'))
+    end
+    def add_folder(folder)
+      Dir.chdir(folder) do
+        require 'find'
+        #files = []
+        Find.find('.') { |e| (puts e; add(e)) if
+          e =~ /code_runner_info.rb/ or
+          e =~ /code_runner_results.rb/ or 
+          e =~ /.code-runner-irb-save-history/ or
+          e =~ /.code_runner_script_defaults.rb/ or
+          (Dir.entries(Dir.pwd).include?('.code_runner_script_defaults') and
+           (repo_file_match = (
+             rcp = CodeRunner.fetch_runner(Y: folder, U: true).run_class.rcp; 
+             rcp.repo_file_match? ? rcp.repo_file_match : false); 
+             repo_file_match =~ m
+           )
+          )
+        }
+      end
+      autocommit_all("Added folder #{relative_path(folder)}")
     end
     def autocommit(*args)
       commit(*args) if metadata[:autocommit]
