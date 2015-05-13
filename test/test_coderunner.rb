@@ -1,11 +1,11 @@
-if false
+if true
 require 'helper'
 require 'rbconfig'
 CodeRunner::RemoteCodeRunner::DISPLAY_REMOTE_INVOCATION = true
 
 
 
-module Test::Unit::Assertions
+module MiniTest::Assertions
 	def assert_system(string)
 		assert(system(string), "System Command: '#{string}'")
 	end
@@ -23,7 +23,7 @@ $coderunner_command = "#{$ruby_command}  -I lib/ lib/coderunner.rb"
 #end
 
 if true
-class TestSubmission  < Test::Unit::TestCase
+class TestSubmission  < MiniTest::Test
 	def setup
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
 		Dir.chdir('test'){CodeRunner.generate_cubecalc}
@@ -78,7 +78,7 @@ class TestSubmission  < Test::Unit::TestCase
 end
 
 
-class TestCodeRunner < Test::Unit::TestCase
+class TestCodeRunner < MiniTest::Test
 	
 	# Override this method as we want the tests to be run in the order they are defined
 	
@@ -201,17 +201,17 @@ class TestCodeRunner < Test::Unit::TestCase
 		assert_equal(21, @runner3.max_id)
 		#eputs "\ntesting set_start_id complete"
 		@runner3 = CodeRunner.new(tfolder2).update
-		assert_nothing_raised{@mrunner = CodeRunner::Merged.new(@runner, @runner3)}
+		@mrunner = CodeRunner::Merged.new(@runner, @runner3)
 		@mrunner.print_out(0)
     #STDIN.gets
 		assert_equal(@runner.run_list.size + 1, @mrunner.run_list.size)
 		@mrunner2 = @runner.merge(@runner3)
 		assert_equal(@mrunner2.run_list.keys, @mrunner.run_list.keys)
-    assert_nothing_raised{@mrunner.add_runner(@runner)}
+    @mrunner.add_runner(@runner)
     assert_equal(CodeRunner::Run::Merged, @mrunner.run_list[[2, 6]].class)
     assert_equal(6, @mrunner.run_list[[2, 6]].run.id)
     assert_system("#$coderunner_command st -Y #{tfolder} -Y #{tfolder2}")
-    assert_raise(RuntimeError){@mrunner.submit}
+    assert_raises(RuntimeError){@mrunner.submit}
     #STDIN.gets
 		FileUtils.rm_r tfolder2
 	end
@@ -261,6 +261,7 @@ class TestCodeRunner < Test::Unit::TestCase
 		#assert(!FileTest.exist?('results/submitting'))
 	#end
 	
+	if ENV['LATEX']
 	def test_latex_graphkit
 		Dir.chdir('test/results') do
 			#@runner.print_out(0)
@@ -282,7 +283,6 @@ class TestCodeRunner < Test::Unit::TestCase
 		end
 	end
 
-	if ENV['LATEX']
 	
 		def test_graphkit_multiplot
 			unless ENV['SHORT_TEST']
@@ -375,7 +375,7 @@ EOF
 end # class TestCodeRunner
 end # if false/true
 
-#class TestFortranNamelist < Test::Unit::TestCase
+#class TestFortranNamelist < MiniTest::Test
 	##require 'gs2crmod'
 	#def test_make_defaults
 		#Dir.chdir('test') do
@@ -387,7 +387,7 @@ end # if false/true
 #
 #
 ENV['CR_NON_INTERACTIVE'] = 'true'
-class TestFortranNamelistC < Test::Unit::TestCase
+class TestFortranNamelistC < MiniTest::Test
 	def setup
 	end
 	def test_synchronise_variables
