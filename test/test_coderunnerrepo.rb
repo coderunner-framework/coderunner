@@ -28,7 +28,7 @@ class TestCreate < MiniTest::Test
     'myrepo/crdummyfiles'
   end
   def setup
-    FileUtils.rm_r(tfolder)
+    FileUtils.rm_r(tfolder) if FileTest.exist? tfolder
     FileUtils.makedirs(tfolder)
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
 		Dir.chdir('test'){CodeRunner.generate_cubecalc}
@@ -37,7 +37,7 @@ class TestCreate < MiniTest::Test
   def test_create
     Dir.chdir(tfolder) {
       assert_system("#$coderunnerrepo_command init myrepo")
-      assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`echo $HOSTNAME`.chomp}/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`hostname`.chomp}/#{Dir.pwd}/remote -Y myrepo")
       assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote -Y myrepo")
       assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
       #assert_equal(false, system("#$coderunnerrepo_command pushcr -r local -Y myrepo"))
@@ -54,6 +54,39 @@ class TestCreate < MiniTest::Test
         FileUtils.touch('.code-runner-irb-save-history')
         Dummy.new.setup_interactive
       end
+      CodeRunner::RepositoryManager.remote_synchronize_up('local', 'myrepo/sims', {})
+      CodeRunner::RepositoryManager.remote_synchronize_down('local', 'myrepo/sims', {})
+      Dir.chdir('remote') do
+        FileUtils.makedirs 'sims'
+        Dir.chdir('sims') do
+          system "echo 'Hello' >> dummyfile"
+          #add('dummyfile')
+          system "git add dummyfile"
+          system "git commit -m 'added dummyfile'"
+          #autocommit_all('--Added dummyfile')
+          system "echo 'Hello' >> dummyfile"
+        end
+        #add('dummyfile')
+      end
+      err = assert_raises(RuntimeError){CodeRunner::RepositoryManager.remote_synchronize_up('local', 'myrepo/sims', {})}
+      p err.message
+      Dir.chdir('remote') do
+        Dir.chdir('sims') do
+          system "git add dummyfile"
+          system "git commit -m 'modified dummyfile'"
+        end
+      end
+      Dir.chdir('myrepo/sims') do
+        system "echo 'Hello' >> dummyfile"
+        #add('dummyfile')
+        system "git add dummyfile"
+        system "git commit -m 'added dummyfile'"
+        #autocommit_all('--Added dummyfile')
+        system "echo 'Hello' >> dummyfile"
+      end
+      err = assert_raises(RuntimeError){CodeRunner::RepositoryManager.remote_synchronize_down('local', 'myrepo/sims', {})}
+      p err.message
+      #CodeRunner::RepositoryManager.remote_synchronize_down('local', 'myrepo/sims', {})
     }
   end
   def teardown
