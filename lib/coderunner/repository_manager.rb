@@ -120,12 +120,18 @@ class CodeRunner
         repo.init_defaults_folder
       end
       def add_remote(name, url, copts)
+        url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+        barefolder = $~[:folder]
+        unless barefolder =~ /\.git$/
+          raise "All remotes must end in .git for coderunnerrepo"
+        end
         Dir.chdir(copts[:Y]){
           repo = Repository.open(Dir.pwd)
           repo.add_remote(name, url)
         }
       end
       def try_system(str)
+        puts str
         raise "Failed command: #{str}" unless system str
       end
       def push_and_create_repository(copts)
@@ -139,16 +145,23 @@ class CodeRunner
           rems.each do |r|
             r.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
             namehost = $~[:namehost]
-            folder = $~[:folder]
-            p namehost, folder
-            try_system %[git bundle create .tmpbundle --all]
-            try_system %[ssh #{namehost} "mkdir -p #{folder}"]
-            try_system %[scp .tmpbundle #{namehost}:#{folder}/../.]
-            try_system %[rm .tmpbundle]
+            barefolder = $~[:folder]
+            p namehost, barefolder
+            unless barefolder =~ /\.git$/
+              raise "All remotes must end in .git for coderunnerrepo"
+            end
+            folder = barefolder.sub(/.git$/, '')
+            #barefolder =folder.sub(/\/+$/, '') + '.git'
+            #try_system %[git bundle create .tmpbundle --all]
+            try_system %[ssh #{namehost} "mkdir -p #{barefolder} && cd #{barefolder} && git init --bare"]
+            repo.push(r)
+            try_system %[ssh #{namehost} "git clone #{barefolder} #{folder}"]
+            #try_system %[scp .tmpbundle #{namehost}:#{folder}/../.]
+            #try_system %[rm .tmpbundle]
             #try_system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
-            try_system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
+            #try_system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
             #try_system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
-            try_system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
+            #try_system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
             #push_repository(copts.dup.absorb(r: r.name))
             repo.remotes.each do |other_remote|
               next if other_remote.name == r.name

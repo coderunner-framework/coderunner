@@ -181,6 +181,43 @@ EOF
       puts string
       system string
     end
+
+    def add_remote(name, url)
+      url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      barefolder = $~[:folder]
+      unless barefolder =~ /\.git$/
+        raise "All remotes must end in .git for coderunnerrepo"
+      end
+      super(name, url)
+    end
+
+    def pull(remote)
+      remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      namehost = $~[:namehost]
+      barefolder = $~[:folder]
+      p namehost, barefolder
+      unless barefolder =~ /\.git$/
+        raise "All remotes must end in .git for coderunnerrepo"
+      end
+      folder = barefolder.sub(/.git$/, '')
+      try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
+      super(remote)
+    end
+    def push(remote)
+      remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      namehost = $~[:namehost]
+      barefolder = $~[:folder]
+      p namehost, barefolder
+      unless barefolder =~ /\.git$/
+        raise "All remotes must end in .git for coderunnerrepo"
+      end
+      folder = barefolder.sub(/.git$/, '')
+      super(remote)
+      try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]
+    end
+    def try_system(str)
+      RepositoryManager.try_system(str)
+    end
   end
 
 end
