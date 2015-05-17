@@ -114,20 +114,17 @@ class CodeRunner
         2
       end
       def init_repository(name, copts)
-        repo = Repository.init(name)
-        repo.init_metadata
-        repo.init_readme
-        repo.init_defaults_folder
+        Repository.init(name)
       end
       def add_remote(name, url, copts)
         url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
-        barefolder = $~[:folder]
-        unless barefolder =~ /\.git$/
-          raise "All remotes must end in .git for coderunnerrepo"
+        folder = $~[:folder]
+        if folder =~ /\.git$/
+          raise "Remotes cannot end in .git for coderunnerrepo"
         end
         Dir.chdir(copts[:Y]){
-          repo = Repository.open(Dir.pwd)
-          repo.add_remote(name, url)
+          repo = Repository.open_in_subfolder(Dir.pwd)
+          repo.bare_repo.add_remote(name, url)
         }
       end
       def try_system(str)
@@ -136,25 +133,27 @@ class CodeRunner
       end
       def push_and_create_repository(copts)
         Dir.chdir(copts[:Y]){
-          repo = Repository.open(Dir.pwd)
+          repo = Repository.open_in_subfolder(Dir.pwd)
+          bare_repo = repo.bare_repo
           if copts[:r]
-            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+            rems = copts[:r].split(/,/).map{|rname| bare_repo.remote(rname)} 
           else
             raise "Must specify remotes using the -r flag when calling push_and_create_repository"
           end
+          repo.simple_push(repo.remote("origin"))
           rems.each do |r|
             r.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
             namehost = $~[:namehost]
-            barefolder = $~[:folder]
+            folder = $~[:folder]
+            barefolder = folder + '.git'
             p namehost, barefolder
-            unless barefolder =~ /\.git$/
-              raise "All remotes must end in .git for coderunnerrepo"
+            if folder =~ /\.git$/
+              raise "Remotes must not end in .git for coderunnerrepo"
             end
-            folder = barefolder.sub(/.git$/, '')
             #barefolder =folder.sub(/\/+$/, '') + '.git'
             #try_system %[git bundle create .tmpbundle --all]
             try_system %[ssh #{namehost} "mkdir -p #{barefolder} && cd #{barefolder} && git init --bare"]
-            repo.push(r)
+            bare_repo.push(r)
             try_system %[ssh #{namehost} "git clone #{barefolder} #{folder}"]
             #try_system %[scp .tmpbundle #{namehost}:#{folder}/../.]
             #try_system %[rm .tmpbundle]
@@ -163,7 +162,7 @@ class CodeRunner
             #try_system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
             #try_system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
             #push_repository(copts.dup.absorb(r: r.name))
-            repo.remotes.each do |other_remote|
+            bare_repo.remotes.each do |other_remote|
               next if other_remote.name == r.name
               try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
               #try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]

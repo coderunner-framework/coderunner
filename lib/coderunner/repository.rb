@@ -24,7 +24,29 @@ class CodeRunner
   # slightly customised git repository. It contains 
   # methods for initializing standard files, and maintains
   # a small amount of metadata about the repository.
+  # In addition, every clone of coderunner repository
+  # comes in a pair: one bare repository, and one local 
+  # repository, which is a clone of the bare repository.
+  # This allows easy synchronisation of working directories
+  # without the need for a central server which all 
+  # working directories have access to.
   class Repository < Git::Base
+    # Create a coderunner repo, which consists of a
+    # twin set of a bare repo and a clone of that
+    # repo. folder must end in '.git'
+    #
+    def self.init(folder)
+      if folder =~ /\.git$/
+        raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .git and a clone of this bare repo"
+      end
+      super(folder + '.git', bare: true)
+      repo = clone(folder + '.git', folder)
+      repo.init_metadata
+      repo.init_readme
+      repo.init_defaults_folder
+      p 'remotes', repo.remotes.map{|r| r.name}
+      repo.simple_push(repo.remote("origin"))
+    end
     # If the folder is within a coderunner repository
     # return the root folder of the repository; else 
     # return nil
@@ -45,6 +67,11 @@ class CodeRunner
       f2 = repo_folder(folder)
       raise "#{folder} is not a coderunner repository " if not f2
       return open(f2)
+    end
+    # Returns a Git::Base object referring to the bare twin 
+    # repository.
+    def bare_repo
+      @bare_repo ||= Git::Base.open(dir.to_s + '.git')
     end
     def relative_path(folder=Dir.pwd)
       File.expand_path(folder).sub(File.expand_path(dir.to_s) + '/', '')
@@ -203,6 +230,13 @@ EOF
       try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
       super(remote)
     end
+    # A simple git push... does not try to push to local 
+    # bare repo or pull remote working repos
+    alias :simple_push :push
+
+    # First push to the bare '.git' twin repo, then push that
+    # bare repo to the remote, then pull remote repos from the 
+    # remote bare repos.
     def push(remote)
       remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
       namehost = $~[:namehost]
@@ -212,7 +246,7 @@ EOF
         raise "All remotes must end in .git for coderunnerrepo"
       end
       folder = barefolder.sub(/.git$/, '')
-      super(remote)
+      simple_push(remote)
       try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]
     end
     def try_system(str)
