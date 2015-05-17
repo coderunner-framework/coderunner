@@ -32,7 +32,7 @@ class TestCreate < MiniTest::Test
     FileUtils.makedirs(tfolder)
 		string = $cpp_command + ' ../cubecalc.cc -o cubecalc'
 		Dir.chdir('test'){CodeRunner.generate_cubecalc}
-		Dir.chdir(tfolder){assert_system string}
+		Dir.chdir(tfolder){assert_system string; FileUtils.rm('../cubecalc.cc')}
   end
   def test_create
     Dir.chdir(tfolder) {

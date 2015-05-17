@@ -1,4 +1,4 @@
-if false
+if true
 require 'helper'
 require 'rbconfig'
 CodeRunner::RemoteCodeRunner::DISPLAY_REMOTE_INVOCATION = true
