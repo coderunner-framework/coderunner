@@ -50,7 +50,7 @@ EXAMPLES
 EOF
 
   COMMANDS_WITH_HELP = [
-    ['add_remote', 'adrm', 2,  'Add a remote url to the repository.', ['name', 'url'], [:Y]],
+    ['add_remote', 'adrm', 2,  'Add a remote url to the repository. The url must not end in \'.git\'', ['name', 'url'], [:Y]],
     ['add_folder', 'add', 1,  'Add the folder to the repository... this adds the directory tree and all coderunner data files to the repository, e.g. .code_runner_info.rb, script defaults, command histories etc. Note that this command must be issued in the root of the repository, or with the -Y flag giving the root of the repository.', ['folder'], [:Y]],
     ['init_repository', 'init', 1,  'Create a new repository with the given name.', ['name'], []],
     ['pull_repository', 'pull', 2,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
@@ -174,20 +174,20 @@ class CodeRunner
         Dir.chdir(copts[:Y]){
           repo = Repository.open(Dir.pwd)
           if copts[:r]
-            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+            rems = copts[:r].split(/,/).map{|rname| repo.bare_repo.remote(rname)} 
           else
-            rems = repo.remotes
+            rems = repo.bare_repo.remotes
           end
           rems.each{|r| repo.push(r)}
         }
       end
       def pull_repository(copts)
         Dir.chdir(copts[:Y]){
-          repo = Repository.open(Dir.pwd)
+          repo = Repository.open_in_subfolder(Dir.pwd)
           if copts[:r]
-            rems = copts[:r].split(/,/).map{|rname| repo.remote(rname)} 
+            rems = copts[:r].split(/,/).map{|rname| repo.bare_repo.remote(rname)} 
           else
-            rems = repo.remotes
+            rems = repo.bare_repo.remotes
           end
           rems.each{|r| repo.pull(r)}
         }

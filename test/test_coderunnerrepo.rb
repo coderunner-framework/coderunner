@@ -41,9 +41,8 @@ class TestCreate < MiniTest::Test
       #assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`hostname`.chomp}.local/#{Dir.pwd}/remote.git -Y myrepo")
       assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote -Y myrepo")
       assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
-      return
       #assert_equal(false, system("#$coderunnerrepo_command pushcr -r local -Y myrepo"))
-      assert_system("cd myrepo; git remote rm dummy")
+      assert_system("cd myrepo.git; git remote rm dummy")
       assert_system("#$coderunnerrepo_command pull -Y myrepo")
       assert_system("#$coderunnerrepo_command push -Y myrepo")
       FileUtils.makedirs(dffolder)

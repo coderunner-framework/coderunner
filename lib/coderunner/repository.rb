@@ -56,7 +56,7 @@ class CodeRunner
             Dir.entries(f2).include?('.code_runner_repo_metadata'))
         f2 = File.expand_path(f2 + '/..')
         (f2=nil; break) if f2 == '/' 
-        p 'f2 is ', f2
+        #p 'f2 is ', f2
       end
       return f2
     end
@@ -152,7 +152,7 @@ Created on: #{Time.now.to_s}
 EOF
     end
     def split_url(remote_name)
-      remote(remote_name).url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      bare_repo.remote(remote_name).url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
       namehost = $~[:namehost]
       folder = $~[:folder]
       return [namehost, folder]
@@ -218,35 +218,48 @@ EOF
       super(name, url)
     end
 
+    alias :simple_pull :pull
+
+    # Pull from the given remote object. remote must be a remote
+    # object from the twin bare repo, i.e. a member of bare_repo.remotes
+    # NOT a remote from the coderunner repo (which only ever has
+    # one remote: origin, corresponding to the bare repo).
     def pull(remote)
       remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
       namehost = $~[:namehost]
-      barefolder = $~[:folder]
+      folder = $~[:folder]
+      barefolder = folder + '.git'
       p namehost, barefolder
-      unless barefolder =~ /\.git$/
-        raise "All remotes must end in .git for coderunnerrepo"
+      if folder =~ /\.git$/
+        raise "Remotes must not end in .git for coderunnerrepo"
       end
-      folder = barefolder.sub(/.git$/, '')
       try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
-      super(remote)
+      bare_repo.pull(remote)
+      simple_pull(remote('origin'))
     end
     # A simple git push... does not try to push to local 
     # bare repo or pull remote working repos
     alias :simple_push :push
 
+    # Push to the given remote object. remote must be a remote
+    # object from the twin bare repo, i.e. a member of bare_repo.remotes
+    # NOT a remote from the coderunner repo (which only ever has
+    # one remote: origin, corresponding to the bare repo).
+    #
     # First push to the bare '.git' twin repo, then push that
     # bare repo to the remote, then pull remote repos from the 
     # remote bare repos.
     def push(remote)
       remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
       namehost = $~[:namehost]
-      barefolder = $~[:folder]
+      folder = $~[:folder]
+      barefolder = folder + '.git'
       p namehost, barefolder
-      unless barefolder =~ /\.git$/
-        raise "All remotes must end in .git for coderunnerrepo"
+      if folder =~ /\.git$/
+        raise "Remotes must not end in .git for coderunnerrepo"
       end
-      folder = barefolder.sub(/.git$/, '')
-      simple_push(remote)
+      simple_push(remote('origin'))
+      bare_repo.push(remote)
       try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]
     end
     def try_system(str)
