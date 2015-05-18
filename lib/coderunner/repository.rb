@@ -177,22 +177,12 @@ EOF
     # the given remote. (Obviously folder must 
     # be a subfolder within the repository).
     def rsyncd(remote_name, folder)
-      #f2 = File.expand_path(folder)
       namehost, remote_folder, _barefolder = split_url(remote_name)
       rpath = relative_path(folder)
       if File.expand_path(folder) == File.expand_path(dir.to_s)
         raise "Cannot run rsyncd in the top level of a repository"
       end 
       string =  "rsync -av #{namehost}:#{remote_folder}/#{rpath}/ #{folder}/"
-      #Dir.chdir(folder) do
-        #FileUtils.touch('dummyfile')
-        #add('dummyfile')
-        #autocommit_all('--Added dummyfile')
-        #system "echo 'Hello' >> dummyfile"
-        ##add('dummyfile')
-      #end
-      #p status.changed.map{|k,f| [p1=File.expand_path(folder), p2=File.expand_path(dir.to_s + '/' + f.path), p2.include?(p1), p1.include?(p2)]}
-      #p changed_in_folder(folder).map{|k,f| f.path}
       if changed_in_folder(folder).size > 0
         raise "You have some uncommitted changes in the folder #{folder}. Please commit these changes before calling rsyncd"
       end
@@ -203,18 +193,14 @@ EOF
     # the given remote. (Obviously folder must 
     # be a subfolder within the repository).
     def rsyncu(remote_name, folder)
-      #f2 = File.expand_path(folder)
       namehost, remote_folder, _barefolder = split_url(remote_name)
       rpath = relative_path(folder)
       if File.expand_path(folder) == File.expand_path(dir.to_s)
         raise "Cannot run rsyncd in the top level of a repository"
       end 
       string =  "rsync -av  #{folder}/ #{namehost}:#{remote_folder}/#{rpath}/"
-      #p status.changed.map{|k,f| [p1=File.expand_path(folder), p2=File.expand_path(dir.to_s + '/' + f.path), p2.include?(p1), p1.include?(p2)]}
-      #p changed_in_folder(folder).map{|k,f| f.path}
 
       cif = `ssh #{namehost} "cd #{remote_folder}/#{rpath} && echo "START" && git status"`
-      #p cif
       if cif =~ /START.*modified/m
         raise "You have some uncommitted changes in the remote folder #{rpath}. Please commit these changes before calling rsyncu"
       end

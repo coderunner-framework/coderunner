@@ -152,32 +152,13 @@ class CodeRunner
           end
           repo.simple_push(repo.remote("origin"))
           rems.each do |r|
-            #r.url =~ Repository.url_regex
-            #namehost = $~[:namehost]
-            #barefolder = $~[:folder]
-            #unless barefolder =~ Repository.bare_ext_reg
-              #puts "Remotes must end in cr.git for coderunnerrepo: skipping '#{r.url}'"
-              #next
-            #end
-            #folder = barefolder.sub(Repository.bare_ext_reg, '')
-            #p namehost, barefolder
             namehost, folder, barefolder = repo.split_url(r.name)
-            #barefolder =folder.sub(/\/+$/, '') + '.git'
-            #try_system %[git bundle create .tmpbundle --all]
             try_system %[ssh #{namehost} "mkdir -p #{barefolder} && cd #{barefolder} && git init --bare"]
             bare_repo.push(r)
             try_system %[ssh #{namehost} "git clone #{barefolder} #{folder}"]
-            #try_system %[scp .tmpbundle #{namehost}:#{folder}/../.]
-            #try_system %[rm .tmpbundle]
-            #try_system %[ssh #{namehost} "cd #{folder} && git clone .tmpbundle #{repname = File.basename(repo.dir.to_s)} "]
-            #try_system %[ssh #{namehost} "cd #{folder} && git clone ../.tmpbundle ."]
-            #try_system %[ssh #{namehost} "cd #{folder}/#{repname} && git remote rm origin"]
-            #try_system %[ssh #{namehost} "cd #{folder} && git remote rm origin"]
-            #push_repository(copts.dup.absorb(r: r.name))
             bare_repo.remotes.each do |other_remote|
               next if other_remote.name == r.name
               try_system %[ssh #{namehost} "cd #{barefolder} && git remote add #{other_remote.name} #{other_remote.url}"]
-              #try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
             end
           end 
         }
