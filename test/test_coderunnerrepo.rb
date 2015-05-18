@@ -37,9 +37,9 @@ class TestCreate < MiniTest::Test
   def test_create
     Dir.chdir(tfolder) {
       assert_system("#$coderunnerrepo_command init myrepo")
-      assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@localhost/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@localhost/#{Dir.pwd}/remote.cr.git -Y myrepo")
       #assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`hostname`.chomp}.local/#{Dir.pwd}/remote.git -Y myrepo")
-      assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote -Y myrepo")
+      assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote.cr.git -Y myrepo")
       assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
       #assert_equal(false, system("#$coderunnerrepo_command pushcr -r local -Y myrepo"))
       assert_system("cd myrepo.git; git remote rm dummy")

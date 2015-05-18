@@ -18,11 +18,12 @@ class CodeRunner
 			@runner = CodeRunner.fetch_runner(CodeRunner::DEFAULT_COMMAND_OPTIONS.dup) unless CodeRunner::DEFAULT_COMMAND_OPTIONS[:q]
 			@r = @runner
       if @r
-        if FileTest.exist?(@r.root_folder + '/.code-runner-irb-save-history')
+        histfile = @r.root_folder + '/.code-runner-irb-save-history'
+        if FileTest.exist?(histfile)
           if @r.is_in_repo?
             repo = Repository.open_in_subfolder(@r.root_folder)
-            repo.add(@r.root_folder + '/.code-runner-irb-save-history')
-            repo.autocommit("--Updated save history in #{repo.relative_path(@r.root_folder)}")
+            repo.add(histfile)
+            repo.autocommit("Updated save history in #{repo.relative_path(@r.root_folder)}") if repo.modified? histfile
           end
         end
       end

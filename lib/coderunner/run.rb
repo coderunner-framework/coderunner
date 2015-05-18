@@ -418,18 +418,31 @@ def defaults_file_name
 	end
 end
 
+@code_module_folder = "/dev/null"
+
+# A list of places where defaults files may be found
+
+def self.defaults_location_list
+  locs = [rcp.user_defaults_location, rcp.code_module_folder + "/defaults_files"]
+  if Repository.repo_folder
+    repo = Repository.open_in_subfolder(Dir.pwd)
+    folder = repo.dir.to_s + '/defaults_files/' + rcp.code + 'crmod/'
+    FileUtils.makedirs folder
+    locs.unshift folder
+  end
+  locs
+end
+
+def defaults_location_list
+  self.class.defaults_location_list
+end
+
 # Return the folder where the default defaults file is located.
 
 def defaults_location
-	#if @runner.defaults_file
-		location = [rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
-		#raise "Defaults file: #{defaults_file_name} not found" unless location
-		raise "Can't find defaults_file #{defaults_file_name} in #{[rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].join(',')}." unless location
-		location
-		#return location
-	#else
-		#location = [rcp.user_defaults_location, rcp.code_module_folder	+ "/defaults_files"].find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
-	#end
+  location = defaults_location_list.find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
+  raise "Can't find defaults_file #{defaults_file_name} in #{defaults_location_list.join(',')}." unless location
+  location
 end
 
 # Return true if the run is completed, false otherwise
@@ -518,6 +531,14 @@ def update_submission_parameters(parameters, start_from_defaults=true)
 EOF
 			main_defaults_file_text = header + main_defaults_file_text
 			File.open(defaults_file_name, 'w'){|file| file.puts main_defaults_file_text}
+      if @runner.is_in_repo?
+        repo = Repository.open_in_subfolder(Dir.pwd)
+        repo.add(defaults_file_name)
+        repo.autocommit("Added local defaults file #{defaults_file_name} in folder #{Dir.pwd}")
+      end
+                                                                                     #{defaults_file_name} in folder #{Dir.pwd
+                                                                                     ##{defaults_file_name} in folder #{Dir.pwd
+                                                                                     #
 		end
 		#FileUtils.cp("#{defaults_location}/#{defaults_file_name}", defaults_file_name) 
 		

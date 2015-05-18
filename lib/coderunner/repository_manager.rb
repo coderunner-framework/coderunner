@@ -50,12 +50,14 @@ EXAMPLES
 EOF
 
   COMMANDS_WITH_HELP = [
-    ['add_remote', 'adrm', 2,  'Add a remote url to the repository. The url must not end in \'.git\'', ['name', 'url'], [:Y]],
+    ['add_remote', 'adrm', 2,  'Add a remote url to the repository. The url must end in \'.git\'', ['name', 'url'], [:Y]],
     ['add_folder', 'add', 1,  'Add the folder to the repository... this adds the directory tree and all coderunner data files to the repository, e.g. .code_runner_info.rb, script defaults, command histories etc. Note that this command must be issued in the root of the repository, or with the -Y flag giving the root of the repository.', ['folder'], [:Y]],
-    ['init_repository', 'init', 1,  'Create a new repository with the given name.', ['name'], []],
-    ['pull_repository', 'pull', 2,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
-    ['push_and_create_repository', 'pushcr', 2,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates a bundle which is then copied to and cloned on the remote destination to create the repository.', ['name', 'url'], [:r, :Y]],
-    ['push_repository', 'push', 2,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', ['name', 'url'], [:r, :Y]],
+    ['bare_repo_command', 'brc', 1,  'Execute the given command within the twin bare repository', ['command'], [:Y]],
+    ['init_repository', 'init', 1,  'Create a new repository with the given name. The name must not end in ".git". In fact, two repositories will be created, a working repo and a bare repo ending in .git. The bare repo is used to send and receive changes to remotes: the working repo should only push and pull to and from its twin bare repo.', ['name'], []],
+    ['list_remotes', 'lsr', 0,  'List remotes in the bare repository (the working repository should only have one remote: origin.', [], [:Y]],
+    ['pull_repository', 'pull', 0,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', [], [:r, :Y]],
+    ['push_and_create_repository', 'pushcr', 0,  'Push to a comma-separated list of remotes given by the -r option; this command assumes that there is no repository on the remote and creates twin pair of a bare repo and a working checkout.', [], [:r, :Y]],
+    ['push_repository', 'push', 0,  'Push repository to all remotes, or to a comma-separated list of remotes given by the -r option.', [], [:r, :Y]],
     ['remote_synchronize_down', 'rsyncd', 2,  'Bring the contents of the remote folder corresponding to the given folder (which must be a subfolder of a local coderunner repository) to the local system. The folder cannot be the top level of the repository. This command uses rsync to actually copy the files. The --delete option is not specified (i.e. files that do not exist on the remote will not be deleted).', ['remote', 'folder'], []],
     ['set_repo_metadata', 'mdata', 1,  "Give a hash of metadata to modify e.g., '{autocommit: false}. Things that can be modified are: autocommit: true/false, automatically commit repo changes made by CodeRunner, default true'.", ['hash'], [:Y]],
 
@@ -113,14 +115,22 @@ class CodeRunner
       def verbosity
         2
       end
+      def bare_repo_command(comm, copts)
+        Dir.chdir(copts[:Y]) do
+          repo = Repository.open_in_subfolder(Dir.pwd)
+          Dir.chdir(repo.bare_repo.dir.to_s) do
+            system comm
+          end
+        end
+      end
       def init_repository(name, copts)
         Repository.init(name)
       end
       def add_remote(name, url, copts)
-        url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
-        folder = $~[:folder]
-        if folder =~ /\.git$/
-          raise "Remotes cannot end in .git for coderunnerrepo"
+        url =~ Repository.url_regex
+        barefolder = $~[:folder]
+        unless barefolder =~ Repository.bare_ext_reg
+          raise "Remotes must end in .cr.git for coderunnerrepo"
         end
         Dir.chdir(copts[:Y]){
           repo = Repository.open_in_subfolder(Dir.pwd)
@@ -142,14 +152,16 @@ class CodeRunner
           end
           repo.simple_push(repo.remote("origin"))
           rems.each do |r|
-            r.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
-            namehost = $~[:namehost]
-            folder = $~[:folder]
-            barefolder = folder + '.git'
-            p namehost, barefolder
-            if folder =~ /\.git$/
-              raise "Remotes must not end in .git for coderunnerrepo"
-            end
+            #r.url =~ Repository.url_regex
+            #namehost = $~[:namehost]
+            #barefolder = $~[:folder]
+            #unless barefolder =~ Repository.bare_ext_reg
+              #puts "Remotes must end in cr.git for coderunnerrepo: skipping '#{r.url}'"
+              #next
+            #end
+            #folder = barefolder.sub(Repository.bare_ext_reg, '')
+            #p namehost, barefolder
+            namehost, folder, barefolder = repo.split_url(r.name)
             #barefolder =folder.sub(/\/+$/, '') + '.git'
             #try_system %[git bundle create .tmpbundle --all]
             try_system %[ssh #{namehost} "mkdir -p #{barefolder} && cd #{barefolder} && git init --bare"]
@@ -164,15 +176,23 @@ class CodeRunner
             #push_repository(copts.dup.absorb(r: r.name))
             bare_repo.remotes.each do |other_remote|
               next if other_remote.name == r.name
-              try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
+              try_system %[ssh #{namehost} "cd #{barefolder} && git remote add #{other_remote.name} #{other_remote.url}"]
               #try_system %[ssh #{namehost} "cd #{folder} && git remote add #{other_remote.name} #{other_remote.url}"]
             end
           end 
         }
       end
+      def list_remotes(copts)
+        Dir.chdir(copts[:Y]){
+          repo = Repository.open_in_subfolder(Dir.pwd)
+          repo.bare_repo.remotes.each do |r|
+            puts "#{r.name} #{r.url}"
+          end
+        }
+      end
       def push_repository(copts)
         Dir.chdir(copts[:Y]){
-          repo = Repository.open(Dir.pwd)
+          repo = Repository.open_in_subfolder(Dir.pwd)
           if copts[:r]
             rems = copts[:r].split(/,/).map{|rname| repo.bare_repo.remote(rname)} 
           else

@@ -761,10 +761,19 @@ end
 def self.use_new_defaults_file(name=ARGV[-2], input_file=ARGV[-1])
 	raise "Please specify a name and an input file" if name == "use_new_defaults_file"
 	defaults_filename = "#{name}_defaults.rb"
-	central_defaults_filename = rcp.user_defaults_location + "/" + defaults_filename
+
+	central_defaults_filename = defaults_location_list[0] + "/" + defaults_filename
 	raise "Defaults file: #{central_defaults_filename} already exists" if FileTest.exist? central_defaults_filename
 	make_new_defaults_file(name, input_file)
 	FileUtils.mv(defaults_filename, central_defaults_filename)
+  if Repository.repo_folder
+    repo = Repository.open_in_subfolder(Dir.pwd)
+    repo.add(central_defaults_filename)
+    repo.autocommit("Added defaults file #{defaults_filename}")
+  end #{defaults_filename}")
+#end #{defaults_filename}")
+  #end
+
 	#modlet = rcp.modlet? ? rcp.modlet : nil
 	#executable = rcp.executable? ? rcp.executable : CodeRunner::DEFAULT_RUNNER_OPTIONS
 	CodeRunner.fetch_runner(D: name) #(C: rcp.code, m: rcp.modlet, D: name, CodeRunner)

@@ -35,6 +35,13 @@ class CodeRunner
     # twin set of a bare repo and a clone of that
     # repo. folder must end in '.git'
     #
+    def self.url_regex
+      (/(?:ssh:\/\/)?(?<namehost>[^\/:]+):?(?<folder>.*$)/)
+    end
+    def self.bare_ext_reg
+      /\.cr\.git$/
+    end
+
     def self.init(folder)
       if folder =~ /\.git$/
         raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .git and a clone of this bare repo"
@@ -152,20 +159,26 @@ Created on: #{Time.now.to_s}
 EOF
     end
     def split_url(remote_name)
-      bare_repo.remote(remote_name).url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      bare_repo.remote(remote_name).url =~ Repository.url_regex
       namehost = $~[:namehost]
-      folder = $~[:folder]
-      return [namehost, folder]
+      barefolder = $~[:folder]
+      self.class.check_bare_ext(barefolder)
+      folder = barefolder.sub(/\.cr\.git$/, '')
+      return [namehost, folder, barefolder]
     end
-    def changed_in_folder(folder)
-      status.changed.find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
+    def modified_in_folder(folder)
+      (status.changed + status.added).find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
+    end
+    alias :changed_in_folder :modified_in_folder
+    def modified?(file)
+      (status.changed + status.added).find{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(file))}
     end
     # Bring all files in the given folder from 
     # the given remote. (Obviously folder must 
     # be a subfolder within the repository).
     def rsyncd(remote_name, folder)
       #f2 = File.expand_path(folder)
-      namehost, remote_folder = split_url(remote_name)
+      namehost, remote_folder, _barefolder = split_url(remote_name)
       rpath = relative_path(folder)
       if File.expand_path(folder) == File.expand_path(dir.to_s)
         raise "Cannot run rsyncd in the top level of a repository"
@@ -191,7 +204,7 @@ EOF
     # be a subfolder within the repository).
     def rsyncu(remote_name, folder)
       #f2 = File.expand_path(folder)
-      namehost, remote_folder = split_url(remote_name)
+      namehost, remote_folder, _barefolder = split_url(remote_name)
       rpath = relative_path(folder)
       if File.expand_path(folder) == File.expand_path(dir.to_s)
         raise "Cannot run rsyncd in the top level of a repository"
@@ -210,12 +223,22 @@ EOF
     end
 
     def add_remote(name, url)
-      url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
+      url =~ Repository.url_regex
       barefolder = $~[:folder]
-      unless barefolder =~ /\.git$/
-        raise "All remotes must end in .git for coderunnerrepo"
+      unless barefolder =~ Repository.bare_ext_reg
+        raise "All remotes must end in .cr.git for coderunnerrepo"
       end
       super(name, url)
+    end
+
+    def self.check_bare_ext(barefolder)
+      unless barefolder =~ bare_ext_reg
+        raise "Remotes must end in .cr.git for coderunnerrepo"
+      end
+    end
+
+    def bare_ext_reg
+      self.class.bare_ext_reg
     end
 
     alias :simple_pull :pull
@@ -225,14 +248,7 @@ EOF
     # NOT a remote from the coderunner repo (which only ever has
     # one remote: origin, corresponding to the bare repo).
     def pull(remote)
-      remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
-      namehost = $~[:namehost]
-      folder = $~[:folder]
-      barefolder = folder + '.git'
-      p namehost, barefolder
-      if folder =~ /\.git$/
-        raise "Remotes must not end in .git for coderunnerrepo"
-      end
+      namehost, folder, _barefolder = split_url(remote.name)
       try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
       bare_repo.pull(remote)
       simple_pull(remote('origin'))
@@ -250,14 +266,7 @@ EOF
     # bare repo to the remote, then pull remote repos from the 
     # remote bare repos.
     def push(remote)
-      remote.url =~ (/ssh:\/\/(?<namehost>[^\/]+)(?<folder>.*$)/)
-      namehost = $~[:namehost]
-      folder = $~[:folder]
-      barefolder = folder + '.git'
-      p namehost, barefolder
-      if folder =~ /\.git$/
-        raise "Remotes must not end in .git for coderunnerrepo"
-      end
+      namehost, folder, _barefolder = split_url(remote.name)
       simple_push(remote('origin'))
       bare_repo.push(remote)
       try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]

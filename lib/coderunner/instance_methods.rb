@@ -175,7 +175,7 @@ class CodeRunner
       repo = Repository.open_in_subfolder(@root_folder)
       Dir.chdir(@root_folder) do
         repo.add('.code_runner_script_defaults.rb')
-        repo.autocommit("Updated script defaults in #{repo.relative_path}")
+        repo.autocommit("Updated script defaults in #{repo.relative_path}") if repo.modified? '.code_runner_script_defaults'
         #repo.add('.code-runner-irb-save-history')
       end
     end
@@ -1204,7 +1204,7 @@ Conditions contain a single = sign: #{conditions}
 				Dir.chdir(run.directory){traverse_directories}
 
 			end
-      if is_in_repo? @root_folder
+      if is_in_repo? @root_folder and not @test_submission
         runs.each do |run| 
           Dir.chdir(run.directory){run.add_to_repo}
         end
