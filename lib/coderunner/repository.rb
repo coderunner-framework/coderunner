@@ -33,7 +33,7 @@ class CodeRunner
   class Repository < Git::Base
     # Create a coderunner repo, which consists of a
     # twin set of a bare repo and a clone of that
-    # repo. folder must end in '.git'
+    # repo. folder must end in '.cr.git'
     #
     def self.url_regex
       (/(?:ssh:\/\/)?(?<namehost>[^\/:]+):?(?<folder>.*$)/)
@@ -44,10 +44,10 @@ class CodeRunner
 
     def self.init(folder)
       if folder =~ /\.git$/
-        raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .git and a clone of this bare repo"
+        raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .cr.git and a clone of this bare repo"
       end
-      super(folder + '.git', bare: true)
-      repo = clone(folder + '.git', folder)
+      super(folder + '.cr.git', bare: true)
+      repo = clone(folder + '.cr.git', folder)
       repo.init_metadata
       repo.init_readme
       repo.init_defaults_folder
@@ -78,7 +78,7 @@ class CodeRunner
     # Returns a Git::Base object referring to the bare twin 
     # repository.
     def bare_repo
-      @bare_repo ||= Git::Base.open(dir.to_s + '.git')
+      @bare_repo ||= Git::Base.open(dir.to_s + '.cr.git')
     end
     def relative_path(folder=Dir.pwd)
       File.expand_path(folder).sub(File.expand_path(dir.to_s) + '/', '')
@@ -167,9 +167,12 @@ EOF
       return [namehost, folder, barefolder]
     end
     def modified_in_folder(folder)
-      (status.changed + status.added).find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
+      (status.changed + status.added + status.deleted).find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
     end
     alias :changed_in_folder :modified_in_folder
+    def deleted_in_folder(folder)
+      (status.deleted).find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
+    end
     def modified?(file)
       (status.changed + status.added).find{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(file))}
     end
@@ -207,7 +210,7 @@ EOF
       puts string
       system string
     end
-
+    
     def add_remote(name, url)
       url =~ Repository.url_regex
       barefolder = $~[:folder]
@@ -217,6 +220,7 @@ EOF
       super(name, url)
     end
 
+    # Check that barefolder ends in .cr.git
     def self.check_bare_ext(barefolder)
       unless barefolder =~ bare_ext_reg
         raise "Remotes must end in .cr.git for coderunnerrepo"

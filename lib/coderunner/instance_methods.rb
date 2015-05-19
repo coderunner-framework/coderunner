@@ -1571,6 +1571,13 @@ EOF
 		ids.each{|id| 
 			FileUtils.rm_r @run_list[id].directory if @run_list[id].directory and not ["", ".", ".."].include? @run_list[id].directory
 			@run_list.delete(id); @ids.delete(id); generate_combined_ids}
+    if is_in_repo?
+      repo = Repository.open_in_subfolder(@root_folder)
+      Dir.chdir(@root_folder){ 
+        repo.deleted_in_folder(Dir.pwd).each{|k,f| repo.add(repo.dir.to_s + '/' + f.path)}
+      }
+      repo.autocommit("Deleted simulations with ids #{ids} in folder #{repo.relative_path(@root_folder)}")
+    end
 		set_max_id(@ids.max || 0)
 		save_large_cache
 		generate_combined_ids

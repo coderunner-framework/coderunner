@@ -1,4 +1,4 @@
-if false
+if true
 require 'helper'
 require 'rbconfig'
 CodeRunner::RemoteCodeRunner::DISPLAY_REMOTE_INVOCATION = true
@@ -131,12 +131,12 @@ class TestCodeRunner < MiniTest::Test
     p rc
 		assert_equal(@runner.ids.sort, rc.ids.sort)
 		rc.print_out(0)
-		wdvh = rc.graphkit("width:height:depth:volume;;;height")
+		wdvh = rc.graphkit("width:height:depth:volume;;;volume")
 		#wdvh.gnuplot
 		assert_equal(4, wdvh.naxes)
 		assert_equal(1, wdvh.data.size)
-		assert_equal([30.0, 18.0, 24.0, 108.0, 27.0, 198.0], wdvh.data[0].axes[:f].data)
-		sds = rc.run_graphkit('sides;;[1,2].include? id')
+		assert_equal([18.0, 24.0, 27.0, 30.0, 108.0, 198.0], wdvh.data[0].axes[:f].data)
+		_sds = rc.run_graphkit('sides;;[1,2].include? id')
 		str = "A very very very looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonnnnnnnnnnnnnnnnnnnnnnnnnng string"
 		str2 = rc.retrieve(str.inspect)
 		assert_equal(str, str2)

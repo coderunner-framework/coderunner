@@ -42,7 +42,7 @@ class TestCreate < MiniTest::Test
       assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote.cr.git -Y myrepo")
       assert_system("#$coderunnerrepo_command pushcr -r local -Y myrepo")
       #assert_equal(false, system("#$coderunnerrepo_command pushcr -r local -Y myrepo"))
-      assert_system("cd myrepo.git; git remote rm dummy")
+      assert_system("cd myrepo.cr.git; git remote rm dummy")
       assert_system("#$coderunnerrepo_command pull -Y myrepo")
       assert_system("#$coderunnerrepo_command push -Y myrepo")
       FileUtils.makedirs(dffolder)
@@ -53,6 +53,11 @@ class TestCreate < MiniTest::Test
       FileUtils.makedirs('myrepo/sims')
       Dir.chdir('myrepo/sims') do
         CodeRunner.submit(C: 'cubecalc', m: 'empty', X: '../../cubecalc')
+        CodeRunner.submit(C: 'cubecalc', m: 'empty', X: '../../cubecalc')
+        r = CodeRunner.fetch_runner
+        r.conditions = 'id==2'
+        r.destroy no_confirm: true
+        #CodeRunner.delete(j: 2)
         FileUtils.touch('.code-runner-irb-save-history')
         Dummy.new.setup_interactive
       end
