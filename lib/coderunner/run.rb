@@ -296,6 +296,7 @@ def process_directory
 	@component_runs = []
 	generate_component_runs
 	save
+  commit_results if @runner.is_in_repo?
 	return self
 end
 

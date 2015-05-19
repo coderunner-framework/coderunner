@@ -18,6 +18,16 @@ class CodeRunner
         repo.autocommit("Submitted simulation id #{id} in folder #{repo.relative_path(@runner.root_folder)}")
       end
     end
+    def commit_results
+      Dir.chdir(@directory) do
+        repo = Repository.open_in_subfolder
+        repo.add("code_runner_results.rb")
+        Dir.entries.each do |f|
+          repo.add(f) if rcp.repo_file_match? and f =~ rcp.repo_file_match
+        end
+        repo.autocommit("Updated results for id #{id} in folder #{repo.relative_path(@runner.root_folder)}") if repo.changed_in_folder(@directory).size > 0
+      end
+    end
   end
   # This is a class which implements methods 
   # for managing a CodeRunner repository, which is a
