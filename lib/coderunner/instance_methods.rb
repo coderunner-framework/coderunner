@@ -1574,7 +1574,7 @@ EOF
     if is_in_repo?
       repo = Repository.open_in_subfolder(@root_folder)
       Dir.chdir(@root_folder){ 
-        repo.deleted_in_folder(Dir.pwd).each{|k,f| repo.add(repo.dir.to_s + '/' + f.path)}
+        repo.deleted_in_folder(Dir.pwd).each{|k,f| repo.remove(repo.dir.to_s + '/' + f.path)}
       }
       repo.autocommit("Deleted simulations with ids #{ids} in folder #{repo.relative_path(@root_folder)}")
     end

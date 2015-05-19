@@ -31,17 +31,17 @@ class CodeRunner
   # without the need for a central server which all 
   # working directories have access to.
   class Repository < Git::Base
-    # Create a coderunner repo, which consists of a
-    # twin set of a bare repo and a clone of that
-    # repo. folder must end in '.cr.git'
-    #
     def self.url_regex
       (/(?:ssh:\/\/)?(?<namehost>[^\/:]+):?(?<folder>.*$)/)
     end
     def self.bare_ext_reg
       /\.cr\.git$/
     end
-
+     
+    # Create a coderunner repo, which consists of a
+    # twin set of a bare repo and a clone of that
+    # repo. folder must end in '.cr.git'
+    #
     def self.init(folder)
       if folder =~ /\.git$/
         raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .cr.git and a clone of this bare repo"
