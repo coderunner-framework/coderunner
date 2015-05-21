@@ -1569,6 +1569,7 @@ EOF
 			gets
 		end
 		ids.each{|id| 
+      @run_list[id].clear_cache
 			FileUtils.rm_r @run_list[id].directory if @run_list[id].directory and not ["", ".", ".."].include? @run_list[id].directory
 			@run_list.delete(id); @ids.delete(id); generate_combined_ids}
     if is_in_repo?

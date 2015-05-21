@@ -85,6 +85,12 @@ def cache
 	@runner.cache[:runs][@id]
 end
 
+# Empty the cache for this run
+def clear_cache
+	@runner.cache[:runs] ||= {} 
+	@runner.cache[:runs][@id] = {} 
+end
+
 # The hard cache persists after the current program ceases because
 # it is written in the .code_runner_run_data file.
 # It will disappear if the -a or -A flags are specified at any point
@@ -220,8 +226,10 @@ end
 def process_directory
 	
 	# Clear the cache
-	@runner.cache[:runs]||={}
-	@runner.cache[:runs][@id] = {}
+  # EGH removed the two lines below because code module need the cache
+  # to last, e.g. if it contains references to other files
+	#@runner.cache[:runs]||={}
+	#@runner.cache[:runs][@id] = {}
 	logf(:process_directory)
 	raise CRFatal.new("Something has gone horribly wrong: runner.class is #{@runner.class} instead of CodeRunner") unless @runner.class.to_s == "CodeRunner"
 
