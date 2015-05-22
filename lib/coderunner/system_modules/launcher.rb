@@ -27,5 +27,11 @@ class CodeRunner
 			fname = CodeRunner.launcher_directory + "/#{$$}.stop"
 			File.open(fname, 'w'){|file| file.puts "\n"}
     end
+    def error_file_launcher
+      return "#{executable_name}.#{job_identifier}.e"
+    end
+    def output_file_launcher
+      return "#{executable_name}.#{job_identifier}.o"
+    end
   end
 end

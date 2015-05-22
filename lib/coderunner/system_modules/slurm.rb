@@ -17,7 +17,7 @@ module Slurm
 	def run_command
 # 		"qsub #{batch_script_file}"
 		if use_launcher
-			return %[mpiexec -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+			return %[mpiexec -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file_launcher} 2> #{error_file_launcher}]
 		else
 			"#@preamble #{mpi_prog}  #{executable_location}/#{executable_name} #{parameter_string}"
 		end
@@ -83,19 +83,17 @@ EOF
 	end
 
 	def cancel_job
-		if use_launcher
-      cancel_job_launcher
-		else
-			`scancel #{@job_no}`
-		end
+		use_launcher ? cancel_job_launcher : `scancel #{@job_no}`
 	end
 
 	def error_file
-		return "#{executable_name}.#{job_identifier}.e#@job_no"
+		use_launcher ? error_file_launcher :
+      "#{executable_name}.#{job_identifier}.e#@job_no"
 	end
 
 	def output_file
-		return "#{executable_name}.#{job_identifier}.o#@job_no"
+		use_launcher ? output_file_launcher :
+      "#{executable_name}.#{job_identifier}.o#@job_no"
 	end
 
 def get_run_status(job_no, current_status)
