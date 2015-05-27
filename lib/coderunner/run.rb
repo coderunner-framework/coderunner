@@ -297,6 +297,14 @@ def process_directory
 	#logi '@@current_status', @@current_status, '@job_no', @job_no
 	#logi '@running', @running
 	process_directory_code_specific	
+  
+  # Sometimes the run can be completed and still in the queue, in
+  # which case process_directory_code_specific may set @status==:Complete
+  # or @status==:Failed even though @running = true. Here we update
+  # @running if this is the case. This will have no effect on any subsequent
+  # update as CodeRunner does not use @running as a criterion for deciding
+  # whether or not to recheck a run and call process_directory again.
+  @running = false if [:Complete, :Failed].include? @status
 	
 	raise CRFatal.new("status must be one of #{PERMITTED_STATI.inspect}") unless PERMITTED_STATI.include? @status
 	@max = {}
