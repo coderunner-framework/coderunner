@@ -399,10 +399,10 @@ EOF
           `cp #{tl}/queue_status.txt #{tl}/queue_status2.txt`
           #`ps > #{tl}/queue_status.txt`
           mutex.synchronize do 
-            File.open("#{tl}/queue_status.txt", 'a') do |f| 
+            File.open("#{tl}/queue_status.txt", 'w') do |f| 
               # This ensures that the right pids will be listed,
               # regardless of the way that ps behaves
-              f.puts processes.map{|pid| "#{pid} #{command_list[pid]}"}
+              f.puts processes.map{|pid| "#{pid} #{command_list[pid].gsub(/\n|\r/, '')}"}
             end
           end
           sleep 1
