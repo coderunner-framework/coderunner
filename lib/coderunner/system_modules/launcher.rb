@@ -11,8 +11,10 @@ class CodeRunner
       launcher_prefix and launcher_prefix.size > 0
     end
     def queue_status_launcher
-			%x[cat #{CodeRunner.launcher_directory}/queue_status.txt | grep sh]  +
-			%x[cat #{CodeRunner.launcher_directory}/queue_status2.txt | grep sh] 
+			#%x[cat #{CodeRunner.launcher_directory}/queue_status.txt | grep sh]  +
+			#%x[cat #{CodeRunner.launcher_directory}/queue_status2.txt | grep sh] 
+			%x[cat #{CodeRunner.launcher_directory}/queue_status.txt ]  +
+			%x[cat #{CodeRunner.launcher_directory}/queue_status2.txt ] 
     end 
     def execute_launcher
 			launch_id = "#{Time.now.to_i}#{$$}"

@@ -392,16 +392,17 @@ EOF
     unless ENV['CODE_RUNNER_LAUNCHER'] =~ /serial/
       mutex = Mutex.new
       processes= []
+      command_list = {}
 
       Thread.new do
         loop do
           `cp #{tl}/queue_status.txt #{tl}/queue_status2.txt`
-          `ps > #{tl}/queue_status.txt`
+          #`ps > #{tl}/queue_status.txt`
           mutex.synchronize do 
             File.open("#{tl}/queue_status.txt", 'a') do |f| 
               # This ensures that the right pids will be listed,
               # regardless of the way that ps behaves
-              f.puts processes 
+              f.puts processes.map{|pid| "#{pid} #{command_list[pid]}"}
             end
           end
           sleep 1
@@ -439,12 +440,15 @@ EOF
             exec(command + "\n wait")
           end
           `cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`
-          mutex.synchronize{processes.push pid}
+          mutex.synchronize do
+            processes.push pid
+            command_list[pid] = command
+          end
 
           File.open(tl + '/' + id + '.pid', 'w'){|fle| fle.puts pid}
           FileUtils.rm(tl + '/' + file)
 
-          Thread.new{Process.wait pid; mutex.synchronize{processes.delete pid}}
+          Thread.new{Process.wait pid; mutex.synchronize{processes.delete pid; command_list.delete(pid)}}
         end
 #         processes.each{|pid| Process.wait pid}
         sleep refresh.to_i
