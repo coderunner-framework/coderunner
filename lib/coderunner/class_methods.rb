@@ -390,10 +390,24 @@ EOF
     FileUtils.makedirs tl
 
     unless ENV['CODE_RUNNER_LAUNCHER'] =~ /serial/
-      Thread.new{loop{`cp #{tl}/queue_status.txt #{tl}/queue_status2.txt; ps > #{tl}/queue_status.txt`; sleep 1}}
-
       mutex = Mutex.new
       processes= []
+
+      Thread.new do
+        loop do
+          `cp #{tl}/queue_status.txt #{tl}/queue_status2.txt`
+          `ps > #{tl}/queue_status.txt`
+          mutex.synchronize do 
+            File.open("#{tl}/queue_status.txt", 'a') do |f| 
+              # This ensures that the right pids will be listed,
+              # regardless of the way that ps behaves
+              f.puts processes 
+            end
+          end
+          sleep 1
+        end
+      end
+
 
       Thread.new do
         loop do
