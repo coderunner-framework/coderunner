@@ -232,6 +232,7 @@ EOF
 		["status", "st", 0, 'Print out a summary of the status of the filtered runs.', [], [:U, :N, :j, :f, :O]],
 		["status_with_comments", "sc", 0, 'Print a list of ids with their status and any comments.', [], [:U, :N, :j, :f, :O]],
 		["status_loop", "sl", 0, 'Loop, updating the filtered runs, then printing out a summary of the status of the filtered runs.  ', [], [:U, :N, :j, :f, :O]],
+		["status_loop_running", "slr", 0, 'Loop, updating and then printing out a summary of runs which are currently running.', [], [:U, :N, :O]],
 		["submit", "sub", 0, 'Submit a run to be simulated.', [], [:p, :n, :W, :k, :v, :T, :d, :J]],
 		["submit_command", "subcom", 2, 'Submit an arbitrary shell command to the batch queue.', ['job name', 'command'], [:n, :W, :v, :T, :d]],
 		["write_graph", "wg", 1, 'Write a graph to disk.', ['filename'], [:G, :g, :w, :O, :U, :N, :j, :f]],

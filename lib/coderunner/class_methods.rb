@@ -758,6 +758,36 @@ EOF
       #ep "end sleep"
     end
   end
+  def self.status_loop_running(copts={})
+    copts[:f] = "@running"
+    runner = fetch_runner(copts)
+    ids = runner.filtered_ids
+    copts[:f] = "#{ids.inspect}.include? id"
+    copts[:j] = nil
+    status_loop(copts)
+  end
+  def self.status_loop(copts={})
+#     process_copts(copts)
+    runner = fetch_runner(copts)
+    runner.print_out(0, with_comments: copts[:with_comments]) unless copts[:interactive_start] or copts[:Z] or copts[:no_print_out]
+    break_out = false
+    loop do
+      old_trap = trap(2){eputs " Terminating loop, please wait..."; break_out = true}
+      runner.use_large_cache = true
+      runner.update(false)
+      (trap(2, old_trap); break) if break_out
+      runner.recheck_filtered_runs(false)
+      runner.print_out(nil, with_comments: copts[:with_comments])
+      trap(2, old_trap)
+      break if break_out
+      break if not runner.run_list.values.find do |r|
+        not [:Complete, :Failed].include? r.status
+      end
+      #ep "sleep"
+      sleep 3
+      #ep "end sleep"
+    end
+  end
   def self.write_graph(name, copts={})
 #     process_copts(copts)
     runner = fetch_runner(copts)
@@ -902,7 +932,8 @@ EOF
         else
           runner = @runners[copts[:Y]]
         end
-        #p 'reading defaults', runner.recalc_all, DEFAULT_RUNNER_OPTIONS
+        # This call ensures that even if we are using an existing
+        # runner, it still uses the new copts  
         runner.read_defaults
         #p 'read defaults', runner.recalc_all
 
