@@ -445,7 +445,7 @@ class CodeRunner
 	end
 	
 	def self.make_film_multiple_runners_old(list, options)
-		possible_options = [:frame_array, :fa, :skip_frames, :sf, :normalize, :n, :normalize_pieces, :np, :increment, :i, :skip_encoding, :se, :index_name, :in]
+		possible_options = [:frame_array, :fa, :skip_frames, :sf, :normalize, :n, :normalize_pieces, :np, :increment, :ic, :skip_encoding, :se, :index_name, :in]
 		fa = (options[:frame_array] or options[:fa] or list[0][0].run_list[list[0][0].filtered_ids[0]].frame_array(options)	)
 		iname = options[:in]||options[:index_name]||:frame_index
 
