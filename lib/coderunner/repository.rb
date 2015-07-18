@@ -52,18 +52,29 @@ class CodeRunner
     # twin set of a bare repo and a clone of that
     # repo. folder must end in '.cr.git'
     #
-    def self.init(folder)
-      if folder =~ /\.git$/
-        raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .cr.git and a clone of this bare repo"
+    class << self
+      alias :simple_init :init
+      def init(folder)
+        if folder =~ /\.git$/
+          raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .cr.git and a clone of this bare repo"
+        end
+        super(folder + '.cr.git', bare: true)
+        repo = simple_clone(folder + '.cr.git', folder)
+        repo.init_metadata
+        repo.init_readme
+        repo.init_defaults_folder
+        p 'remotes', repo.remotes.map{|r| r.name}
+        repo.simple_push(repo.remote("origin"))
       end
-      super(folder + '.cr.git', bare: true)
-      repo = clone(folder + '.cr.git', folder)
-      repo.init_metadata
-      repo.init_readme
-      repo.init_defaults_folder
-      p 'remotes', repo.remotes.map{|r| r.name}
-      repo.simple_push(repo.remote("origin"))
+      alias :simple_clone :clone
+      def clone(url, name)
+        namehost, folder, _barefolder = split_url(url)
+        try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
+        simple_clone(url, bflocal=name+'.cr.git', bare: true)  
+        return simple_clone(bflocal, name)  
+      end
     end
+
     # If the folder is within a coderunner repository
     # return the root folder of the repository; else 
     # return nil
@@ -168,13 +179,16 @@ Created on: #{Time.now.to_s}
 
 EOF
     end
-    def split_url(remote_name)
-      bare_repo.remote(remote_name).url =~ Repository.url_regex
+    def self.split_url(url)
+      url =~ Repository.url_regex
       namehost = $~[:namehost]
       barefolder = $~[:folder]
-      self.class.check_bare_ext(barefolder)
+      check_bare_ext(barefolder)
       folder = barefolder.sub(/\.cr\.git$/, '')
       return [namehost, folder, barefolder]
+    end
+    def split_url(remote_name)
+      return self.class.split_url(bare_repo.remote(remote_name).url)
     end
     def modified_in_folder(folder)
       (status.changed + status.added + status.deleted).find_all{|k,f| File.expand_path(dir.to_s + '/' + f.path).include?(File.expand_path(folder))}
@@ -272,6 +286,9 @@ EOF
       try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]
     end
     def try_system(str)
+      RepositoryManager.try_system(str)
+    end
+    def self.try_system(str)
       RepositoryManager.try_system(str)
     end
   end

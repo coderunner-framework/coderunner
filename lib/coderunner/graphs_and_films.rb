@@ -706,7 +706,7 @@ class CodeRunner
 		frame_rate = (options[:frame_rate] or options[:fr] || 15)
 		film_name = (options[:film_name] or options [:fn] or graphkit_frame_array[0][1].file_name + '_film').gsub(/\s/, '_')
 		#puts `ffmpeg -y #{options[:bitrate] ? "-b #{options[:bitrate]}" : ""} -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  #{film_name}.mp4`
-		str =  "avconv  -y -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  #{film_name}.mp4"
+		str =  "avconv  -y -r #{frame_rate} -threads #{(@multiple_processes or 1)} -i film_frames/frame_%0#{fd}d#{extension}  -r 25 #{film_name}.mp4"
     puts str
     system str
 		end

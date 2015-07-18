@@ -53,6 +53,7 @@ EOF
     ['add_remote', 'adrm', 2,  'Add a remote url to the repository. The url must end in \'.git\'', ['name', 'url'], [:Y]],
     ['add_folder', 'add', 1,  'Add the folder to the repository... this adds the directory tree and all coderunner data files to the repository, e.g. .code_runner_info.rb, script defaults, command histories etc. Note that this command must be issued in the root of the repository, or with the -Y flag giving the root of the repository.', ['folder'], [:Y]],
     ['bare_repo_command', 'brc', 1,  'Execute the given command within the twin bare repository', ['command'], [:Y]],
+    ['clone_repo', 'clone', 2,  'Clone the given url to a working repo with the given name (NB creates both a bare and working repository). Give the url of the bare repository (with a name ending in .cr.git)', ['url', 'name'], []],
     ['init_repository', 'init', 1,  'Create a new repository with the given name. The name must not end in ".git". In fact, two repositories will be created, a working repo and a bare repo ending in cr.git. The bare repo is used to send and receive changes to remotes: the working repo should only push and pull to and from its twin bare repo.', ['name'], []],
     ['list_remotes', 'lsr', 0,  'List remotes in the bare repository (the working repository should only have one remote: origin.', [], [:Y]],
     ['pull_repository', 'pull', 0,  'Pull repository from all remotes, or from a comma-separated list of remotes given by the -r option.', [], [:r, :Y]],
@@ -206,6 +207,13 @@ class CodeRunner
         repo = Repository.open_in_subfolder(folder)
         repo.rsyncu(remote, folder)
       end
+
+      def clone_repo(url, name, copts)
+        Dir.chdir(copts[:Y]){
+          Repository.clone(url, name)
+        }
+      end
+
 
     end
   end
