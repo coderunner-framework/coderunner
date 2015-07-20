@@ -178,7 +178,7 @@ EOF
 
 		eputs shell_script if DISPLAY_REMOTE_INVOCATION
 		data = %x[#@ssh_command '#{shell_script}']
-# 		ep data
+ 		#ep data
 		eputs "\nDisconnecting from server..."	
 		eprint "Extracting data..."
 		data_arr = []

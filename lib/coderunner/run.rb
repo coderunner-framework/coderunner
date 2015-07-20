@@ -281,12 +281,16 @@ def process_directory
 		end
 	
 	
-	begin
-		read_results if FileTest.exist? 'code_runner_results.rb'
-	rescue NoMethodError, SyntaxError => err
-		puts err
-		puts 'Results file possibly corrupted for ' + @run_name
-	end	
+  @cr_has_read_results = false
+  if FileTest.exist? 'code_runner_results.rb'
+    begin
+      read_results
+      @cr_has_read_results = true
+    rescue NoMethodError, SyntaxError => err
+      puts err
+      puts 'Results file possibly corrupted for ' + @run_name
+    end	
+  end
 
 	@running = (@@current_status =~ Regexp.new(@job_no.to_s)) ? true : false 
 	if methods.include? :get_run_status
@@ -296,7 +300,9 @@ def process_directory
 	end
 	#logi '@@current_status', @@current_status, '@job_no', @job_no
 	#logi '@running', @running
-	process_directory_code_specific	
+  if not @cr_has_read_results or @running or not [:Complete, :Failed].include? @status or @runner.recalc_all or @runner.reprocess_all
+    process_directory_code_specific	
+  end 
   
   # Sometimes the run can be completed and still in the queue, in
   # which case process_directory_code_specific may set @status==:Complete

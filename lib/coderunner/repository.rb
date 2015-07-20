@@ -84,7 +84,7 @@ class CodeRunner
             Dir.entries(f2).include?('.code_runner_repo_metadata'))
         f2 = File.expand_path(f2 + '/..')
         (f2=nil; break) if f2 == '/' 
-        p 'f2 is ', f2
+        #p 'f2 is ', f2
       end
       return f2
     end
