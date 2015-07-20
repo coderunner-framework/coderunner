@@ -293,7 +293,7 @@ def process_directory
   end
 
 	@running = (@@current_status =~ Regexp.new(@job_no.to_s)) ? true : false 
-	if methods.include? :get_run_status
+	if @running and methods.include? :get_run_status
 		@status = get_run_status(@job_no, @@current_status) rescue :Unknown
 	else
 		@status ||= :Unknown
