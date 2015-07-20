@@ -120,7 +120,7 @@ class CodeRunner
       def bare_repo_command(comm, copts)
         Dir.chdir(copts[:Y]) do
           repo = Repository.open_in_subfolder(Dir.pwd)
-          Dir.chdir(repo.bare_repo.dir.to_s) do
+          Dir.chdir(repo.bare_repo.repo.to_s) do
             system comm
           end
         end
@@ -175,12 +175,15 @@ class CodeRunner
       end
       def push_repository(copts)
         Dir.chdir(copts[:Y]){
+          puts 'opening repo'
           repo = Repository.open_in_subfolder(Dir.pwd)
           if copts[:r]
+            puts 'mapping'
             rems = copts[:r].split(/,/).map{|rname| repo.bare_repo.remote(rname)} 
           else
             rems = repo.bare_repo.remotes
           end
+          puts 'pusing'
           rems.each{|r| repo.push(r)}
         }
       end

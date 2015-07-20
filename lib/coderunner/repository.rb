@@ -58,8 +58,8 @@ class CodeRunner
         if folder =~ /\.git$/
           raise "Please do not add '.git' to the end of #{folder}. Two repositories will be created: a bare repo ending in .cr.git and a clone of this bare repo"
         end
-        super(folder + '.cr.git', bare: true)
-        repo = simple_clone(folder + '.cr.git', folder)
+        super(bflocal = folder + '.cr.git', bare: true, repository: bflocal)
+        repo = simple_clone(bflocal, folder)
         repo.init_metadata
         repo.init_readme
         repo.init_defaults_folder
@@ -70,7 +70,7 @@ class CodeRunner
       def clone(url, name)
         namehost, folder, _barefolder = split_url(url)
         try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
-        simple_clone(url, bflocal=name+'.cr.git', bare: true)  
+        simple_clone(url, bflocal=name+'.cr.git', bare: true, repository: bflocal)  
         return simple_clone(bflocal, name)  
       end
     end
@@ -84,7 +84,7 @@ class CodeRunner
             Dir.entries(f2).include?('.code_runner_repo_metadata'))
         f2 = File.expand_path(f2 + '/..')
         (f2=nil; break) if f2 == '/' 
-        #p 'f2 is ', f2
+        p 'f2 is ', f2
       end
       return f2
     end
@@ -99,7 +99,8 @@ class CodeRunner
     # Returns a Git::Base object referring to the bare twin 
     # repository.
     def bare_repo
-      @bare_repo ||= Git::Base.open(dir.to_s + '.cr.git')
+      #puts 'bare_repo', dir.to_s + '.cr.git'
+      @bare_repo ||= Git::Base.bare(dir.to_s + '.cr.git')
     end
     def relative_path(folder=Dir.pwd)
       File.expand_path(folder).sub(File.expand_path(dir.to_s) + '/', '')
@@ -264,7 +265,7 @@ EOF
     def pull(remote)
       namehost, folder, _barefolder = split_url(remote.name)
       try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
-      bare_repo.pull(remote)
+      bare_repo.fetch(remote)
       simple_pull(remote('origin'))
     end
     # A simple git push... does not try to push to local 
@@ -281,7 +282,9 @@ EOF
     # remote bare repos.
     def push(remote)
       namehost, folder, _barefolder = split_url(remote.name)
+      puts 'simple_push'
       simple_push(remote('origin'))
+      puts 'bare_repo.push'
       bare_repo.push(remote)
       try_system %[ssh #{namehost} "cd #{folder} && git pull origin"]
     end

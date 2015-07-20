@@ -38,6 +38,7 @@ class TestCreate < MiniTest::Test
     Dir.chdir(tfolder) {
       
       assert_system("#$coderunnerrepo_command init myrepo")
+      #exit
       assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@localhost/#{Dir.pwd}/remote.cr.git -Y myrepo")
       #assert_system("#$coderunnerrepo_command adrm local ssh://#{ENV['USER']}@#{`hostname`.chomp}.local/#{Dir.pwd}/remote.git -Y myrepo")
       assert_system("#$coderunnerrepo_command adrm dummy ssh://dummyuser@nohost/#{Dir.pwd}/remote.cr.git -Y myrepo")
@@ -97,6 +98,8 @@ class TestCreate < MiniTest::Test
       #CodeRunner::RepositoryManager.remote_synchronize_down('local', 'myrepo/sims', {})
       FileUtils.makedirs('testclone')
       assert_system("#$coderunnerrepo_command clone ssh://#{ENV['USER']}@localhost/#{Dir.pwd}/remote.cr.git myclone -Y testclone")
+      #assert_system("#$coderunnerrepo_command push -r origin -Y testclone/myclone")
+      CodeRunner::RepositoryManager.push_repository(r: 'origin', Y: 'testclone/myclone')
     }
   end
   def teardown
