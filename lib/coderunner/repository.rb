@@ -265,7 +265,10 @@ EOF
     def pull(remote)
       namehost, folder, _barefolder = split_url(remote.name)
       try_system %[ssh #{namehost} "cd #{folder} && git push origin"]
-      bare_repo.fetch(remote)
+      Dir.chdir(bare_repo.repo.to_s) do
+        try_system("git fetch #{remote.name} master:master")
+      end
+      #bare_repo.fetch(remote)
       simple_pull(remote('origin'))
     end
     # A simple git push... does not try to push to local 
