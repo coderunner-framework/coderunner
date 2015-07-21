@@ -15,6 +15,7 @@ class CodeRunner
 	#PBS -l select=#{nodes}
 	#PBS -l walltime=#{sprintf("%02d:%02d:%02d", hours, mins, secs)}
 	#{@project ? "#PBS -A #@project" : ""}
+	#{@queue ? "#PBS -q #@queue" : ""}
 
 	### start of jobscript 
 	cd $PBS_O_WORKDIR 
