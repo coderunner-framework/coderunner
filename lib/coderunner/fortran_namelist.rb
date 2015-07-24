@@ -776,7 +776,8 @@ def self.use_new_defaults_file(name=ARGV[-2], input_file=ARGV[-1])
 
 	#modlet = rcp.modlet? ? rcp.modlet : nil
 	#executable = rcp.executable? ? rcp.executable : CodeRunner::DEFAULT_RUNNER_OPTIONS
-	CodeRunner.fetch_runner(D: name) #(C: rcp.code, m: rcp.modlet, D: name, CodeRunner)
+	#CodeRunner.fetch_runner(D: name) #(C: rcp.code, m: rcp.modlet, D: name, CodeRunner)
+	CodeRunner.fetch_runner(C: rcp.code, m: (rcp.modlet? ? rcp.modlet : nil), D: name) #CodeRunner)
 end
 
 # The name is self-explanatory: this method takes an input file and generates a CodeRunner defaults file. The first argument is the name of the new defaults file.

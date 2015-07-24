@@ -14,11 +14,12 @@ def queue_status
 end
 
 def run_command
+  crenv = @code_run_environment ? @code_run_environment + ";" : nil
 	if rcp.uses_mpi
     raise "Number of processors (nprocs) not specified" unless @nprocs
-		return %[time mpirun -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+		return %[#{crenv} time mpirun -np #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 	else
-		return %[#{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
+		return %[#{crenv} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 	end
 end		
 
