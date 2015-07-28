@@ -1,7 +1,11 @@
 require 'git'
 class CodeRunner
   def is_in_repo?(folder=@root_folder)
-    Repository.repo_folder(folder) ?  true : false
+    if ENV['CODE_RUNNER_NO_REPO']
+      return false
+    else
+      Repository.repo_folder(folder) ?  true : false
+    end
   end
   class Run
     # Add CodeRunner files within the run folder to git. If
