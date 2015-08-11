@@ -464,7 +464,7 @@ end
 
 def defaults_location
   location = defaults_location_list.find{|folder| FileTest.exist? folder and Dir.entries(folder).include? defaults_file_name}
-  raise "Can't find defaults_file #{defaults_file_name} in #{defaults_location_list.join(',')}." unless location
+  #raise "Can't find defaults_file #{defaults_file_name} in #{defaults_location_list.join(',')}." unless location
   location
 end
 
@@ -509,14 +509,15 @@ def update_submission_parameters(parameters, start_from_defaults=true)
   if start_from_defaults
     #upgrade_defaults_from_0_5_0 if self.class.constants.include? :DEFAULTS_FILE_NAME_0_5_0
     #
-    main_defaults_file = "#{defaults_location}/#{defaults_file_name}"
 
-    if not FileTest.exist? main_defaults_file 
+    if not defloc=defaults_location
+      info("Could not find central defaults file... using local defaults only")
       if not FileTest.exist? defaults_file_name
         raise "Cannot find #{defaults_file_name} either centrally or locally"
       end
     else
 
+      main_defaults_file = "#{defloc}/#{defaults_file_name}"
       main_defaults_file_text =     File.read(main_defaults_file)
       evaluate_defaults_file(main_defaults_file)
 
@@ -1114,6 +1115,10 @@ end
 # Prints a warning message, useful for pre-submit checks.
 def warning(message)
   eputs "Warning: " + message; sleep 0.1
+end
+
+def info(message)
+  eputs "Info: " + message; sleep 0.02
 end
 
 class SubmitError < StandardError
