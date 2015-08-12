@@ -44,7 +44,7 @@ def execute
   if prefix = ENV['CODE_RUNNER_LAUNCHER']
     launch_id = "#{Time.now.to_i}#{$$}"
     fname = CodeRunner.launcher_directory + "/#{launch_id}"
-    File.open(fname + '.start', 'w'){|file| file.puts "cd #{Dir.pwd};#{run_command}"}
+    File.open(fname + '.start', 'w'){|file| file.puts "cd '#{Dir.pwd}';#{run_command}"}
     sleep 1 until FileTest.exist? fname + '.pid'
     pid = File.read(fname + '.pid').to_i
     FileUtils.rm fname + '.pid'
