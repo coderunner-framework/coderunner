@@ -221,7 +221,7 @@ class CodeRunner
       eputs queue_status
     rescue => _err
       eputs "General queue status doesn't work on this system; showing queue status for this folder"
-#       p err
+      #ep err
       runner = fetch_runner(copts)
       eputs runner.queue_status
     end

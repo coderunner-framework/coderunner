@@ -1,16 +1,22 @@
 class CodeRunner
+require SCRIPT_FOLDER + '/system_modules/launcher.rb'
 module GenericLinux
+  include Launcher
 
 
 # @@ruby_command = "ruby1.9"
 
 def queue_status
-	if rcp.uses_mpi
-		return %x[ps -e -U #{Process.uid} | grep mpi] + %x[ps -e -U #{Process.uid} | grep -G '\\bsh\\b'] + %x[ps -e -U #{Process.uid} -o pid,user,cmd | grep coderunner].grep(/launch/)
-	else
-# 		ep executable_name
-		return %x[ps -e -U #{Process.uid} | grep '#{executable_name}'] + %x[ps -e -U #{Process.uid} | grep -G '\\bsh\\b']
-	end
+		if use_launcher
+      queue_status_launcher
+    else
+      if methods.include?(:rcp) and rcp.uses_mpi? and rcp.uses_mpi
+        return %x[ps -e -U #{Process.uid} | grep mpi] + %x[ps -e -U #{Process.uid} | grep -G '\\bsh\\b'] + %x[ps -e -U #{Process.uid} -o pid,user,cmd | grep coderunner].grep(/launch/)
+      else
+    # 		ep executable_name
+        return %x[ps -e -U #{Process.uid} | grep '#{executable_name}'] + %x[ps -e -U #{Process.uid} | grep -G '\\bsh\\b']
+      end
+    end
 end
 
 def run_command
