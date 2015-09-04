@@ -16,6 +16,3 @@ require 'coderunner'
 require 'cubecalccrmod'
 require 'cubecalccrmod/sleep'
 
-
-#class Test::Unit::TestCase
-#end

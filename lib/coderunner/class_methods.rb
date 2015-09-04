@@ -18,7 +18,6 @@ class CodeRunner
   end
 
   # List the available modlets for the given code (copts[:C] or -C on the command line).
-
   def self.available_modlets(copts={})
     process_command_options(copts)
     puts "\nAvailable modlets for #{copts[:C]}:"
@@ -37,7 +36,6 @@ class CodeRunner
   end
 
     # List the available defaults files for the given code (copts[:C] or -C on the command line).
-
   def self.available_defaults_files(copts={})
     process_command_options(copts)
     entries = []
@@ -61,8 +59,9 @@ class CodeRunner
     end
   end
 
-  # Cancel the job with the given id. The user is asked interactively for confirmation and whether they would like to delete the folder for that job as well.
-
+  # Cancel the job with the given id. The user is asked interactively for 
+  # confirmation and whether they would like to delete the folder for that job 
+  # as well.
   def self.cancel(id, copts={})
     runner = fetch_runner(copts)
     runner.cancel_job(id.to_i)
@@ -76,6 +75,29 @@ class CodeRunner
     end
 
     runner.continue_in_new_folder(folder, options)
+  end
+
+  # Method which concatenates NetCDF output files 
+  def self.concat(name, copts={})
+    begin
+      require "numru/netcdf"
+    rescue LoadError
+      eputs "Error: No Ruby NetCDF library (was it installed correctly?): "\
+            "concatenation for netcdf files not possible."
+      return
+    end
+
+    runner = fetch_runner(copts)
+    runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
+
+    concat_string = 'ncrcat '
+    runs.each do |r|
+      concat_string += r.directory + '/' + r.run_name + '.out.nc '
+    end
+
+    concat_string += runner.root_folder + '/' + name
+
+    exec "#{concat_string}"
   end
 
   # This section defines the report report writing function in. The latex header is defined in run.rb. It is a run method and can be redefined in a particular CRMOD.
@@ -110,11 +132,13 @@ class CodeRunner
               \\begin{itemize}
             EOF
 
-            #Need to call some methods here which reads the graphs we want from gs2crmod, generates the graphs
-            #then generates the latex code to display graphs.
+            # Need to call some methods here which reads the graphs we want 
+            # from gs2crmod, generates the graphs then generates the latex code 
+            # to display graphs.
             latex_code = r.latex_graphs.inject("") do |tmp_latex_code, (kit, latexstring)|
               kit.gnuplot_write(kit.file_name) #write the graph
-              tmp_latex_code += "\\item " + latexstring + " \n\n\\newfig{#{kit.file_name}}"
+              tmp_latex_code += "\\item " + latexstring + 
+                                " \n\n\\newfig{#{kit.file_name}}"
               tmp_latex_code += "\n\n"
               tmp_latex_code
             end
@@ -135,6 +159,7 @@ class CodeRunner
     runner = fetch_runner(copts)
     runner.destroy
   end
+
   def self.differences_between(copts = {})
     runner = fetch_runner(copts)
     runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
@@ -180,14 +205,8 @@ class CodeRunner
       kit.gnuplot(eval: string_to_eval)
       sleep(copts[:F][:fr] ? 1.0/copts[:F][:fr] :  0.1)
     end
-  end
-#   def self.executable_name # :nodoc:
-#     ""
-#   end
-#
-#   def self.rcp # :nodoc:
-#     @rcp ||= KitHash.new
-#   end
+  end 
+
   def self.netcdf_plot(netcdf_file, vars, indices, copts={})
     process_command_options(copts)
     begin
@@ -214,8 +233,6 @@ class CodeRunner
     kit.close
   end
 
-
-
   def self.print_queue_status(copts={})
     begin
       eputs queue_status
@@ -226,10 +243,6 @@ class CodeRunner
       eputs runner.queue_status
     end
   end
-
-
-
-
 
   def self.reference(class_or_method, copts={})
     code_folders = Dir.recursive_entries(SCRIPT_FOLDER + '/code_modules').grep(/\/ri$/).map{|fold| ['-d', fold]}.flatten
@@ -251,11 +264,11 @@ class CodeRunner
 #     trap(1){}
   end
 
-
   def self.directory(id, copts={})
     runner = fetch_runner(copts)
     puts runner.run_list[id.to_i].directory
   end
+
   def self.film(copts={})
     runner = fetch_runner(copts)
     copts[:F][:graphkit_modify] = copts[:w]
@@ -308,7 +321,6 @@ EOF
     exec string
 
   end
-
 
   def self.generate_cubecalc(copts={})
     #return
@@ -372,9 +384,11 @@ EOF
 
     end
   end
+
   def self.launcher_directory
     ENV['HOME'] + "/.coderunner/to_launch/#{ENV['CODE_RUNNER_LAUNCHER']}"
   end
+  
   def self.start_launcher(refresh, max_queue, copts={})
     #eputs "Starting launcher!"
     raise "Raise refresh is #{refresh}: it must be >= 0.1" if refresh.to_f < 0.1
@@ -477,15 +491,16 @@ EOF
 
   end
 
-
   def self.code_runner_execute(ruby_fragment, copts={})
     #eval(ruby_fragment, GLOBAL_BINDING)
     eval(ruby_fragment)
   end
+
   def self.execute(ruby_fragment, copts={})
     eval(ruby_fragment, GLOBAL_BINDING)
     #eval(ruby_fragment)
   end
+  
   def self.load_file(files, copts={})
     process_command_options(copts)
 #     begin
@@ -519,6 +534,7 @@ EOF
     @@psppipe.finish
     @@psppipe = nil
   end
+
   def self.plot_graph(copts = {})
 #     process_copts(copts)
     runner = fetch_runner(copts)
@@ -530,17 +546,18 @@ EOF
     gets
     kit.close
   end
+
   def self.readout(copts={})
-#     process_copts(copts)
     runner = fetch_runner(copts)
     puts runner.readout
   end
+  
   def self.recheck(id, copts={})
-#     process_copts(copts)
     runner = fetch_runner(copts)
     runner.run_list[copts[:R]].recheck
     runner.respond_to_requests
   end
+
   def self.run_class(copts={})
     process_command_options(copts)
     copts[:no_update] = true
@@ -557,12 +574,14 @@ EOF
 
     return setup_run_class(copts[:C], modlet: copts[:m])
   end
+
   def self.code_command(string, copts = {})
     run_class(copts).class_eval(string)
 
 #      runner = fetch_runner(copts)
 #      runner.run_class.class_eval(string)
   end
+  
   def self.run_command(string, copts={})
 #       process_copts(copts)
     runner = fetch_runner(copts)
@@ -606,6 +625,7 @@ EOF
 #     Process.waitall
     runner.respond_to_requests
   end
+
   def self.runner_eval(string, copts = {})
 #      process_copts(copts)
      runner = fetch_runner(copts)
@@ -621,11 +641,13 @@ EOF
      end
 
   end
+  
   def self.scan(scan_string, copts={})
 #       process_copts(copts)
     runner = fetch_runner(copts)
       runner.simple_scan(scan_string, nprocs: copts[:n], version: copts[:v], skip: copts[:k], parameters: copts[:p][0])
   end
+
   def self.submit(copts = {})
 #     process_copts(copts)
     runner = get_submit_runner(copts)
@@ -648,6 +670,7 @@ EOF
     runner.submit(runs, nprocs: copts[:n], version: copts[:v], skip: copts[:k], job_chain: copts[:J], no_update_before_submit: copts[:no_update_before_submit])
     #exit(0)
   end
+
   # Fetch a runner appropriate for submitting simulations. In 
   # all usual cases this is just the default runner for the command
   # but where several folders have been specified and we are dealing
@@ -665,10 +688,9 @@ EOF
       end
     end
   end
+
   def self.resubmit(copts = {})
     runner = get_submit_runner(copts)
-#     process_copts(copts)
-#     raise "something is already submitting" if FileTest.exist? "submitting"
     runs = []
     raise "Parameters must be an array of inspected hashes" unless copts[:p].kind_of? Array
     Dir.chdir(runner.root_folder) do
@@ -688,12 +710,12 @@ EOF
         run
       end
     end
-    #throw(:here)
 
     runner.submit(runs, nprocs: copts[:n], version: copts[:v], skip: copts[:k], job_chain: copts[:J], no_update_before_submit: copts[:no_update_before_submit], replace_existing: copts[:replace_existing], smart_resubmit_name: copts[:smart_resubmit_name], rerun: copts[:rerun])
   end
 
-  # This method allows the straightforward submission of a single command using the batch queue on any system.
+  # This method allows the straightforward submission of a single command using 
+  # the batch queue on any system.
   def self.submit_command(jid, comm, copts={})
     process_command_options(copts)
     submitter = Object.new
@@ -717,25 +739,27 @@ EOF
     submitter.execute
   end
 
-
-
   def self.readout(copts={})
     runner = fetch_runner(copts)
     runner.readout
   end
+
   def self.show_values_of(expression, copts={})
     runner = fetch_runner(copts)
     p runner.filtered_ids.map{|id| runner.combined_run_list[id].instance_eval(expression)}.uniq.sort
   end
+  
   def self.status_with_comments(copts={})
     copts[:with_comments] = true
     status(copts)
   end
+  
   def self.status(copts={})
 #     process_copts(copts)
     runner = fetch_runner(copts)
     runner.print_out(0, with_comments: copts[:with_comments]) unless copts[:interactive_start] or copts[:Z] or copts[:no_print_out]
   end
+  
   def self.status_loop(copts={})
 #     process_copts(copts)
     runner = fetch_runner(copts)
@@ -758,6 +782,7 @@ EOF
       #ep "end sleep"
     end
   end
+
   def self.status_loop_running(copts={})
     copts[:f] = "@running"
     runner = fetch_runner(copts)
@@ -766,6 +791,7 @@ EOF
     copts[:j] = nil
     status_loop(copts)
   end
+  
   def self.status_loop(copts={})
 #     process_copts(copts)
     runner = fetch_runner(copts)
@@ -788,6 +814,7 @@ EOF
       #ep "end sleep"
     end
   end
+
   def self.write_graph(name, copts={})
 #     process_copts(copts)
     runner = fetch_runner(copts)
@@ -808,11 +835,13 @@ EOF
     raise "kit doesn't have a file_name and no filename specified; can't write graph" unless name or (kit.file_name.class == String and kit.file_name =~ /\S/)
     Dir.chdir(COMMAND_FOLDER){kit.gnuplot_write((name or kit.file_name), {eval: copts[:w]})}
   end
+
   def self.read_default_command_options(copts)
     DEFAULT_COMMAND_OPTIONS.each do |key, value|
       copts[key] ||= value
     end
   end
+  
   def self.process_command_options(copts)
     if copts[:true]
       copts[:true].to_s.split(//).each do |letter|
@@ -869,8 +898,8 @@ EOF
 
   end
 
-  # Analyse copts[:Y], the choice of the root folder for the runner, and make appropriate
-  # modifications to the command options for running remotely, etc.
+  # Analyse copts[:Y], the choice of the root folder for the runner, and make 
+  # appropriate modifications to the command options for running remotely, etc.
   def self.process_root_folder(copts)
     copts[:Y] ||= DEFAULT_COMMAND_OPTIONS[:Y] if DEFAULT_COMMAND_OPTIONS[:Y]
     if copts[:Y] and copts[:Y].kind_of? Array
@@ -890,8 +919,8 @@ EOF
 
   CODE_OPTIONS={}
 
-  # Retrieve the runner with the folder (and possibly server) given in copts[:Y]. If no runner has been loaded for that folder, load one.
-
+  # Retrieve the runner with the folder (and possibly server) given in 
+  # copts[:Y]. If no runner has been loaded for that folder, load one.
   def self.fetch_runner(copts={})
 #     ep copts
     #read_default_command_options(copts)
@@ -943,20 +972,19 @@ EOF
     return runner
 #     @r.read_defaults
   end
+
   def self.update_runners
     @runners ||= {}
     @runners.each{|runner| runner.update}
   end
-
 
   def self.runner
     @runners ||={}
     @runners.values[0]
   end
 
-
-    def self.manual(copts={})
-      help = <<EOF
+  def self.manual(copts={})
+    help = <<EOF
 
 
 -------------CodeRunner Manual---------------
@@ -1018,12 +1046,4 @@ EOF
      help.paginate
     end
 
-
-
-
-
 end
-
-
-
-

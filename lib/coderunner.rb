@@ -203,6 +203,7 @@ EOF
 		["available_defaults_files", "avd", 0, 'List the defaults files for the code module.', [], [:C]],
 		["cancel", "can", 1, 'Cancel the specified job.', ['id'], [:U]],
 		["code_command", "cc", 1, 'Call a class method of the run class. Effectively this will call run_class.class_eval(command). See documentation for whichever code module is in use.', ['command'], []],
+		["concat", "concat", 1, 'Concatenates NetCDF output files together. File is output in the CR root directory.', ['output file'], [:j, :f, :U, :N]],
 		["continue_in_new_folder", "cnf", 1, 'Make a new folder in the parent directory and copy all coderunner configuration files to that folder. If options j or f are specified, copy all matching runs to that new folder.', ['folder'], [:j, :f, :U, :N]],
 		["code_runner_execute", "crex",  1, 'Run (within the CodeRunner class) the fragment of Ruby code given.', ['Ruby fragment'], []],	
 		["delete", "del", 0, 'Permanently erase all filtered runs.', [], [:j, :F, :U, :N]],

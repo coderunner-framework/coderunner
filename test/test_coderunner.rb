@@ -3,8 +3,6 @@ require 'helper'
 require 'rbconfig'
 CodeRunner::RemoteCodeRunner::DISPLAY_REMOTE_INVOCATION = true
 
-
-
 module MiniTest::Assertions
 	def assert_system(string)
 		assert(system(string), "System Command: '#{string}'")
