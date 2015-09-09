@@ -1,5 +1,7 @@
 class CodeRunner
+require SCRIPT_FOLDER + '/system_modules/launcher.rb'
 module Moab
+  include Launcher
 
 	#def self.configure_environment
 		#eputs "Configuring Hector"
@@ -13,9 +15,8 @@ module Moab
 	#end
 				
 	def queue_status
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			%x[cat #{CodeRunner.launcher_directory}/queue_status.txt | grep sh]  +
-			%x[cat #{CodeRunner.launcher_directory}/queue_status2.txt | grep sh] 
+		if use_launcher
+      queue_status_launcher
 		else
 			%x[qstat | grep $USER]
 		end
@@ -25,22 +26,22 @@ module Moab
 		"aprun -n #{nprocstot} -N #{ppn}"
 	end
 
-	def nodes
-			nodes, ppn = @nprocs.split(/:/)[0].split(/x/)
-			nodes.to_i
-	end
+  def nodes
+    nodes, _ppn = @nprocs.split(/:/)[0].split(/x/)
+    nodes.to_i
+  end
 	def ppn
-			nodes, ppn = @nprocs.split(/:/)[0].split(/x/)
+			_nodes, ppn = @nprocs.split(/:/)[0].split(/x/)
 			ppn.to_i
 	end
 	def nprocstot
 		
 			#nodes, ppn = @nprocs.split(/x/)
-			nprocstot = nodes.to_i * ppn.to_i
+			_nprocstot = nodes.to_i * ppn.to_i
 	end
 	def run_command
 # 		"qsub #{batch_script_file}"
-		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
+		if use_launcher
 			return %[#{code_run_environment}
 				#{mpi_prog} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 		else
@@ -49,17 +50,11 @@ module Moab
 	end
 
 	def execute
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			launch_id = "#{Time.now.to_i}#{$$}"
-			fname = "#{CodeRunner.launcher_directory}/#{launch_id}"
-			File.open(fname + '.start', 'w'){|file| file.print "cd #{Dir.pwd};", run_command, "\n"}
-			sleep 2 until FileTest.exist? fname + '.pid'
-			pid = File.read(fname + '.pid').to_i
-			FileUtils.rm fname + '.pid'
-			return pid
+		if use_launcher
+      return execute_launcher
 		else
 			File.open(batch_script_file, 'w'){|file| file.puts batch_script + run_command + "\n"}
-			pid = %x[qsub #{batch_script_file}].to_i
+			_pid = %x[qsub #{batch_script_file}].to_i
 		end
 	end
 
@@ -109,59 +104,42 @@ EOF
 	end
 
 	def cancel_job
-		if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-			 fname = CodeRunner.launcher_directory + "/#{$$}.stop"
-			 File.open(fname, 'w'){|file| file.puts "\n"}
-		else
-			`qdel #{@job_no}`
-		end
+		use_launcher ? cancel_job_launcher : `qdel #{@job_no}`
 	end
 
 	def error_file
-		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
-			return "#{executable_name}.#{job_identifier}.e"
-		else
-			return "#{executable_name}.#{job_identifier}.e#@job_no"
-		end
+		use_launcher ? error_file_launcher :
+			"#{executable_name}.#{job_identifier}.e#@job_no"
 	end
 
 	def output_file
-		if (ENV['CODE_RUNNER_LAUNCHER'].size > 0 rescue false)
-			return "#{executable_name}.#{job_identifier}.o"
-		else
-			return "#{executable_name}.#{job_identifier}.o#@job_no"
-		end
+		use_launcher ? output_file_launcher :
+			"#{executable_name}.#{job_identifier}.o#@job_no"
 	end
 
-def get_run_status(job_no, current_status)
-	if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-		if current_status =~ Regexp.new(job_no.to_s)
-			@running = true
-			return :Running
-		else
-			@running = false
-			return :Unknown
-		end
-	end
-	line = current_status.split(/\n/).grep(Regexp.new(job_no.to_s))[0]
-	unless line
-		return :Unknown
-	else 
-		if line =~ /\sQ\s/
-			return :Queueing
-		elsif line =~ /\sR\s/
-			return :Running
-		elsif line =~ /\sH\s/
-			return :Queueing
-		elsif line =~ /\sC\s/
-			@running=false
-			return :Unknown
-		else
-			ep 'line', line
-			raise 'Could not get run status'
-		end
-	end
+  def get_run_status(job_no, current_status)
+    if use_launcher
+      return :Unknown
+    end
+    line = current_status.split(/\n/).grep(Regexp.new(job_no.to_s))[0]
+    unless line
+      return :Unknown
+    else 
+      if line =~ /\sQ\s/
+        return :Queueing
+      elsif line =~ /\sR\s/
+        return :Running
+      elsif line =~ /\sH\s/
+        return :Queueing
+      elsif line =~ /\sC\s/
+        @running=false
+        return :Unknown
+      else
+        ep 'line', line
+        raise 'Could not get run status'
+      end
+    end
+  end
+
 end
-
-	end
 end

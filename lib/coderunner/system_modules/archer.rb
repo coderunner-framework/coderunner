@@ -34,14 +34,8 @@ EOF
     "aprun -n #{ppn*nodes}"
     end
 def get_run_status(job_no, current_status)
-	if ((prefix = ENV['CODE_RUNNER_LAUNCHER']).size > 0 rescue false)
-		if current_status =~ Regexp.new(job_no.to_s)
-			@running = true
-			return :Running
-		else
-			@running = false
-			return :Unknown
-		end
+	if use_launcher
+		return :Unknown
 	end
 	line = current_status.split(/\n/).grep(Regexp.new(job_no.to_s))[0]
 	unless line
