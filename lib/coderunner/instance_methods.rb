@@ -1558,20 +1558,20 @@ EOF
 	# Delete the folders of all runs for whom CodeRunner#filter(run) is true. This will permanently erase the runs. This is an interactive method which asks for confirmation.
 
 	def destroy(options={})
-		ids = @ids.find_all{|id| filter @run_list[id]}
-		unless options[:no_confirm]
-			logf(:destroy)			
-			puts "About to delete:"
-			ids.each{|id| eputs @run_list[id].run_name}
-			return unless Feedback.get_boolean("You are about to DESTROY #{ids.size} jobs. There is no way back. All data will be eliminated. Please confirm the delete.")
-			#gets
-			eputs "Please confirm again. Press Enter to confirm, Ctrl + C to cancel"
-			gets
-		end
-		ids.each{|id| 
-      @run_list[id].clear_cache
-			FileUtils.rm_r @run_list[id].directory if @run_list[id].directory and not ["", ".", ".."].include? @run_list[id].directory
-			@run_list.delete(id); @ids.delete(id); generate_combined_ids}
+      ids = @ids.find_all{|id| filter @run_list[id]}
+      unless options[:no_confirm]
+        logf(:destroy)			
+        puts "About to delete:"
+        ids.each{|id| eputs @run_list[id].run_name}
+        return unless Feedback.get_boolean("You are about to DESTROY #{ids.size} jobs. There is no way back. All data will be eliminated. Please confirm the delete.")
+        eputs "Please confirm again. Press Enter to confirm, Ctrl + C to cancel"
+        gets
+      end
+      ids.each{|id| 
+        @run_list[id].clear_cache
+        FileUtils.rm_r @run_list[id].directory if @run_list[id].directory and not ["", ".", ".."].include? @run_list[id].directory
+        @run_list.delete(id); @ids.delete(id); generate_combined_ids
+      }
     if is_in_repo?
       repo = Repository.open_in_subfolder(@root_folder)
       Dir.chdir(@root_folder){ 
@@ -1579,36 +1579,35 @@ EOF
       }
       repo.autocommit("Deleted simulations with ids #{ids} in folder #{repo.relative_path(@root_folder)}")
     end
-		set_max_id(@ids.max || 0)
-		save_large_cache
-		generate_combined_ids
+      set_max_id(@ids.max || 0)
+      save_large_cache
+      generate_combined_ids
 	end
 
 	# Cancel the job with the given ID. Options are:
 	# 	:no_confirm  ---> true or false, cancel without asking for confirmation if true
 	# 	:delete ---> if (no_confirm and delete), delete cancelled run
 	
-	def cancel_job(id, options={})
-		@run=@run_list[id]
-		raise "Run with id #{id} does not exist" unless @run
-		unless options[:no_confirm]
-			eputs "Cancelling job: #{@run.job_no}: #{@run.run_name}. \n Press enter to confirm"
-	# 		puts 'asfda'
-			gets
-		end
-		@run.cancel_job
-		if options[:no_confirm] 
-			delete =  options[:delete]
-		else
-			delete = Feedback.get_boolean("Do you want to delete the folder (#{@run.directory}) as well?")
-		end
-		FileUtils.rm_r(@run.directory) if delete and @run.directory and not @run.directory == ""
-		update
-		print_out
+	def cancel_job(options={})
+      ids = @ids.find_all{|id| filter @run_list[id]}
+
+      unless options[:no_confirm]
+        puts "About to cancel:"
+        ids.each{|id| eputs "#{@run_list[id].job_no}: #{@run_list[id].run_name}"}
+        return unless Feedback.get_boolean("You are about to cancel "\
+                                           "#{ids.size} jobs. Please confirm.")
+        eputs "Please confirm again. Press Enter to confirm, Ctrl + C to cancel"
+        gets
+      end
+
+      ids.each do |id| 
+        @run_list[id].clear_cache
+        @run_list[id].cancel_job
+        generate_combined_ids
+      end
 	end
 	
 	# Needs to be fixed.
-
 # 	def rename_variable(old, new)
 # 		puts "Please confirm complete renaming of #{old} to #{new}"
 # 		gets

@@ -62,9 +62,9 @@ class CodeRunner
   # Cancel the job with the given id. The user is asked interactively for 
   # confirmation and whether they would like to delete the folder for that job 
   # as well.
-  def self.cancel(id, copts={})
+  def self.cancel(copts={})
     runner = fetch_runner(copts)
-    runner.cancel_job(id.to_i)
+    runner.cancel_job(copts)
   end
 
   def self.continue_in_new_folder(folder, copts={})
