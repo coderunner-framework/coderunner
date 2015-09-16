@@ -1182,6 +1182,7 @@ Conditions contain a single = sign: #{conditions}
 				@submission_script = @run_class.modify_job_script(self, runs, @submission_script)
 				# To get out of job_chain_files folder
 				@submission_script = "cd .. \n" + @submission_script
+                @code_run_environment = runs[0].code_run_environment
 				old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
 				################ Submit the run
 				Dir.chdir('job_chain_files'){job_no = execute}
@@ -1238,7 +1239,7 @@ Conditions contain a single = sign: #{conditions}
 	end
 
 	def code_run_environment
-		run_class.new(self).code_run_environment
+      @code_run_environment
 	end
 	
 	def run_command
