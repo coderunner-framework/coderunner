@@ -78,7 +78,14 @@ class CodeRunner
   end
 
   # Change the id of a given run to another integer
-  def self.change_id(new_ids, copts={})
+  def self.change_run_id(new_ids, copts={})
+    return unless Feedback.get_boolean("Warning: changing the id of a run does "\
+                                       "NOT change the restart information "\
+                                       "of any run which was restarted from "\
+                                       "it! Please confirm.")
+
+    runner_all = fetch_runner()
+    runs_all = runner_all.filtered_ids.map{|id| runner.combined_run_list[id]}
     runner = fetch_runner(copts)
     runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
 
@@ -89,6 +96,17 @@ class CodeRunner
       return
     end
 
+    existing_ids = []
+    runs_all.each{|r| existing_ids << r.id}
+
+    runs.each_with_index do |r, i|
+      if existing_ids.include?new_ids[i]
+        eputs "Error: id #{new_ids[i]} already exists! Skipping..."
+        next
+      end
+
+      r.change_id(new_ids[i])
+    end
   end
 
   # Method which concatenates NetCDF output files 
