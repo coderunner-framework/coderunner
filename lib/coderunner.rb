@@ -202,6 +202,7 @@ EOF
 		["available_modlets", "av", 0, 'List the available modlets for the code module.', [], [:C]],
 		["available_defaults_files", "avd", 0, 'List the defaults files for the code module.', [], [:C]],
 		["cancel", "can", 0, 'Cancel the specified job.', [], [:j, :f, :U, :N]],
+		["change_id", "ci", 1, 'Changes the id of a given set of runs to a new set of ids', ['new_ids'], [:j, :f, :U, :N]],
 		["code_command", "cc", 1, 'Call a class method of the run class. Effectively this will call run_class.class_eval(command). See documentation for whichever code module is in use.', ['command'], []],
 		["concat", "concat", 1, 'Concatenates NetCDF output files together. File is output in the CR root directory.', ['output file'], [:j, :f, :U, :N]],
 		["continue_in_new_folder", "cnf", 1, 'Make a new folder in the parent directory and copy all coderunner configuration files to that folder. If options j or f are specified, copy all matching runs to that new folder.', ['folder'], [:j, :f, :U, :N]],

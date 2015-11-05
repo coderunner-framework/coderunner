@@ -372,7 +372,7 @@ class CodeRunner
 	# If the custom class has already been set up, this method just returns the class.
 
 
-		def self.setup_run_class(code, options={})
+      def self.setup_run_class(code, options={})
 # 		logf(:setup_code)
 # 		log(:code, code)
 			
@@ -471,7 +471,7 @@ class CodeRunner
 # 			ep 'finished'
 
 		return run_class
-	end
+      end
 
 	# Traverse the directory tree below the root folder, detecting and analysing all runs within that folder. Although runs submitted by CodeRunner will all be in one folder in the root folder, it is not necessary for the runs to be organised like that. This is because CodeRunner can also be used to analyse runs which it did not submit.
 	#

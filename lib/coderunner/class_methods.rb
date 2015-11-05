@@ -77,6 +77,20 @@ class CodeRunner
     runner.continue_in_new_folder(folder, options)
   end
 
+  # Change the id of a given run to another integer
+  def self.change_id(new_ids, copts={})
+    runner = fetch_runner(copts)
+    runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
+
+    new_ids = new_ids.split(',').map(&:to_i)
+
+    if new_ids.length != runs.length
+      eputs "Error: New ids and list of runs are not the same length."
+      return
+    end
+
+  end
+
   # Method which concatenates NetCDF output files 
   def self.concat(name, copts={})
     begin
@@ -1044,6 +1058,6 @@ OPTIONS
 EOF
      #help.gsub(/(.{63,73} |.{73})/){"#$1\n\t"}.paginate
      help.paginate
-    end
+  end
 
 end
