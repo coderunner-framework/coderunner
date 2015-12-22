@@ -46,6 +46,14 @@ module Slurm
 		raise "Please define max_ppn for your system"
 	end
 	
+
+  def nodes
+    @nprocs.split(/x/)[0].to_i
+  end
+  def ppn
+    @nprocs.split(/x/)[1].to_i
+  end
+
 	def batch_script
 
 		nodes, ppn = @nprocs.split(/x/)

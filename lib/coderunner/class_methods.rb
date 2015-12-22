@@ -575,8 +575,8 @@ EOF
     eputs 'Starting Graph'
     kit = runner.graphkit_from_lists(copts[:G], copts[:g])
     kit.gnuplot(eval: string_to_eval)
-    gets
-    kit.close
+    #gets
+    #kit.close
   end
 
   def self.readout(copts={})
