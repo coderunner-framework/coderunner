@@ -1,6 +1,6 @@
 class CodeRunner
 	require SCRIPT_FOLDER + '/system_modules/slurm.rb'
-	module Stampede
+	module Cori
 		include Slurm
 		#def batch_script
 			#raise "Please specify project" unless @project
