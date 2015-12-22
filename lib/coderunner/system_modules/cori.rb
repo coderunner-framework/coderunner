@@ -14,7 +14,7 @@ class CodeRunner
 			if use_launcher
 				return %[#{code_run_environment}\n srun -n #{@nprocs} #{executable_location}/#{executable_name} #{parameter_string} > #{output_file} 2> #{error_file}]
 			else
-				"srun -n #{nodex*ppn} #{executable_location}/#{executable_name} #{parameter_string}"
+				"srun -n #{nodes*ppn} #{executable_location}/#{executable_name} #{parameter_string}"
 			end
 		end
 		def batch_script
