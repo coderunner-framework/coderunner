@@ -1,5 +1,5 @@
 
-$stderr.puts "CodeRunner (c) 2009 Edmund Highcock. Loading..." unless $has_put_startup_message_for_code_runner
+$stderr.puts "CodeRunner. Written by Edmund Highcock & Ferdinand van Wyk. Loading..." unless $has_put_startup_message_for_code_runner
 
 if RUBY_VERSION.to_f < 1.9
 	raise "Ruby version 1.9 or greater required (current version is #{RUBY_VERSION})"
