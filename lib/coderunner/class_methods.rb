@@ -129,24 +129,26 @@ class CodeRunner
 
     concat_string += runner.root_folder + '/' + name
 
-    exec "#{concat_string}"
+    system "#{concat_string}"
   end
 
-  # This section defines the report report writing function in. The latex header is defined in run.rb. It is a run method and can be redefined in a particular CRMOD.
-  # The function is simply called as follows:
+  # This section defines the report report writing function in. The latex
+  # header is defined in run.rb. It is a run method and can be redefined in a
+  # particular CRMOD.  The function is simply called as follows:
   #
-  #   interactively: wr j:<run no.>
-  #   command line: coderunner write_report -j <run no>
+  #   interactively: wr j:<run no.> command line: coderunner write_report -j
+  #   <run no>
   #
   # The requirements to use this function are:
   #
-  #   1. pdflatex version 2014 or higher
-  #   2. gnuplot
-  #   3. ability to write eps graphs
+  #   1. pdflatex version 2014 or higher 2. gnuplot 3. ability to write eps
+  #   graphs
   #
-  # The graphs which are written out to the PDF are read in from a given CRMOD. It should be defined in the main .rb file for the CRMOD, e.g. gs2.rb.
-  # As seen below, this function should be called 'latex_graphs'. To see an example of what this function should look like see GS2CRMOD, but it is simply an array of graphkits
-  # and latex code blocks which describe plots.
+  # The graphs which are written out to the PDF are read in from a given CRMOD.
+  # It should be defined in the main .rb file for the CRMOD, e.g. gs2.rb.  As
+  # seen below, this function should be called 'latex_graphs'. To see an
+  # example of what this function should look like see GS2CRMOD, but it is
+  # simply an array of graphkits and latex code blocks which describe plots.
   def self.write_report(copts={})
     runner = fetch_runner(copts)
     runs = runner.filtered_ids.map{|id| runner.combined_run_list[id]}
