@@ -1096,125 +1096,128 @@ Conditions contain a single = sign: #{conditions}
 		end
 		logf(:submit)
 		Dir.chdir(@root_folder) do
-			@skip=skip
-			mess = false
-			while FileTest.exist?("submitting") 
-				(eputs " Waiting for another process to finish submitting. If you know that no other CodeRunner processes are submitting in this folder (#@root_folder) then delete the file 'submitting' and try again"; mess = true) unless mess
-				sleep rand
-			end
-# 			old_trap = trap(0)
-			#old_trap0 = trap(0){eputs "Aborted Submit (0)!"; File.delete("#@root_folder/submitting"); exit!}
-			old_trap2 = trap(2){eputs "Aborted Submit (2)!"; File.delete("#@root_folder/submitting") if FileTest.exist? "#@root_folder/submitting"; trap(2, "DEFAULT"); trap(0, "DEFAULT"); Process.kill(2, 0)}
-	# 		File.open("submitting", "w"){|file| file.puts ""}
-			FileUtils.touch("submitting")
-			unless options[:no_update_before_submit]
-				@use_large_cache, ulc = false, @use_large_cache; update; @use_large_cache = ulc
-			end
-			generate_combined_ids(:real)
-# 			old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
-			script = "" if options[:job_chain]
-			runs.each_with_index do |run, index|
-				similar = similar_runs([], run)
-				if @skip and similar[0] and not (options[:replace_existing] or options[:rerun])
-					eputs "Found similar run: #{@run_list[similar[0]].run_name}"
-					eputs "Skipping submission..."
-					runs[index] = nil
-					next
-				end
-				unless options[:replace_existing] or options[:rerun]
-					@max_id+=1
-					run.id = @max_id
-				else
-					if options[:replace_existing]
-						FileUtils.rm_r run.directory 
-				  elsif options[:rerun]
-						################# For backwards compatibility
-						SUBMIT_OPTIONS.each do |opt|
-							 run.set(opt, send(opt)) unless run.send(opt)	
-						end
-						###########################################
-						FileUtils.rm "#{run.directory}/code_runner_results.rb"
-						FileUtils.rm "#{run.directory}/.code_runner_run_data"
-					end
-					@run_list.delete(run.id)
-					@ids.delete run.id
-					generate_combined_ids
-				end
-
-				begin
-					
-					unless options[:job_chain]
-						run.prepare_submission unless options[:rerun]
-						next if @test_submission
-						Dir.chdir(run.directory) do 
-							old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
-							######################### The big tomale!
-							run.job_no = run.execute  # Start the simulation and get the job_number
-							#########################
-							run.job_no = get_new_job_no(old_job_nos) unless run.job_no.kind_of? Integer # (if the execute command does not return the job number, look for it manually) 
-# 							eputs 'run.job_no', run.job_no
-							run.output_file = nil # reset the output file
-							run.output_file # Sets the output_file on first call
-							run.error_file = nil # reset the output file
-							run.error_file # Sets the error_file on first call
-							run.write_info
-							eputs "Submitted run: #{run.run_name}"
-						end
-					else
-						run.prepare_submission unless options[:rerun]
-						script << "cd #{run.directory}\n"
-						script << "#{run.run_command}\n"
-						next if @test_submission
-					end
-				rescue => err
-					File.delete("submitting")
-					raise(err)
-				end
-			end # runs.each
-			runs.compact!
-			if options[:job_chain] and not @test_submission and runs.size > 0
-				FileUtils.makedirs('job_chain_files')
-				@id_list = runs.map{|run| run.id}
-				
-				#@executable ||= runs[0].executable
-				@submission_script = script
-				# A hook... default is to do nothing
-				@submission_script = @run_class.modify_job_script(self, runs, @submission_script)
-				# To get out of job_chain_files folder
-				@submission_script = "cd .. \n" + @submission_script
-                @code_run_environment = runs[0].code_run_environment
-				old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
-				################ Submit the run
-				Dir.chdir('job_chain_files'){job_no = execute}
-				################
-				job_no = get_new_job_no(old_job_nos) unless job_no.kind_of? Integer 	# (if the execute command does not return the job number, look for it manually) 
-# 				eputs 'jobchain no', job_no
-				#runs.each{|run| run.job_no = job_no}
-				runs.each do |run| 
-					run.job_no = @job_no = job_no
-					run.output_file = run.relative_directory.split("/").map{|d| ".."}.join("/") + "/job_chain_files/" + output_file
-					run.error_file = run.relative_directory.split("/").map{|d| ".."}.join("/") + "/job_chain_files/" + error_file
-					run.write_info
-					eputs "Submitted run: #{run.run_name}"
-				end
-			end
-			@write_status_dots, wsd = false, @write_status_dots
-			@run_class.update_status(self)
-			runs.each do |run| 
-# 				ep run.id, run_list.keys		
-				Dir.chdir(run.directory){traverse_directories}
-
-			end
-      if is_in_repo? @root_folder and not @test_submission
-        runs.each do |run| 
-          Dir.chdir(run.directory){run.add_to_repo}
+      begin
+        @skip=skip
+        mess = false
+        while FileTest.exist?("submitting") 
+          (eputs " Waiting for another process to finish submitting. If you know that no other CodeRunner processes are submitting in this folder (#@root_folder) then delete the file 'submitting' and try again"; mess = true) unless mess
+          sleep rand
         end
-      end
-			@write_status_dots = wsd	
-			save_large_cache
-			File.delete("submitting")
+  # 			old_trap = trap(0)
+        #old_trap0 = trap(0){eputs "Aborted Submit (0)!"; File.delete("#@root_folder/submitting"); exit!}
+        old_trap2 = trap(2){eputs "Aborted Submit (2)!"; File.delete("#@root_folder/submitting") if FileTest.exist? "#@root_folder/submitting"; trap(2, "DEFAULT"); trap(0, "DEFAULT"); Process.kill(2, 0)}
+    # 		File.open("submitting", "w"){|file| file.puts ""}
+        FileUtils.touch("submitting")
+        unless options[:no_update_before_submit]
+          @use_large_cache, ulc = false, @use_large_cache; update; @use_large_cache = ulc
+        end
+        generate_combined_ids(:real)
+  # 			old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
+        script = "" if options[:job_chain]
+        runs.each_with_index do |run, index|
+          similar = similar_runs([], run)
+          if @skip and similar[0] and not (options[:replace_existing] or options[:rerun])
+            eputs "Found similar run: #{@run_list[similar[0]].run_name}"
+            eputs "Skipping submission..."
+            runs[index] = nil
+            next
+          end
+          unless options[:replace_existing] or options[:rerun]
+            @max_id+=1
+            run.id = @max_id
+          else
+            if options[:replace_existing]
+              FileUtils.rm_r run.directory 
+            elsif options[:rerun]
+              ################# For backwards compatibility
+              SUBMIT_OPTIONS.each do |opt|
+                 run.set(opt, send(opt)) unless run.send(opt)	
+              end
+              ###########################################
+              FileUtils.rm "#{run.directory}/code_runner_results.rb"
+              FileUtils.rm "#{run.directory}/.code_runner_run_data"
+            end
+            @run_list.delete(run.id)
+            @ids.delete run.id
+            generate_combined_ids
+          end
+
+          begin
+            
+            unless options[:job_chain]
+              run.prepare_submission unless options[:rerun]
+              next if @test_submission
+              Dir.chdir(run.directory) do 
+                old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
+                ######################### The big tomale!
+                run.job_no = run.execute  # Start the simulation and get the job_number
+                #########################
+                run.job_no = get_new_job_no(old_job_nos) unless run.job_no.kind_of? Integer # (if the execute command does not return the job number, look for it manually) 
+  # 							eputs 'run.job_no', run.job_no
+                run.output_file = nil # reset the output file
+                run.output_file # Sets the output_file on first call
+                run.error_file = nil # reset the output file
+                run.error_file # Sets the error_file on first call
+                run.write_info
+                eputs "Submitted run: #{run.run_name}"
+              end
+            else
+              run.prepare_submission unless options[:rerun]
+              script << "cd #{run.directory}\n"
+              script << "#{run.run_command}\n"
+              next if @test_submission
+            end
+          rescue => err
+            File.delete("submitting")
+            raise(err)
+          end
+        end # runs.each
+        runs.compact!
+        if options[:job_chain] and not @test_submission and runs.size > 0
+          FileUtils.makedirs('job_chain_files')
+          @id_list = runs.map{|run| run.id}
+          
+          #@executable ||= runs[0].executable
+          @submission_script = script
+          # A hook... default is to do nothing
+          @submission_script = @run_class.modify_job_script(self, runs, @submission_script)
+          # To get out of job_chain_files folder
+          @submission_script = "cd .. \n" + @submission_script
+                  @code_run_environment = runs[0].code_run_environment
+          old_job_nos = queue_status.scan(/^\s*(\d+)/).map{|match| match[0].to_i}
+          ################ Submit the run
+          Dir.chdir('job_chain_files'){job_no = execute}
+          ################
+          job_no = get_new_job_no(old_job_nos) unless job_no.kind_of? Integer 	# (if the execute command does not return the job number, look for it manually) 
+  # 				eputs 'jobchain no', job_no
+          #runs.each{|run| run.job_no = job_no}
+          runs.each do |run| 
+            run.job_no = @job_no = job_no
+            run.output_file = run.relative_directory.split("/").map{|d| ".."}.join("/") + "/job_chain_files/" + output_file
+            run.error_file = run.relative_directory.split("/").map{|d| ".."}.join("/") + "/job_chain_files/" + error_file
+            run.write_info
+            eputs "Submitted run: #{run.run_name}"
+          end
+        end
+        @write_status_dots, wsd = false, @write_status_dots
+        @run_class.update_status(self)
+        runs.each do |run| 
+  # 				ep run.id, run_list.keys		
+          Dir.chdir(run.directory){traverse_directories}
+
+        end
+        if is_in_repo? @root_folder and not @test_submission
+          runs.each do |run| 
+            Dir.chdir(run.directory){run.add_to_repo}
+          end
+        end
+        @write_status_dots = wsd	
+        save_large_cache
+        File.delete("submitting")
+      ensure
 			#trap(0, old_trap0)
-			trap(2, old_trap2)
+        trap(2, old_trap2)
+      end
 	
 			
 		end # Dir.chdir(@root_folder)

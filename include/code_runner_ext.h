@@ -9,8 +9,8 @@
 #define RFCALL_10_ON(obj, name) (rb_funcall(obj, rb_intern(name), 0))
 #define RFCALL_11(name, arg1) (rb_funcall(self, rb_intern(name), 1, arg1))
 #define RFCALL_11_ON(obj, name, arg1) (rb_funcall(obj, rb_intern(name), 1, arg1))
-#define RFCALL_12(name, arg1, arg2) (rb_funcall(self, rb_intern(name), 1, arg1, arg2))
-#define RFCALL_12_ON(obj, name, arg1, arg2) (rb_funcall(obj, rb_intern(name), 1, arg1, arg2))
+#define RFCALL_12(name, arg1, arg2) (rb_funcall(self, rb_intern(name), 2, arg1, arg2))
+#define RFCALL_12_ON(obj, name, arg1, arg2) (rb_funcall(obj, rb_intern(name), 2, arg1, arg2))
 
 /* Access an element of an array or hash*/
 #define CR_ELEMENT_ACCESS(recvr, key) ( \
