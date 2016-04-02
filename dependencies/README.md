@@ -28,7 +28,7 @@ Manual Installation
 3. If you only want to build one package see the makefile for the short name
    of the package. If you find any of these out of date, please open an
    issue of GitHub.
-3. Finally, export these to the system PATH by adding the following to your
+4. Finally, export these to the system PATH by adding the following to your
    `.bashrc`:
 
    `export PATH=/path/to/install/dir:$PATH`
