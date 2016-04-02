@@ -11,22 +11,23 @@ CodeRunner requires the following system-level dependencies:
 6. Ruby
 7. yaml
 
-The exact versions required can be read from the `download_dependencies.sh`
-script and the user has two options:
+To install these, there are two option:
 
-1. Install the packages using the from source (recommended).
-2. Install the packages through a package manager.
+1. Install through a package manager (recommended).
+2. Install using the from source.
 
-The packages downloaded by the `download_dependencies.sh` and built using the
-Makefile are guaranteed to work and avoids having to deal with the headaches of
-package compatibility.
+In some cases, packages downloaded through the system package manager are too
+old for some RubyGems. In that case follow the manual installation below.
 
-Installing using the shell script and Makefile
-==============================================
+Manual Installion
+=================
 
 1. Run `./download_dependencies.sh -P /path/to/download/dir`. Default
    location is in the dependencies directory.
 2. To compile all the packages, run `make hd all rb PREFIX=/path/to/install/dir`.
+3. If you only want to build one package see the makefile for the short name
+   of the package. If you find any of these out of data, please open an
+   issue of GitHub.
 3. Finally, export these to the system PATH by adding the following to your
    `.bashrc`:
 

@@ -13,8 +13,7 @@ HDF5="hdf5-1.8.9"
 YAML="yaml-0.1.4"
 READLINE="readline-6.2"
 NCURSES="ncurses-5.9"
-RUBY="ruby-1.9.3-p551"
-RUBY2="ruby-2.1-stable"
+RUBY="ruby-2.1-stable"
 
 help:
 	@echo
@@ -90,21 +89,13 @@ rb: ruby
 ruby:
 	tar -xzf ${RUBY}.tar.gz
 	cd ${RUBY};  ./configure --prefix=${PREFIX} ${MY_CONFFLAGS} && make ${MY_MAKEFLAGS} && make install ${MY_MAKEFLAGS}
-	cd ${RUBY}/ext/readline; ${PREFIX}/bin/ruby extconf.rb ; make && make install
-	#cd ${RUBY}/ext/psych/; ${PREFIX}/bin/ruby extconf.rb ; make && make install
-
-rb2: ruby2
-
-ruby2:
-	tar -xzf ${RUBY2}.tar.gz
-	cd ${RUBY2};  ./configure --prefix=${PREFIX} ${MY_CONFFLAGS} && make ${MY_MAKEFLAGS} && make install ${MY_MAKEFLAGS}
-	cd ${RUBY2}/ext/readline; ruby extconf.rb ; make && make install
-	cd ${RUBY2}/ext/psych/; ruby extconf.rb ; make && make install
+	cd ${RUBY}/ext/readline; ruby extconf.rb ; make && make install
+	cd ${RUBY}/ext/psych/; ruby extconf.rb ; make && make install
 
 ruby_ext:
 	cd ${RUBY}/ext/readline; ruby extconf.rb ; make && make install
 	cd ${RUBY}/ext/psych/; ruby extconf.rb ; make && make install
 
 clean:
-	rm -rf ${RUBY} ${RUBY2} ${NETCDF} ${YAML} ${READLINE} ${GSL}
+	rm -rf ${RUBY} ${RUBY} ${NETCDF} ${YAML} ${READLINE} ${GSL}
 	rm -rf ${NCURSES} ${HDF5}

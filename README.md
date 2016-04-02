@@ -10,13 +10,20 @@ Installation
 ============
 
 CodeRunner requires several system dependencies which are explained in the
-`dependencies/README.md` file. Short guide:
+`dependencies/README.md` file.
 
-1. `cd dependencies`
-2. `./download_dependencies`
-3. `make hd all rb PREFIX=/path/to/install/dir`
-4. Add the following to your `.bashrc`: `export PATH=/path/to/install/dir:$PATH`
-5. Finally install using: `gem install coderunner`
+From RubyGems:
+
+```bash
+$ gem install coderunner
+```
+
+From source:
+
+```bash
+$ rake build
+$ gem install -l pkg/coderunner-x.x.x.gem
+```
 
 Coding Style Guide
 ==================
