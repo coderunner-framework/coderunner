@@ -278,24 +278,14 @@ class CodeRunner
     end
   end
 
+  # Used by the help method defined in interactive_methods.rb
   def self.reference(class_or_method, copts={})
-    code_folders = Dir.recursive_entries(SCRIPT_FOLDER + '/code_modules').grep(/\/ri$/).map{|fold| ['-d', fold]}.flatten
-#     ep code_folders
-
-#     require 'rdoc/ri/driver'
-
-# "
-#     op = @ri_count ? [] : (@ri_count = true; ['--no-use-cache'])
-#     trap(1){puts 'No help available'}
-#     at_exit{raise ""}
-#     p op
     begin
       eputs "Looking up #{class_or_method}"
-      RDoc::RI::Driver.run ['-d', SCRIPT_FOLDER + '/ri', class_or_method.to_s] + code_folders
-    rescue => err
+      RDoc::RI::Driver.run [class_or_method.to_s] 
+    rescue SystemExit => err
       eputs "Unknown class or method or no help available: #{err}"
     end
-#     trap(1){}
   end
 
   def self.directory(id, copts={})
