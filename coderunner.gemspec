@@ -19,20 +19,22 @@ Gem::Specification.new do |s|
   s.extensions = ["ext/extconf.rb"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.md",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
+    "CONTRIBUTING.md",
     "Gemfile",
     "LICENSE.txt",
     "README.md",
-    "README.rdoc",
     "Rakefile",
     "VERSION",
     "bin/coderunner",
     "bin/coderunnerrepo",
     "coderunner.gemspec",
+    "dependencies/Makefile",
+    "dependencies/README.md",
+    "dependencies/download_dependencies.sh",
     "ext/code_runner_ext.c",
     "ext/extconf.rb",
     "ext/graph_kit.c",
@@ -95,8 +97,7 @@ Gem::Specification.new do |s|
     "test/fortran_namelist.in",
     "test/helper.rb",
     "test/old_test.rb",
-    "test/test_coderunner.rb",
-    "test/test_coderunnerrepo.rb"
+    "test/test_coderunner.rb"
   ]
   s.homepage = "http://coderunner.sourceforge.net"
   s.licenses = ["GPLv3"]
