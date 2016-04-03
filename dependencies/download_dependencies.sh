@@ -16,5 +16,5 @@ wget -nc ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz -P $DIR
 wget -nc ftp://ftp.unidata.ucar.edu/pub/netcdf/old/netcdf-4.2.1.1.tar.gz -P $DIR
 wget -nc ftp://ftp.gnu.org/gnu/readline/readline-6.2.tar.gz -P $DIR
 wget -nc http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz -P $DIR
-wget -nc https://cache.ruby-lang.org/pub/ruby/ruby-2.1-stable.tar.gz -P $DIR
+wget -nc https://cache.ruby-lang.org/pub/ruby/ruby-2.3.0.tar.gz -P $DIR
 
