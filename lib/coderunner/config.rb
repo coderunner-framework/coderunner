@@ -4,7 +4,7 @@
 require 'rubygems'
 require "rubyhacks"
 require 'fileutils'
-require 'coderunner/version.rb'
+require 'coderunner/version'
 
 class CodeRunner
 
