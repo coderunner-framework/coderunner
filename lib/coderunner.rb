@@ -66,8 +66,6 @@ eprint '.' unless $has_put_startup_message_for_code_runner
 #eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/long_regexen.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
-load CodeRunner::SCRIPT_FOLDER + "/version.rb"
-eprint '.' unless $has_put_startup_message_for_code_runner
 load CodeRunner::SCRIPT_FOLDER + "/heuristic_run_methods.rb"
 eprint '.' unless $has_put_startup_message_for_code_runner
 #load CodeRunner::SCRIPT_FOLDER + "/code_runner_version.rb"

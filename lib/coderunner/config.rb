@@ -4,6 +4,7 @@
 require 'rubygems'
 require "rubyhacks"
 require 'fileutils'
+require 'coderunner/version.rb'
 
 class CodeRunner
 
@@ -83,6 +84,7 @@ class CodeRunner
     $stdin.gets
   end
 
-  CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s) rescue "test"
+  #CodeRunner::CODE_RUNNER_VERSION = Version.new(Gem.loaded_specs['coderunner'].version.to_s) rescue "test"
+  CodeRunner::CODE_RUNNER_VERSION = Version.new(File.read(SCRIPT_FOLDER + '/../../VERSION')) rescue "test"
 
 end
