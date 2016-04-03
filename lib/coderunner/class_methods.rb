@@ -299,6 +299,7 @@ class CodeRunner
     runner.make_film_from_lists(copts[:G], copts[:g], copts[:F])
   end
 
+  # Deprecated
   def self.generate_documentation(username = nil, copts = {})
     ep 'username', username||=ENV['USER']
 
@@ -410,7 +411,7 @@ EOF
   end
 
   def self.launcher_directory
-    ENV['HOME'] + "/.coderunner/to_launch/#{ENV['CODE_RUNNER_LAUNCHER']}"
+    ENV['HOME'] + "/.coderunner/to_launch/#{global_options(:launcher)}"
   end
   
   def self.start_launcher(refresh, max_queue, copts={})
@@ -427,7 +428,7 @@ EOF
     at_exit{FileUtils.rm_r tl}
     FileUtils.makedirs tl
 
-    unless ENV['CODE_RUNNER_LAUNCHER'] =~ /serial/
+    unless global_options(:launcher) =~ /serial/
       mutex = Mutex.new
       processes= []
       command_list = {}

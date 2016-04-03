@@ -13,6 +13,7 @@ class CodeRunner
     no_repo: true, # Disable CodeRunner repo, true for now as in development
     simple_prompt: false, # If true have a less fancy prompt in interactive mode
     non_interactive: false, # If true, don't prompt for feedback when executing commands. Use with caution.
+    launcher: nil, # To activate the launcher, set this to be a string. The launcher will use the folder ~/.coderunner/to_launch/GLOBAL_OPTIONS[:launcher]
   }
 
   class CodeRunner::ConfigError < StandardError
