@@ -1,0 +1,37 @@
+sudo: false
+language: ruby
+rvm:
+  - 2.2.0
+notifications:
+    email:
+        on_success: change
+        on_failure: change
+
+addons:
+    apt:
+        packages:
+        - gsl-bin
+        - libgsl0-dev
+        - libnetcdf-dev
+        - libhdf5-serial-dev
+        - libyaml-dev
+        - libreadline-dev
+        - libncurses5-dev
+
+before_install:
+    - rvm use 2.2.0 --install --binary --fuzzy --default
+
+install:
+    - bundle install
+    - rake install
+    - mkdir -m 700 -p -v $HOME/.ssh
+    - ssh-keygen -t rsa -N '' -f $HOME/.ssh/id_rsa
+    - cat $HOME/.ssh/id_rsa.pub > $HOME/.ssh/authorized_keys
+    - cat $HOME/.ssh/id_rsa.pub > $HOME/.ssh/known_hosts
+    - echo "Host *" >> $HOME/.ssh/config &&
+      echo "  NoHostAuthenticationForLocalhost yes" >> $HOME/.ssh/config
+    - echo "export CODE_RUNNER_SYSTEM=generic_linux" >> $HOME/.bashrc
+    - source $HOME/.bashrc
+
+script:
+    - export CPP=g++ && rake test
