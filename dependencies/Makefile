@@ -8,7 +8,7 @@ MY_CONFFLAGS=LDFLAGS=-L${PREFIX}/lib CFLAGS=-I${PREFIX}/include
 
 # Packages
 NETCDF="netcdf-4.2.1.1"
-GSL="gsl-1.16"
+GSL="gsl-2.1"
 HDF5="hdf5-1.8.16"
 YAML="yaml-0.1.4"
 READLINE="readline-6.2"
