@@ -7,7 +7,7 @@ MY_MAKEFLAGS?=
 MY_CONFFLAGS=LDFLAGS=-L${PREFIX}/lib CFLAGS=-I${PREFIX}/include
 
 # Packages
-NETCDF="netcdf-4.2.1.1"
+NETCDF="netcdf-4.4.0"
 GSL="gsl-2.1"
 HDF5="hdf5-1.8.16"
 YAML="yaml-0.1.4"
