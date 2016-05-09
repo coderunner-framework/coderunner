@@ -12,7 +12,7 @@ GSL="gsl-2.1"
 HDF5="hdf5-1.8.16"
 YAML="yaml-0.1.4"
 READLINE="readline-6.2"
-NCURSES="ncurses-5.9"
+NCURSES="ncurses-6.0"
 RUBY="ruby-2.3.0"
 
 help:
