@@ -34,4 +34,4 @@ install:
     - source $HOME/.bashrc
 
 script:
-    - export CPP=g++ && rake test
+    - export CXX=g++ && rake test

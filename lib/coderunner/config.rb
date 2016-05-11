@@ -53,7 +53,7 @@ class CodeRunner
   GLOBAL_OPTIONS.keys.each do |key|
     env_string = 'CODE_RUNNER_' + key.to_s.upcase
     if env_val = ENV[env_string]
-      GLOBAL_OPTIONS[:key] = 
+      GLOBAL_OPTIONS[key] = 
         case env_val
         when 'true'
           true

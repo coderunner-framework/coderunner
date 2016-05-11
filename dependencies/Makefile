@@ -13,7 +13,7 @@ HDF5="hdf5-1.8.16"
 YAML="yaml-0.1.6"
 READLINE="readline-6.3"
 NCURSES="ncurses-6.0"
-RUBY_VERSION="2.3.0"
+RUBY_VERSION="2.3.1"
 
 help:
 	@echo

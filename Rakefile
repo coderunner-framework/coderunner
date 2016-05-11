@@ -15,12 +15,12 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "coderunner"
-  gem.homepage = "http://coderunner.sourceforge.net"
+  gem.homepage = "http://coderunner-framework.github.io/coderunner"
   gem.license = "GPLv3"
 	gem.rubyforge_project = gem.name
   gem.summary = %Q{A framework for the automated running and analysis of simulations.}
   gem.description = %Q{CodeRunner is a framework for the automated running and analysis of simulations. It automatically generates any necessary input files, organises the output data and analyses it. Because it is a modular system, it can easily be customised to work with any system and any simulation code. One of its greatest strengths is that it is independent of any one simulation code; thus it can easily plot and compare the data from different codes.}
-  gem.email = "edmundhighcock@sourceforge.net"
+  gem.email = "edmundhighcock@users.sourceforge.net"
   gem.authors = ["Edmund Highcock"]
 	gem.extensions = "ext/extconf.rb"
 	gem.files.include('ext/*.c', 'include/*.h', 'ext/*.rb')
