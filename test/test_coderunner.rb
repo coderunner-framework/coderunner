@@ -9,8 +9,8 @@ module MiniTest::Assertions
 	end
 end
 
-unless $cpp_command = ENV['CPP']
-	raise "Please specify the environment variable CPP (the C++ compiler)"
+unless $cpp_command = ENV['CXX']
+	raise "Please specify the environment variable CXX (the C++ compiler)"
 end
 
 $ruby_command = "#{RbConfig::CONFIG['bindir']}/#{RbConfig::CONFIG['ruby_install_name']}"
