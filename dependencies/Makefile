@@ -58,7 +58,7 @@ rvm:
 	@echo "source $$HOME/.rvm/scripts/rvm"
 	@echo "rvm autolibs disable"
 	@echo "rvm install ruby-${RUBY_VERSION} -j 4"
-	@echo "[add to .bashrc] export LD_LIBRARY_PATH=${PREFIX}/lib"
+	@echo "export LD_LIBRARY_PATH=${PREFIX}/lib [and add to .bashrc]"
 	@echo "Now ready to install gems..."
 	@echo "----------------------------------------------------------------"
 
