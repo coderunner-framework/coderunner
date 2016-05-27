@@ -50,6 +50,7 @@ ncurses:
 	cd ${NCURSES};  ./configure --prefix=${PREFIX} --with-shared &&  make ${MY_MAKEFLAGS}  && make install ${MY_MAKEFLAGS}
 
 rvm:
+	command curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
 	\curl -sSL https://get.rvm.io | bash -s stable --auto-dotfiles
 	@echo "----------------------------------------------------------------"
 	@echo "To complete RVM/Ruby installation run the following commands:"
@@ -57,6 +58,8 @@ rvm:
 	@echo "source $$HOME/.rvm/scripts/rvm"
 	@echo "rvm autolibs disable"
 	@echo "rvm install ruby-${RUBY_VERSION} -j 4"
+	@echo "[add to .bashrc] export LD_LIBRARY_PATH=${PREFIX}/lib"
+	@echo "Now ready to install gems..."
 	@echo "----------------------------------------------------------------"
 
 clean:
