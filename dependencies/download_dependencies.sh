@@ -10,11 +10,11 @@ do
     shift
 done
 
-wget -nc ftp://ftp.gnu.org/gnu/gsl/gsl-1.16.tar.gz -P $DIR
-wget -nc https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.9/src/hdf5-1.8.9.tar.gz -P $DIR
-wget -nc ftp://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz -P $DIR
-wget -nc ftp://ftp.unidata.ucar.edu/pub/netcdf/old/netcdf-4.2.1.1.tar.gz -P $DIR
-wget -nc ftp://ftp.gnu.org/gnu/readline/readline-6.2.tar.gz -P $DIR
-wget -nc http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz -P $DIR
-wget -nc https://cache.ruby-lang.org/pub/ruby/ruby-2.1.0.tar.gz -P $DIR
+wget -nc ftp://ftp.gnu.org/gnu/gsl/gsl-2.1.tar.gz -P $DIR
+wget -nc https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8.16/src/hdf5-1.8.16.tar.gz -P $DIR
+wget -nc ftp://ftp.gnu.org/gnu/ncurses/ncurses-6.0.tar.gz -P $DIR
+wget -nc ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.4.0.tar.gz -P $DIR
+wget -nc ftp://ftp.gnu.org/gnu/readline/readline-6.3.tar.gz -P $DIR
+wget -nc http://pyyaml.org/download/libyaml/yaml-0.1.6.tar.gz -P $DIR
+wget -nc https://cache.ruby-lang.org/pub/ruby/ruby-2.3.1.tar.gz -P $DIR
 
