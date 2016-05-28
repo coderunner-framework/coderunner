@@ -1,3 +1,8 @@
+required_rubygems_version = '2.6.0'
+if Gem.rubygems_version < Gem::Version.create(required_rubygems_version)
+    raise "Please upgrade to rubygems #{required_rubygems_version}"
+end
+
 source "http://rubygems.org"
 # Add dependencies required to use your gem here.
 # Example:

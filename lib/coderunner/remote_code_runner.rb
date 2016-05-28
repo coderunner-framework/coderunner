@@ -148,10 +148,10 @@ class RemoteCodeRunner < CodeRunner
 			require 'digest'
 			filename = Digest::MD5.hexdigest(filename)
 		end
-    cachename = self.class.cache_folder(@host, @folder) + '/' + filename
+        cachename = self.class.cache_folder(@host, @folder) + '/' + filename
 		if @remote_cache == :auto and 	FileTest.exist?(cachename)
 			data = eval(File.read(cachename))
-      return data if not data.nil?
+            return data if not data.nil?
 		end
 		string = @libraries.map{|lib| "require #{lib}"}.join(";") + ";" + string
 
