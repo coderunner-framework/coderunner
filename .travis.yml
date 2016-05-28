@@ -22,6 +22,8 @@ before_install:
     - rvm use 2.2.0 --install --binary --fuzzy --default
 
 install:
+    - gem install rubygems-update
+    - gem update --system
     - bundle install
     - rake install
     - mkdir -m 700 -p -v $HOME/.ssh
