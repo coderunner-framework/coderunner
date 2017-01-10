@@ -15,9 +15,7 @@ class CodeRunner
 <<EOF
 	#!/bin/bash --login 
 	#PBS -N #{executable_name}.#{job_identifier}
-	#PBS -l ncpus=#{nprocstot}
-	#PBS -l mpiprocs=#{nprocstot}
-	#PBS -l select=#{nodes}
+	#PBS -l select=#{nodes}:ncpus=#{nprocstot}:mpiprocs=#{nprocstot}
 	#PBS -l walltime=#{sprintf("%02d:%02d:%02d", hours, mins, secs)}
 	#{@project ? "#PBS -A #@project" : ""}
 	#{@queue ? "#PBS -q #@queue" : ""}
