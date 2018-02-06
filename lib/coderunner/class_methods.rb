@@ -749,6 +749,7 @@ EOF
     submitter.instance_variable_set(:@nprocs, copts[:n])
     submitter.instance_variable_set(:@wall_mins, copts[:W])
     submitter.instance_variable_set(:@project, copts[:P])
+    submitter.instance_variable_set(:@queue, copts[:Q])
     class << submitter
       include CodeRunner::SYSTEM_MODULE
       def executable_name
