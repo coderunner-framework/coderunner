@@ -34,4 +34,4 @@ install:
     - source $HOME/.bashrc
 
 script:
-    - export CXX=g++ && rake test
+    - export CXX=g++ && export RUBYOPT=W0 && rake test
