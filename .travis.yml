@@ -1,5 +1,5 @@
-sudo: false
-dist: precise
+sudo: required
+#dist: precise
 language: ruby
 rvm:
   - 2.2.0
@@ -8,6 +8,9 @@ notifications:
         on_success: change
         on_failure: change
 
+branches:
+  only:
+    1.0.x
 addons:
     apt:
         packages:
