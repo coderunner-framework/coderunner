@@ -1069,7 +1069,9 @@ OPTIONS
 
 EOF
      #help.gsub(/(.{63,73} |.{73})/){"#$1\n\t"}.paginate
-     help.paginate
+     #help.paginate
+     puts help
   end
+
 
 end
