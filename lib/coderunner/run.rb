@@ -315,7 +315,7 @@ def process_directory
   raise CRFatal.new("status must be one of #{PERMITTED_STATI.inspect}") unless PERMITTED_STATI.include? @status
   @max = {}
   write_results
-  @component_runs = []
+  @component_runs ||= []
   generate_component_runs
   save
   commit_results if @runner.is_in_repo? and not @running
